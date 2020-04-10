@@ -127,8 +127,6 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
     \item Make an outline.
     \item Suggest a method for localization from a image sequences.
     \item Evaluate and demonstrate it.
-    \item Label data in Table \ref{tab:estimation-errors} by image type (see our previous emails).
-    \item Add labels of InMap, OffMap data (Fig. \ref{fig:queryPipeline}).
     \item Get queries for B-670, inspect the data, localize, evaluate.
     \item Localization if sequences will be based on predicting the next view from the pose obtained bay localizing and initial segment of the segment of the sequence and attaching the next view(s) using the relative pose between the views provided by Hololens pose tracking. 
     \item Level-1: localize initial segment of length 1, evaluate, wait or this to work, ...
@@ -231,11 +229,11 @@ In order to measure how the InLocCIIRC algorithm is performing, I have measured 
 
 \begin{table}
 	\centering
-	\begin{tabular}{|c|c|c|}
+	\begin{tabular}{|c|c|c|c|}
 		\hline
-		\bfseries Query ID & \bfseries Translation [m] & \bfseries Orientation [\degree]
+		\bfseries Query ID & \bfseries InMap & \bfseries Translation [m] & \bfseries Orientation [\degree]
 		\csvreader[head to column names]{evaluation/errors.csv}{}
-		{\\ \hline \id & \translation & \orientation}
+		{\\ \hline \id & \inMap & \translation & \orientation}
 		\\\hline
 	\end{tabular}
 	\caption{Pose estimation errors on query images.}
@@ -291,7 +289,7 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.0 meters and 5.0 degrees whereas localization results in the last two rows are incorrect.
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.0 meters and 5.0 degrees whereas localization results in the last two rows are incorrect. All of the shown queries are OffMap, to test challenging estimation scenarios.
     \label{fig:queryPipeline}}
     }
 \end{figure*}
