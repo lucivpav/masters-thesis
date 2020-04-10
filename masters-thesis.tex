@@ -18,8 +18,8 @@
 	%subtitle-english = {Journey to the who-knows-what wondeland},
 	doctype = M,
 	faculty = F3,
-	department-czech = {CIIRC - TODO: má tohle být fakulta, která zaštiťuje můj program, nebo fakulta kde působí vedoucí?},
-	department-english = {CIIRC},
+	department-czech = {CIIRC},
+	department-english = {CIIRC - TODO: má tohle být fakulta, která \\ zaštiťuje můj program, nebo fakulta kde působí \\ vedoucí?},
 	author = {Pavel Lučivňák},
 	supervisor = {doc. Ing. Tomáš Pajdla Ph.D.},
 	supervisor-address = {CIIRC ČVUT, \\ Jugoslávských partyzánů 1580/3, \\ Praha 6 - Dejvice, \\ 160 00},
@@ -112,6 +112,9 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage{mathrsfs} % provides \mathscr used in the ridiculous examples
 \usepackage{gensymb} % for \degree
 \usepackage{csvsimple}
+\usepackage{makecell}
+\usepackage{adjustbox}
+\usepackage{cellspace} % for table rows padding
 
 \begin{document}
 
@@ -242,45 +245,54 @@ In order to measure how the InLocCIIRC algorithm is performing, I have measured 
 
 Figure \ref{fig:queryPipeline} shows example queries, how they are being processed and what is the localization result.
 
-\newcommand{\thiswidth}{0.160\linewidth} 
-{\tabcolsep=1pt
+\newcommand{\thiswidth}{0.19\linewidth} 
+{
+\setlength{\tabcolsep}{1pt}
+\cellspacetoplimit 2pt
+\cellspacebottomlimit 2pt
 \begin{figure*}
     \centering
     {\footnotesize
-    \begin{tabular}{c|c|c|c|c|c}
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/3.jpg/query_3} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/6.jpg/query_6} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/31.jpg/query_31} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/38.jpg/query_38} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/16.jpg/query_16} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/26.jpg/query_26} \\[-1pt]
-	\includegraphics[width=\thiswidth]{evaluation/queryPipeline/3.jpg/chosen_cutout_19_90_0} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/6.jpg/chosen_cutout_2_90_0} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/31.jpg/chosen_cutout_4_30_0} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/38.jpg/chosen_cutout_2_-120_-30} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/16.jpg/chosen_cutout_16_-180_-30} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/26.jpg/chosen_cutout_10_-90_-30} \\[-1pt]
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/3.jpg/synthesized} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/6.jpg/synthesized} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/31.jpg/synthesized} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/38.jpg/synthesized} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/16.jpg/synthesized} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/26.jpg/synthesized} \\[-1pt]
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/3.jpg/errmap} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/6.jpg/errmap} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/31.jpg/errmap} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/38.jpg/errmap} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/16.jpg/errmap} & 
-    \includegraphics[width=\thiswidth]{evaluation/queryPipeline/26.jpg/errmap} \\[-1pt] 
-    0.49, 1.19$\degree$ & 0.25, 2.38$\degree$ & 0.65, 1.69$\degree$ & 0.12, 0.07$\degree$ & 19.74, 149.70$\degree$ & 6.09, 145.58$\degree$ \\[1pt] \hline
-	Query 3 & 
-	Query 6 & 
-	Query 31 &
-	Query 38 & 
-	Query 16 & 
-	Query 26 \\
+	\begin{tabular}{ScScScScSc}
+	\hline
+	\makecell{Query 3 \\ 0.49, 1.19$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/query_3} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/chosen_cutout_19_90_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/synthesized} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/errmap} \\
+	\hline
+	\makecell{Query 6 \\ 0.25, 2.38$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/query_6} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/chosen_cutout_2_90_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/synthesized} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/errmap} \\
+	\hline
+	\makecell{Query 31 \\ 0.65, 1.69$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/query_31} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/chosen_cutout_4_30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/synthesized} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/errmap} \\
+	\hline
+	\makecell{Query 38 \\ 0.12, 0.07$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/query_38} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/chosen_cutout_2_-120_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/synthesized} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/errmap} \\
+	\hline
+	\makecell{Query 16 \\ 19.74, 149.70$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/query_16} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/chosen_cutout_16_-180_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/synthesized} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/errmap} \\
+	\hline
+	\makecell{Query 26 \\ 6.09, 145.58$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/query_26} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/chosen_cutout_10_-90_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/synthesized} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/errmap} \\
+	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization (columns).} From top to bottom: query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view, localization error (meters, degrees). Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th column are well localized within 1.0 meters and 5.0 degrees whereas localization results in the last two columns are incorrect. TODO: "transpose" the image matrix?
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.0 meters and 5.0 degrees whereas localization results in the last two rows are incorrect.
     \label{fig:queryPipeline}}
     }
 \end{figure*}
