@@ -225,7 +225,7 @@ One difference from the original InLoc is that I am using a mesh model projectio
 
 \chapter{Evaluation}
 
-In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix. Translation error $666.00$ signals that the estimated pose was in a different space than the reference query pose. Table \ref{tab:estimation-performance} shows the performance under the various thresholds. The InMap/OffMap performance is also shown.
+In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix. Translation error $666.00$ signals that the estimated pose was in a different space than the reference query pose. Table \ref{tab:estimation-performance} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
 
 \begin{table}
 	\centering
@@ -309,6 +309,13 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
 	\label{tab:estimation-performance}
 \end{table}
+
+\begin{figure}
+	\centering
+	\input{distThreshVsAccuracy}
+	\caption{Comparison between InLoc and InLocCIIRC on their respective datasets. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
+	\label{fig:dist-thresh-vs-accuracy}
+\end{figure}
 
 Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset including the localization results.
 
