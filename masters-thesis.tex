@@ -252,37 +252,37 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
     {\footnotesize
 	\begin{tabular}{ScScScScSc}
 	\hline
-	\makecell{Query 3 \\ 0.49, 1.19$\degree$} &
+	\makecell{Query 3 \\ 0.49 m, 1.19$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/query_3} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/chosen_cutout_19_90_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/errmap} \\
 	\hline
-	\makecell{Query 6 \\ 0.25, 2.38$\degree$} &
+	\makecell{Query 6 \\ 0.25 m, 2.38$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/query_6} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/chosen_cutout_2_90_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/errmap} \\
 	\hline
-	\makecell{Query 31 \\ 0.65, 1.69$\degree$} &
+	\makecell{Query 31 \\ 0.65 m, 1.69$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/query_31} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/chosen_cutout_4_30_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/errmap} \\
 	\hline
-	\makecell{Query 38 \\ 0.12, 0.07$\degree$} &
+	\makecell{Query 38 \\ 0.12 m, 0.07$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/query_38} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/chosen_cutout_2_-120_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/errmap} \\
 	\hline
-	\makecell{Query 16 \\ 19.74, 149.70$\degree$} &
+	\makecell{Query 16 \\ 19.74 m, 149.70$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/query_16} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/chosen_cutout_16_-180_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/errmap} \\
 	\hline
-	\makecell{Query 26 \\ 6.09, 145.58$\degree$} &
+	\makecell{Query 26 \\ 6.09 m, 145.58$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/query_26} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/chosen_cutout_10_-90_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/synthesized} &
@@ -301,9 +301,9 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 		\hline
 		Threshold & InLoc & \bfseries InLocCIIRC & InMap & OffMap \\
 		\hline
-		0.25m & 38.9 & \bfseries 50.0 & 72.73 & 41.38 \\
-		0.50m & 56.5 & \bfseries 62.5 & 81.82 & 55.17 \\
-		1.00m & \bfseries 69.9 & 67.5 & 81.82 & 62.07 \\
+		0.25m & 38.9\% & \bfseries 50.0\% & 72.73\% & 41.38\% \\
+		0.50m & 56.5\% & \bfseries 62.5\% & 81.82\% & 55.17\% \\
+		1.00m & \bfseries 69.9\% & 67.5\% & 81.82\% & 62.07\% \\
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
