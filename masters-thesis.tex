@@ -189,10 +189,10 @@ The query images can be split into two categories --- InMap and OffMap. An InMap
 
 \begin{itemize}
 	\item the translation difference is less than $1.3$ meters,
-	\item the direction vector angular difference is at most 10 degrees.
+	\item the angular difference between reference and retrieved rotation matrices is at most 10 degrees. TODO: elaborate.
 \end{itemize}
 
-The InLocCIIRC dataset consists of 11 InMap queries and 29 OffMap queries.
+The InLocCIIRC dataset consists of 5 InMap queries and 35 OffMap queries.
 
 The entire dataset, including the output of the InLocCIIRC demo, takes up to 142 GB of disk space.
 
@@ -265,44 +265,44 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
     {\footnotesize
 	\begin{tabular}{ScScScScSc}
 	\hline
-	\makecell{Query 3 \\ 0.49 m, 1.19$\degree$} &
+	\makecell{Query 3 \\ 1.36 m, 7.83$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/query_3} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/chosen_cutout_19_90_0} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/chosen_cutout_B-315_19_90_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/errmap} \\
 	\hline
-	\makecell{Query 6 \\ 0.25 m, 2.38$\degree$} &
+	\makecell{Query 6 \\ 0.34 m, 3.82$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/query_6} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/chosen_cutout_2_90_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/chosen_cutout_B-315_2_90_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/errmap} \\
 	\hline
-	\makecell{Query 31 \\ 0.65 m, 1.69$\degree$} &
+	\makecell{Query 31 \\ 0.65 m, 2.50$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/query_31} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/chosen_cutout_4_30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/chosen_cutout_B-315_4_30_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/errmap} \\
 	\hline
-	\makecell{Query 38 \\ 0.12 m, 0.07$\degree$} &
+	\makecell{Query 38 \\ 0.13 m, 1.27$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/query_38} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/chosen_cutout_2_-120_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/chosen_cutout_B-315_2_-120_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/errmap} \\
 	\hline
-	\makecell{Query 16 \\ 19.74 m, 149.70$\degree$} &
+	\makecell{Query 16 \\ 19.74 m, 177.21$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/query_16} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/chosen_cutout_16_-180_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/chosen_cutout_B-315_16_-180_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/errmap} \\
 	\hline
-	\makecell{Query 26 \\ 6.09 m, 145.58$\degree$} &
+	\makecell{Query 26 \\ 6.09 m, 179.05$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/query_26} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/chosen_cutout_10_-90_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/chosen_cutout_B-315_10_-90_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/synthesized} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.0 meters and 5.0 degrees whereas localization results in the last two rows are incorrect. All of the shown queries are OffMap, to test challenging estimation scenarios.
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.5 meters and 10.0 degrees whereas localization results in the last two rows are incorrect. All of the shown queries are OffMap, to test challenging estimation scenarios. TODO: add column headings.
     \label{fig:queryPipeline}}
     }
 \end{figure*}
@@ -314,9 +314,9 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 		\hline
 		Threshold & InLoc & \bfseries InLocCIIRC & InMap & OffMap \\
 		\hline
-		0.25m & 38.9\% & \bfseries 50.0\% & 72.73\% & 41.38\% \\
-		0.50m & 56.5\% & \bfseries 62.5\% & 81.82\% & 55.17\% \\
-		1.00m & \bfseries 69.9\% & 67.5\% & 81.82\% & 62.07\% \\
+		0.25m & 38.9\% & \bfseries 47.5\% & 80.00\% & 42.86\% \\
+		0.50m & 56.5\% & \bfseries 57.5\% & 100.00\% & 51.43\% \\
+		1.00m & \bfseries 69.9\% & 62.5\% & 100.00\% & 57.14\% \\
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
@@ -342,7 +342,7 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 \begin{figure}
 	\centering
  	\includegraphics[width=0.65\textwidth]{evaluation/topView-B-670}
- 	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses.}
+ 	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. Queries 23 and 40 from room B-315 were incorrectly localized. They are positioned to the left side of this floor plan, but they are not drawn, in order to simplify this figure.}
  	\label{fig:topView-B-670}
 \end{figure} 
 
