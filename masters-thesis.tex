@@ -263,7 +263,8 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 \begin{figure*}
     \centering
     {\footnotesize
-	\begin{tabular}{ScScScScSc}
+	\begin{tabular}{Sc|Sc|Sc|Sc|Sc|}
+	& Query image & Closest cutout & Synthesized view & Error map \\
 	\hline
 	\makecell{Query 3 \\ 1.36 m, 7.83$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/query_3} &
@@ -302,7 +303,7 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.5 meters and 10.0 degrees whereas localization results in the last two rows are incorrect. All of the shown queries are OffMap, to test challenging estimation scenarios. TODO: add column headings.
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.5 meters and 10.0 degrees whereas localization results in the last two rows are incorrect. All of the shown queries are OffMap, to test challenging estimation scenarios.
     \label{fig:queryPipeline}}
     }
 \end{figure*}
