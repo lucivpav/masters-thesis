@@ -4,9 +4,9 @@ set style data lp
 set xlabel "Distance threshold [meters]"
 set ylabel "Correctly localized queries [\\%]"
 set xtics 0,0.25,2 nomirror
-set ytics 0,20,80 nomirror
+set ytics 0,20,100 nomirror
 set xrange [0:2]
-set yrange [0:80]
+set yrange [0:100]
 set style line 1 lw 4 pt 7 ps 1.5
 set grid lt -1 linecolor rgb "gray"
 set border 3 back

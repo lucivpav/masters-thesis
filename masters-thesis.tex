@@ -307,9 +307,11 @@ TODO: describe the steps taken in dataset construction tool, maybe also some tec
 
 InLoc \cite{taira2018inloc} authors provide a demonstration in MATLAB that operates on the InLoc dataset. I have taken this demonstration and adjusted it, so that it works on the InLocCIIRC dataset instead. I have added an evaluation script, that was missing from the original code. Although the evaluation of InLoc is handled by \url{visuallocalization.net}, this tool of course doesn't handle the newly created InLocCIIRC dataset yet.
 
-The entire InLocCIIRC demo has to run on a machine with a GPU. This is because we are using inference of NetVLAD neural network, which would take much longer on a CPU. This restriction is present in InLoc demo as well.
+The entire InLocCIIRC demo should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP server. However, the GPU node prohibited the use of more than 8 CPU threads per user. So I had to split the demo into 2 parts: in the first run, the GPU is used. In the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc demo as well.
 
-One difference from the original InLoc is that I am using a mesh model projection instead of a point cloud projection in the point verification step. This is because the code for point cloud projection did not support variable point size. Because the model is dense (compared to Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image.
+One difference from the original InLoc is that I am using a mesh model projection instead of a point cloud projection in the point verification step. This is because the code for point cloud projection did not support variable point size TODO: I have implemented PC projection with a point size parameter, but the problem is that it does not support headless rendering. Because the model is dense (compared to Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image.
+
+TODO: describe many other major changes from the original demo.
 
 \chapter{Evaluation}
 
@@ -320,7 +322,7 @@ In order to measure how the InLocCIIRC algorithm is performing, I have measured 
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		\bfseries Query ID & \bfseries InMap & \bfseries Translation [m] & \bfseries Orientation [\degree]
-		\csvreader[head to column names]{evaluation/errors.csv}{}
+		\csvreader[head to column names]{evaluation-s10e/errors.csv}{}
 		{\\ \hline \id & \inMap & \translation & \orientation}
 		\\\hline
 	\end{tabular}
@@ -341,44 +343,44 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 	\begin{tabular}{Sc|Sc|Sc|Sc|Sc|}
 	& Query image & Closest cutout & Synthesized view & Error map \\
 	\hline
-	\makecell{Query 3 \\ 1.36 m, 7.83$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/query_3} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/chosen_cutout_B-315_19_90_0} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/synthesized} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/3.jpg/errmap} \\
+	\makecell{Query 3 \\ 0.17 m, 1.44$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/query_3} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/chosen_cutout_B-315_22_120_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/errmap} \\
 	\hline
-	\makecell{Query 6 \\ 0.34 m, 3.82$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/query_6} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/chosen_cutout_B-315_2_90_0} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/synthesized} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/6.jpg/errmap} \\
+	\makecell{Query 6 \\ 0.13 m, 1.02$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/query_6} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/chosen_cutout_B-315_2_30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/errmap} \\
 	\hline
-	\makecell{Query 31 \\ 0.65 m, 2.50$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/query_31} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/chosen_cutout_B-315_4_30_0} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/synthesized} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/31.jpg/errmap} \\
+	\makecell{Query 31 \\ 0.12 m, 0.41$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/query_31} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/chosen_cutout_B-315_2_0_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/errmap} \\
 	\hline
-	\makecell{Query 38 \\ 0.13 m, 1.27$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/query_38} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/chosen_cutout_B-315_2_-120_-30} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/synthesized} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/38.jpg/errmap} \\
+	\makecell{Query 38 \\ 0.07 m, 0.87$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/query_38} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/chosen_cutout_B-315_2_-180_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/errmap} \\
 	\hline
-	\makecell{Query 16 \\ 19.74 m, 177.21$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/query_16} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/chosen_cutout_B-315_16_-180_-30} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/synthesized} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/16.jpg/errmap} \\
+	\makecell{Query 16 \\ 0.31 m, 4.02$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/query_16} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/chosen_cutout_B-315_1_60_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/errmap} \\
 	\hline
-	\makecell{Query 26 \\ 6.09 m, 179.05$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/query_26} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/chosen_cutout_B-315_10_-90_-30} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/synthesized} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation/queryPipeline/26.jpg/errmap} \\
+	\makecell{Query 26 \\ 0.47 m, 2.23$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/query_26} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/chosen_cutout_B-315_10_30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images in the 1st, 2nd, 3th and 4th row are well localized within 1.5 meters and 10.0 degrees whereas localization results in the last two rows are incorrect. All of the shown queries are OffMap, to test challenging estimation scenarios.
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images shows here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. TODO: show query 40, which is currently broken (in evaluation-s10e-v4.2).
     \label{fig:queryPipeline}}
     }
 \end{figure*}
@@ -390,9 +392,9 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 		\hline
 		Threshold & InLoc & \bfseries InLocCIIRC & InMap & OffMap \\
 		\hline
-		0.25m & 38.9\% & \bfseries 47.5\% & 80.00\% & 42.86\% \\
-		0.50m & 56.5\% & \bfseries 57.5\% & 100.00\% & 51.43\% \\
-		1.00m & \bfseries 69.9\% & 62.5\% & 100.00\% & 57.14\% \\
+		0.25m & 38.9\% & \bfseries 77.50\% & 100.00\% & 74.29\% \\
+		0.50m & 56.5\% & \bfseries 90.00\% & 100.00\% & 88.57\% \\
+		1.00m & 69.9\% & \bfseries 92.50\% & 100.00\% & 91.43\% \\
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
@@ -410,14 +412,14 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 
 \begin{figure}
 	\centering
- 	\includegraphics[width=0.65\textwidth]{evaluation/topView-B-315}
+ 	\includegraphics[width=0.65\textwidth]{evaluation-s10e/topView-B-315}
  	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses.}
  	\label{fig:topView-B-315}
 \end{figure} 
 
 \begin{figure}
 	\centering
- 	\includegraphics[width=0.65\textwidth]{evaluation/topView-B-670}
+ 	\includegraphics[width=0.65\textwidth]{evaluation-s10e/topView-B-670}
  	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. Queries 23 and 40 from room B-315 were incorrectly localized. They are positioned to the left side of this floor plan, but they are not drawn, in order to simplify this figure.}
  	\label{fig:topView-B-670}
 \end{figure} 
