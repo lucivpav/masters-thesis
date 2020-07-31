@@ -115,6 +115,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage{makecell}
 \usepackage{adjustbox}
 \usepackage{cellspace} % for table rows padding
+\usepackage{subcaption} % for subfigures
 
 \begin{document}
 
@@ -128,11 +129,12 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
     \item Suggest a method for localization from a image sequences.
     \item Evaluate and demonstrate it.
     \item Get queries for B-670, inspect the data, localize, evaluate.
-    \item Localization if sequences will be based on predicting the next view from the pose obtained bay localizing and initial segment of the segment of the sequence and attaching the next view(s) using the relative pose between the views provided by Hololens pose tracking. 
+    \item Localization of sequences will be based on predicting the next view from the pose obtained by localizing an initial segment of the sequence and attaching the next view(s) using the relative pose between the views provided by HoloLens pose tracking. 
     \item Level-1: localize initial segment of length 1, evaluate, wait or this to work, ...
     \item Evaluate w.r.t. to the Level-0 (baseline) obtained by localizing just one image without any verification by predicting the next views. Introduce another label = not-localized.
     \item Level-2: localize initial segments of length > 1. How t do it? Use the maximal 1st/2nd NN ratio to select the best image in the indexing phase. Next use the sequence as a generalized camera and replace p3p with GP6P. 
-    \item Level-3: Combine images before image indexing. How to do it? We don't know as of now.
+	\item Level-3: Combine images before image indexing. How to do it? We don't know as of now.
+	\item Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy.
 \end{itemize}
 
 \chapter{Outline}
@@ -156,7 +158,7 @@ InLocCIIRC is a modification of the InLoc \cite{taira2018inloc}, that runs on a 
 \chapter{Dataset}
 The original InLoc demo is using the InLoc dataset \cite{taira2018inloc}, which is based on data taken at the Washington University in St. Louis (WUSTL dataset). The InLocCIIRC dataset aims to keep the same structure as the InLoc dataset.
 
-The dataset is a result of scanning two rooms at CIIRC: the B-670 lecture hall and a room B-315. For scanning the environments, a Matterport 3D scanner is used. Let's call the environments \emph{spaces}. This scanner is much faster to operate and cheaper than the Faro 3D scanner used in InLoc (WUSTL dataset). The disadvantage is that the resulting point cloud model tends to be of lower quality. Matterport creates a point cloud and a mesh model of each room. This is made possible by scanning the area at various locations. Let's call each such scan a \emph{sweep}, to match the Matterport API terminology. To construct the models, RGBD panoramas are taken around the rooms. In B-670, I have taken 31 such panoramas. In B-315, I have taken 27 panoramas. Overall, there are 58 RGBD panoramas taken by Matterport 3D scanner. The scanner was mounted on a tripod at height of approximately 1.52cm and I tried to avoid walls and objects in 60cm radius.
+The dataset is a result of scanning two rooms at CIIRC: the B-670 lecture hall and a room B-315. For scanning the environments, a Matterport 3D scanner is used. Let's call the environments \emph{spaces}. This scanner is much faster to operate and cheaper than the Faro 3D scanner used in InLoc (WUSTL dataset). The disadvantage is that the resulting point cloud model tends to be of lower quality. Matterport creates a point cloud and a mesh model of each space. This is made possible by scanning the area at various locations. Let's call each such scan a \emph{sweep}, to match the Matterport API terminology. To construct the models, RGBD panoramas are taken around the rooms. In B-670, I have taken 31 such panoramas. In B-315, I have taken 27 panoramas. Overall, there are 58 RGBD panoramas taken by Matterport 3D scanner. The scanner was mounted on a tripod at height of approximately 1.52cm and I tried to avoid walls and objects in 60cm radius.
 
 When creating an RGBD panorama, the Matterport scanner has to revolve around yaw axis in order to capture the scene in 360\degree. For each RGBD panorama, we are given the pose of the Matterport scanner at the moment right before the rotation started. These poses are provided by Matterport, so we don't have to bother to estimate them ourselves as in \cite{wijmans17rgbd}.
 
@@ -171,19 +173,89 @@ This approach works well, however it may still fail in an exceptional case. Then
 
 Once we have the RGB panoramas which are pointing the same direction as the RGBD panoramas, we can move into the next stage. Here we construct cutouts, which are projections of the RGB panoramas at a specific orientation. As in InLoc, I am sampling around the yaw axis per $30\degree$ under the pitch direction of $\{-30, 0, 30\}$ degrees. The cutouts also contain information about the depth (not provided by Matterport).
 
-The dataset contains a set of query images (queries), taken by a smartphone camera --- via Samsung Galaxy S10e's wide angle rear facing lens. I have taken 40 query images in a restricted area of room B-315. This room was chosen to be in the dataset, because it contains a pose estimation system called Vicon. All of the query images were taken in this area, so that their reference pose is known. No queries were taken in room B-670, as it would be time consuming to estimate the reference poses manually (or creating a program that does this). Hence, its only purpose is to serve as a confuser.
+The dataset contains sets of query images (queries). The first set, called s10e, was taken by a smartphone camera --- via Samsung Galaxy S10e's wide angle rear facing lens. I have taken 40 query images in a restricted area of room B-315. This room was chosen to be in the dataset, because it contains a pose estimation system called Vicon. The other two sets of queries were obtained using 1st generation HoloLens. The sets are named HoloLens1 and HoloLens2 --- the suffix number indicates the sequence number. The major difference between s10e and HoloLens query datasets is that the queries from HoloLens form a sequence of images, as the user walked around the room. The sequential nature of those query datasets shall be leveraged, and data from multiple cameras may be used for a higher precision pose estimation of a current frame.
 
-The queries have a pixel resolution $4032 \times 3024$. InLoc demo requires the knowledge of focal length of the camera that was used when taking the query images. I found conflicting information about the S10e's field of view (FoV) online, and the focal length didn't add up. I ended up computing the focal length manually with the help of a tripod and a ruler. The focal length turned out to be 3172 pixels. The IDs of query images are sorted in a non-decreasing difficulty, e.g. queries with IDs 1 to 10 were taken such that the camera's direction vector is roughly parallel with the floor. Queries with higher IDs have the camera rotated on a tripod under any direction.
+All of the query images were taken in this area, so that their reference pose is known. No queries were taken in room B-670, as it would be time consuming to estimate the reference poses manually (or creating a program that does this). Hence, its only purpose is to serve as a confuser.
 
-The sweeps, used to construct the point cloud model, were taken on Thursday/Friday midnight. The query images were taken on a Monday morning 3 days later. Note that there was a weekend within these days, meaning the scene didn't change a lot during that time. The reason the query images were taken later was to test what happens when items such as chair, lighting and people move around or change.
+The queries in the s10e set have a pixel resolution $4032 \times 3024$. InLoc demo requires the knowledge of focal length of the camera that was used when taking the query images. I found conflicting information about the S10e's field of view (FoV) online, and the focal length didn't add up. TODO: talk about a similar problem with HL. I ended up computing the focal length manually with the help of a tripod and a ruler. The focal length turned out to be 3172 pixels. The IDs of query images are sorted in a non-decreasing difficulty, e.g. queries with IDs 1 to 10 were taken such that the camera's direction vector is roughly parallel with the floor. Queries with higher IDs have the camera rotated on a tripod under any direction.
 
-Alignments define the pose of individual sweeps within the space they are in. Because the poses are given to us from Matterport, we do not need to perform the generalized iterative closest point (GICP) step, as in InLoc.
+The HoloLens queries have a pixel resolution of $1344 \times 756$ pixels and according to the official documentation, the horizontal FoV is 67\degree. However, looking at the data generated while capturing the sequences, HoloLens provides a cameraProjectionTransform matrix. According to an article, the effective hFoV can be computed as
+
+\begin{equation}
+	\text{hFoV} = 2*\arctan \left(\frac{1}{\text{cameraProjectionTransform.m11}}\right),
+\end{equation}
+
+which gives the value of 65.83 degrees.
+
+The sweeps, used to construct the point cloud model, were taken on Thursday/Friday midnight. The s10e query images were taken on a Monday morning 3 days later. Note that there was a weekend within these days, meaning the scene didn't change a lot during that time. The reason the query images were taken later was to test what happens when items such as chair, lighting and people move around or change.
+
+The two HoloLens sequences were captured about three weeks later. This means the environment was more challenging to worth it, because it has changed from the state in which it was scanned by Matterport.
+
+Alignments define the pose of individual sweeps within the space they are in. Because the poses are given to us from Matterport, we do not need to perform the generalized iterative closest point (GICP) step, as in InLoc. Because Matterport gives us an entire model (point cloud and mesh) of each scanned space, we do need to consider alignments at all. They were useful in InLoc, where there were individual point clouds for sweeps and thus the 3D coordinates of the points projecting onto cutouts were wrt the sweep coordinate system.
 
 In InLoc, there are point cloud models for every sweep. On the contrary, in InLocCIIRC we have a model for each space.
 
-There is also a set of candidate poses for each query. The candidates are selected by choosing N cutouts with the highest scores. NetVLAD \cite{Arandjelovic16} descriptors are computed for both cutouts and query images. A score between a query image and a cutout is computed using a dot product between the two feature vectors, and then normalizing it via softmax, so that the similarity scores add up to one for each query. The code for doing so was not provided in InLoc, so I came up with an implementation that reuses existing InLoc MATLAB components. However, when manually observing the similarity scores of some queries, they didn't seem to make a lot of sense. When observing the same kind of similarity scores in InLoc, they didn't make sense either, as the top candidate often didn't seem to match the query at all. I have therefore concluded that these similarity scores are not that essential for the InLocCIIRC demo to work.
+The InLoc demo requires the knowledge of scores between every pair of a query image and a cutout image. An individual score describes similarity between the two images. When the demo is run, InLoc chooses, for each query, top N cutouts with the highest scores. The other cutouts will not be considered. It is thus quite important that these scores are relevant. NetVLAD \cite{Arandjelovic16} descriptors are computed for both cutouts and query images. The features are the output of the L2 normalization layer. A score between a query image and a cutout is computed using a dot product between the two feature vectors. Note that the similarity scores of cutouts for a query do not represent a probability distribution, and thus don't need to sum up to one. The code for doing so was not provided in InLoc, so I came up with an implementation that reuses existing InLoc MATLAB components. The resulting scores seem to be meaningful, but a reference implementation would have been better.
 
-My code for automatically obtaining reference poses for queries is not perfect. The following IDs of queries don't match the synthesized views from the calculated reference pose very well: $\{37\}$.
+\section{Reference poses}
+For every query we need to know its reference pose, in order to evaluate how accurate the pose estimation algorithms are. The pose of the cameras used to take the query pictures in query sets was also being tracked by a pose estimation system -- Vicon. Figure \ref{fig:s10e-tracker} shows the s10e camera (thus also its coordinate system) and a coordinate system that is being tracked by Vicon. Let the latter coordinate system be called Omega. 
+
+\begin{figure}
+	\begin{subfigure}{0.45\textwidth}
+		\includegraphics[width=\textwidth]{s10e_beacon}
+		\caption{s10e camera and an object being tracked by Vicon. TODO: replace drawings with straight arrows.}
+		\label{fig:s10e-tracker}
+	\end{subfigure}
+	\hspace*{\fill}	% maximize separation between the subfigures
+	\begin{subfigure}{0.45\textwidth}
+		\includegraphics[width=\textwidth]{holoLens1_beacon}
+		\caption{HoloLens camera and an object being tracked by Vicon.}
+		\label{fig:holoLens-tracker}
+	\end{subfigure}
+	\caption{The camera and an object tracked by Vicon. The tracked coordinate system is called Omega and is visualized in subfigure \ref{fig:s10e-tracker} by the xyz arrows. TODO: make the images of same resolution.}
+	\label{fig:camera-trackers}
+\end{figure}
+
+Let's now focus on a more difficult scenario, which is the reference pose determination of the HoloLens queries. There are three reasons why the reference poses cannot be simply taken from the Vicon tracking:
+
+\begin{enumerate}
+	\item camera pose and Omega are widely different,
+	\item the Vicon coordinate system differs from the World coordinate system,
+	\item Vicon started tracking before HoloLens was run, as visualized in figure \ref{fig:HL_and_vicon_time}.
+\end{enumerate}
+
+\begin{figure}
+	\centering
+ 	\includegraphics[width=0.80\textwidth]{HL_and_vicon_time}
+ 	\caption{Visualization of the HoloLens and Vicon time series. The synchronization constant must be found. Note that the sampling frequencies are vastly different. However, given a query image from HoloLens taken at some point in time, we find the corresponding Omega pose that has the nearest timestamp (after taking the synchronization constant into acount). TODO: make it a vector graphics.}
+ 	\label{fig:HL_and_vicon_time}
+\end{figure} 
+
+Luckily, the second issue turned out to be easily mitigated. I have been told where the origin of the Vicon coordinate system is. And by experimentation, the rotation matrix that converts Vicon bases to World bases was found. Because the Vicon bases and World bases are aligned to the room (i.e. a basic vector is parallel with the floor or the walls), the rotation matrix can be represented by a simple rotation.
+
+The transformation from Omega to camera is considered to be a constant (for all queries in a query set), because the tracking device is securely attached to the camera. One could manually estimate that transformation and visually evaluate how close the model projection is to the original query image. However, this approach is prone to errors. Instead, a quantitative approach was employed, which I describe next.
+
+For a particular query set, we need to manually set up the reference pose for a small number of queries. I used 6 of them in HoloLens1. Let these queries be called \emph{interesting} queries. For such a query, we manually find 9 2D-3D correspondences. The 2D correspondences are carefully chosen, such that they actually represent the same 3D point -- because the 3D points were captured up to three weeks earlier than the query images and the environment has changed. For each query with the correspondences, we compute its initial reference pose using P3P. The pose returned by P3P may not be completely accurate, however.
+
+Given reference poses for 6 queries and corresponding poses from Vicon, we can almost compute individual Omega to camera transformations. The last piece missing is a synchronization constant, to match the correct Vicon pose taken at Vicon tie with a particular query taken at HoloLens time. I created a script, findOptimalParamsForInterestingQueries.m, which computes the Omega to camera transformations and evaluates the reference poses quality both quantitatively (reprojection error) and visually (manually investigated by the user). Currently, user must guess a synchronization constant. Finding a reasonable synchronization constant does not take long. Alternatively, one could implement a brute-force search, where various synchronization constants are guessed and the one with lowest quantitative error is chosen. In my case this was not necessary. At the end of the script, a generic transformation is suggested, which is an average of the individual transformations. The quality of the generic transformation is again evaluated on all the 6 queries. This generic transformation and the synchronization constant are used as a baseline and are further optimized, described next.
+
+A brute-force search is employed to find an improved version of the baseline transformation and synchronization constant in nearby space. First, an improved synchronization constant is estimated, by simply evaluating the interesting queries on the same transformation but for different synchronization constants, that are close to the baseline constant. Then, different transformations are being tried. An Omega to camera transformation is described by a 3D translation vector and a 3x3 rotation matrix. Note that this rotation matrix can be represented by three parameters (yaw, roll and pitch). Thus, the code iterates over predefined values of the 6 parameters, such that every combination is tried. For each combination, the reprojection error is computed and stored for later. The parameters are continuous, but I try a sequence of values nearby the baseline value, where the offset is a constant. When it comes to the translation parameters, I have had good experience with trying 17 values, where the middle value is the baseline. The offset was 0.023 Matterport meters. Each orientation parameter was evaluated on 11 values with even offsets, where the middle value was the baseline. The offset was 0.5\degree. Overall, the brute-force search is very time consuming, taking about 20 hours on a machine capable of processing 45 threads at once. Optionally, one can iterate over 5 synchronization constant values, for even more optimal parameters to be found. Of course, by doing that, the search will take asymptotically 5 times as much time and memory resources. TODO: some example data of how much the brute force search improves the reprojection error.
+
+The resulting reference poses are not perfectly matching ground truth poses, which can be seen when projecting the reference poses and comparing the results with the query images. I have created the following procedure in order to estimate the mean translation and orientation error (reference vs ground truth poses). Although we do not know the true ground truth poses, one can use the poses from HoloLens. According to TODO:citation, the poses estimated by HoloLens have the following mean accuracy with respect to the ground truth poses:
+
+\begin{itemize}
+	\item 1.6 $\pm$ 0.2 cm translation error,
+	\item 2.2 $\pm$ $0.3\degree$ orientation error.
+\end{itemize}
+
+Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes TODO:citation, which find a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procruses minimizes the sum of squered errors of points in the same coordinate system. After the conversion, we have ground truth estimates. Using these, we can compute the mean reference vs ground truth pose errors, which is:
+
+\begin{itemize}
+	\item 15 cm translation error,
+	\item $2.09\degree$ orientation error.
+\end{itemize}
+
+These errors may be either an upper bound on the real mean errors, but they can also be approximately the true mean errors. As you can see, the translation error is significant. This causes trouble, because it is not clear whether my method is better or worse than the poses provided by HoloLens themselves. \textbf{TODO: evaluate estimated poses by procruses with poses from HoloLens} (if the queries are from HoloLens). Note that in case of s10e queries, the reference poses seem to have a lower error wrt ground truth. However, because we do not know the ground truth and no HoloLens poses are available here, I cannot quantitatively evaluate it.
 
 The query images can be split into two categories --- InMap and OffMap. An InMap query is such a query, for which we have a cutout that has a similar pose. I have defined the pose similarity as:
 
@@ -192,11 +264,11 @@ The query images can be split into two categories --- InMap and OffMap. An InMap
 	\item the angular difference between reference and retrieved rotation matrices is at most 10 degrees. TODO: elaborate.
 \end{itemize}
 
-The InLocCIIRC dataset consists of 5 InMap queries and 35 OffMap queries.
+The set of s10e queries consists of 5 InMap queries and 35 OffMap queries. The set of HoloLens1 queries consists of 111 InMap queries and 239 OffMap queries. The HoloLens2 does not have up to date reference poses. According to an outdated result, it contains 48 InMap and 570 OffMap queries.
 
-The entire dataset, including the output of the InLocCIIRC demo, takes up to 142 GB of disk space.
+The entire dataset, including the output of the InLocCIIRC demo, takes up to TODO GB of disk space.
 
-The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notice that the horizontal field of view of database cutout images is widely different from the query FoV. When I tried to generate the dataset, such that the cutouts have horizontal FoV of 60 degrees, the resulting pose estimation accuracy became 0\%. I have spent a significant time investigating why this is happening, and came to the conclusion that the problem is in the data. When one creates a cutout of a lower FoV, smaller portion of the $360\degree$ panorama gets rendered. This also means that the visual quality of the image decreases. I believe that the quality of such cutouts is not good enough for the convolutional neural network to generate reasonable feature descriptors. Figure \ref{fig:fov-quality} illustrates this problem. It seems that there is nothing we can do about it, since the pixel density of each $360\degree$ panorama is determined by Matterport. It is, however, true that one could experiment with other FoV values. Such experiments were not conducted here, as regenerating the dataset and then uploading it to an evaluation server takes a lot of time (one day is not an exception).
+The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notice that the horizontal field of view of database cutout images is widely different from the query FoVs. When I tried to generate the dataset, such that the cutouts have horizontal FoV of 60 degrees, the resulting pose estimation accuracy became 0\%. TODO: that might been caused by that densePE bug, re-run it. I have spent a significant time investigating why this is happening, and came to the conclusion that the problem is in the data. When one creates a cutout of a lower FoV, smaller portion of the $360\degree$ panorama gets rendered. This also means that the visual quality of the image decreases. I believe that the quality of such cutouts is not good enough for the convolutional neural network to generate reasonable feature descriptors. Figure \ref{fig:fov-quality} illustrates this problem. It seems that there is nothing we can do about it, since the pixel density of each $360\degree$ panorama is determined by Matterport. It is, however, true that one could experiment with other FoV values. Such experiments were not conducted here, as regenerating the dataset and then uploading it to an evaluation server takes a lot of time (one day is not an exception).
 
 \begin{table}[t]
     \centering
@@ -205,7 +277,9 @@ The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notic
 	\hline
 	Type & Number & Image size [px] & Horizontal FoV [\degree] \\[1pt]
 	\hline
-    Query & 40 & 4,032$\times$3,024 & 64.86 \\[1pt]
+    Query - s10e & 40 & 4,032$\times$3,024 & 64.86 \\[1pt]
+    Query - HoloLens1 & 350 & 1344$\times$756 & 65.83 \\[1pt]
+    Query - HoloLens2 & 618 & 1344$\times$756 & 65.83 \\[1pt]
 	Cutout & 2,088 & 1,600$\times$1,200 & 106.26 \\[3pt]
 	\hline
     \end{tabular}
