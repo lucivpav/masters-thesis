@@ -116,6 +116,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage{adjustbox}
 \usepackage{cellspace} % for table rows padding
 \usepackage{subcaption} % for subfigures, subtables
+\usepackage[normalem]{ulem} % strikethrough
 
 \begin{document}
 
@@ -141,19 +142,47 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 
 \begin{itemize}
 	\item Introduction.
-	\item Relevant work with regards to HoloLens or indoor localization.
-	\item Literature overview: NetVLAD, InLoc, Single view depth estimation, Deep depth completion.
+	\item Relevant work.
+	\item Literature overview
 	\item Newly acquired datasets - how they were build, description, statistics, examples. I need a dataset with query images and reference poses (done). I also need a dataset with query sequences and reference poses - this will be simulated by Habitat.
 	\item Describe, demonstrate the method for query localization on the newly acquired dataset.
 	\item Describe, demonstrate and evaluate the improved method for HoloLens localization.
-	\item Analyze the sources of errors and inaccuracies. Analyze the influence of incorrectly constructed 3D models and its maintenance in time, this can be only done on the datasets that are not completely synthetic, i.e. queries are from real world.
+	\item Analyze the sources of errors and inaccuracies. Analyze the influence of incorrectly constructed 3D models \sout{and its maintenance in time}, this can be only done on the datasets that are not completely synthetic, i.e. queries are from real world.
+	\item Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).
 	\item Conclusion and possible future extensions.
 \end{itemize}
 
 %\part{Your Party}
 
 \chapter{Introduction}
-InLocCIIRC is a modification of the InLoc \cite{taira2018inloc}, that runs on a dataset taken at CIIRC. TODO: repeat some info about InLoc
+InLocCIIRC is a modification of the InLoc \cite{taira2018inloc}, that runs on a dataset taken at CIIRC.
+
+TODO:
+\begin{itemize}
+	\item repeat some info about InLoc,
+	\item motivation
+	\item state of the art HoloLens v1 accuracy so far?
+\end{itemize}
+
+\chapter{Related work}
+TODO: Relevant work with regards to HoloLens or indoor localization.
+
+\chapter{Literature overview}
+TODO:
+\begin{itemize}
+	\item NetVLAD (and what is a neural network?),
+	\item InLoc,
+	\item camera coordinate system (copy some image from GVG and cite it),
+	\item HoloLens,
+	\item Matterport,
+	\item Vicon,
+	\item P3P,
+	\item MultiCameraPose and the related theory (Kukelova2016CVPR paper),
+	\item procrustes? I think I just need one or two sentences,
+	\item Single view depth estimation,
+	\item Deep depth completion,
+	\item more?
+\end{itemize}
 
 \chapter{Dataset}
 The original InLoc demo is using the InLoc dataset \cite{taira2018inloc}, which is based on data taken at the Washington University in St. Louis (WUSTL dataset). The InLocCIIRC dataset aims to keep the same structure as the InLoc dataset.
@@ -203,7 +232,7 @@ For every query we need to know its reference pose, in order to evaluate how acc
 \begin{figure}
 	\begin{subfigure}{0.45\textwidth}
 		\includegraphics[width=\textwidth]{s10e_beacon}
-		\caption{s10e camera and an object being tracked by Vicon. TODO: replace drawings with straight arrows.}
+		\caption{s10e camera and an object being tracked by Vicon. TODO: replace drawings with vector graphics (albeit converted into raster).}
 		\label{fig:s10e-tracker}
 	\end{subfigure}
 	\hspace*{\fill}	% maximize separation between the subfigures
@@ -358,7 +387,7 @@ Notice that namely the the translation error is very low. To estimate the qualit
 	\item $2.09\degree$ orientation error.
 \end{itemize}
 
-These errors may be either an upper bound on the real mean errors, but they can also be approximately the true mean errors. As you can see, the translation error is significant. This causes trouble, because it is not clear whether my method is better or worse than the poses provided by HoloLens themselves. \textbf{TODO: evaluate estimated poses by procruses with poses from HoloLens} (if the queries are from HoloLens). Note that in case of s10e queries, the reference poses seem to have a lower error wrt ground truth. However, because we do not know the ground truth and no HoloLens poses are available here, I cannot quantitatively evaluate it.
+These errors may be either an upper bound on the real mean errors, but they can also be approximately the true mean errors. As you can see, the translation error is significant. This causes trouble, because it is not clear whether my method is better or worse than the poses provided by HoloLens themselves. Note that in case of s10e queries, the reference poses seem to have a lower error wrt ground truth. However, because we do not know the ground truth and no HoloLens poses are available here, I cannot quantitatively evaluate it.
 
 The query images can be split into two categories --- InMap and OffMap. An InMap query is such a query, for which we have a cutout that has a similar pose. I have defined the pose similarity as:
 
@@ -500,7 +529,7 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 		1.00m & 69.9\% & \bfseries 92.50\% & 100.00\% & 91.43\% \\
 		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
+	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset. \textbf{TODO: evaluate estimated poses by procruses with poses from HoloLens} (if the queries are from HoloLens).}
 	\label{tab:estimation-performance}
 \end{table}
 
