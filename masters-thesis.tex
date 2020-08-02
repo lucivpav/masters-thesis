@@ -115,7 +115,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage{makecell}
 \usepackage{adjustbox}
 \usepackage{cellspace} % for table rows padding
-\usepackage{subcaption} % for subfigures
+\usepackage{subcaption} % for subfigures, subtables
 
 \begin{document}
 
@@ -242,103 +242,107 @@ Given reference poses for 6 queries and corresponding poses from Vicon, we can a
 
 A brute-force search is employed to find an improved version of the baseline transformation and synchronization constant in nearby space. First, an improved synchronization constant is estimated, by simply evaluating the interesting queries on the same transformation but for different synchronization constants, that are close to the baseline constant. Then, different transformations are being tried. An Omega to camera transformation is described by a 3D translation vector and a 3x3 rotation matrix. Note that this rotation matrix can be represented by three parameters (yaw, roll and pitch). Thus, the code iterates over predefined values of the 6 parameters, such that every combination is tried. For each combination, the reprojection error is computed and stored for later. The parameters are continuous, but I try a sequence of values nearby the baseline value, where the offset is a constant. When it comes to the translation parameters, I have had good experience with trying 17 values, where the middle value is the baseline. The offset was 0.023 Matterport meters. Each orientation parameter was evaluated on 11 values with even offsets, where the middle value was the baseline. The offset was 0.5\degree. Additionally, the brute-force search is very time consuming, taking about 20 hours on a machine capable of processing 45 threads at once. Optionally, one can iterate over 5 synchronization constant values, for even more optimal parameters to be found. Of course, by doing that, the search will take asymptotically 5 times as much time and memory resources.
 
-TODO: summary of how much the brute force search improves the reprojection error and ref-HL error. TODO: make the two tables and image with projection image one subsubsection or somehow connected.
+Table \ref{tab:HL1-ref-poses-errors} shows quantitave evaluation of the quality of reference poses, after the brute-force optimization. Table \ref{tab:HL1-ref-non-optimized-poses-errors} shows the same statistics for parameters prior to the optimization (baseline transformation). The improvement is not significant: 1 cm lower translation error and $0.14\degree$ lower orientation error. Figure \ref{fig:interesting-reprojection-s10e-query-2} shows an example of the 9 manually defined correspondences and their reprojection errors.
 
-\textbf{Optimal params}
-
-\begin{table}[t]
-    \centering
-    {\footnotesize
-	\begin{tabular}{|r|c|c|c|}
-	\hline
-	Query ID & Average projection error [px] & Sum of projection errors [px] \\
-	\hline
-	1 & 3.47 & 31.24 \\
-	94 & 9.80 & 88.19 \\
-	237 & 10.06 & 90.52 \\
-	281 & 3.83 & 34.48 \\
-	155 & 5.07 & 45.63 \\
-	198 & 3.23 & 29.10 \\
-	\hline
-	\hline
-	Sum & N/A & 319.16 \\
-	\hline
-    \end{tabular}
-	\caption{Reprojection error of optimized transformation params of holoLens1 query set.}
-	\label{tab:interesting-reprojection-s10e}
-    }
+\begin{table}
+	\begin{subtable}{.9\linewidth}\centering
+		{
+		\footnotesize
+		\begin{tabular}{|r|c|c|c|}
+			\hline
+			Query ID & Average projection error [px] & Sum of projection errors [px] \\
+			\hline
+			1 & 3.47 & 31.24 \\
+			94 & 9.80 & 88.19 \\
+			237 & 10.06 & 90.52 \\
+			281 & 3.83 & 34.48 \\
+			155 & 5.07 & 45.63 \\
+			198 & 3.23 & 29.10 \\
+			\hline
+			\hline
+			Sum & N/A & 319.16 \\
+			\hline
+		\end{tabular}
+		}
+		\caption{Reprojection error.}
+		\label{tab:interesting-reprojection-s10e}
+	\quad
+	\end{subtable}
+	\begin{subtable}{.9\linewidth}\centering
+		{
+		\footnotesize
+		\begin{tabular}{|r||c|c|}
+			\hline
+			& Mean errors & Standard deviation of errors \\
+			\hline
+			Translation [m] & 0.15 & 0.08 \\
+			Orientation [m] & 2.09 & 1.69 \\
+			\hline
+		\end{tabular}
+		}
+		\caption{Estimate of reference vs ground truth poses errors. All the queries in the sequence were considered. Queries, for which we do not have a pose (Vicon got lost) are not considered in the statistics. Ground truth poses are estimated from the poses provided from HoloLens, after conversion to World coordinate system.}
+		\label{tab:HL1-ref-vs-HL-errors}	
+	\end{subtable}
+	\caption{Quantitave evaluation of reference poses quality. HoloLens1 sequence shown. Parameters describing the Omega to camera transformation were \textbf{optimized} using brute-force search.}
+	\label{tab:HL1-ref-poses-errors}
 \end{table}
 
 \begin{figure}
 	\centering
  	\includegraphics[width=0.80\textwidth]{HL1-query2-reprojection}
- 	\caption{Query 94 of holoLens1 and its reprojections errors. The optimized transformation params were used.}
+ 	\caption{Query 94 of holoLens1 and its reprojections errors. The optimized transformation params were used. The same image on non-optimized parameters is not shown, because the average improvement of reprojection error of a the correspondences is about 2 pixels. Therefore a naked eye can barely tell which image has lower reprojection error. Green points: optimal location of 2D correspondences. Red dots: location of the 3D correspondences (projected onto 2D image plane), under the generic parameters (that aim to work across all queries in the sequence).}
  	\label{fig:interesting-reprojection-s10e-query-2}
 \end{figure} 
 
-\begin{table}[t]
-    \centering
-    {\footnotesize
-	\begin{tabular}{|r||c|c|}
-	\hline
-	& Mean errors & Standard deviation of errors \\
-	\hline
-	Translation [m] & 0.15 & 0.08 \\
-	Orientation [m] & 2.09 & 1.69 \\
-	\hline
-    \end{tabular}
-	\caption{Estimate of reference vs ground truth poses errors on optimized transformation params of holoLens1 query set. All the queries in the sequence were considered. Queries, for which we do not have a pose (Vicon got lost) are not considered in the statistics. Ground truth poses are estimated from the poses provided from HoloLens, after conversion to World coordinate system.}
-	\label{tab:HL1-ref-vs-HL-errors}
-    }
+\begin{table}
+	\begin{subtable}{.9\linewidth}\centering
+		{
+		\footnotesize
+		\begin{tabular}{|r|c|c|c|}
+			\hline
+			Query ID & Average projection error [px] & Sum of projection errors [px] \\
+			\hline
+			1 & 3.38 & 30.42 \\
+			94 & 11.96 & 107.66 \\
+			237 & 9.22 & 82.98 \\
+			281 & 3.62 & 32.57 \\
+			155 & 5.99 & 53.91 \\
+			198 & 3.08 & 27.68 \\
+			\hline
+			\hline
+			Sum & N/A & 335.22 \\
+			\hline
+		\end{tabular}
+		}
+		\caption{Reprojection error.}
+		\label{tab:interesting-reprojection-non-optimized-s10e}
+	\quad
+	\end{subtable}
+	\begin{subtable}{.9\linewidth}\centering
+		{
+		\footnotesize
+		\begin{tabular}{|r||c|c|}
+			\hline
+			& Mean errors & Standard deviation of errors \\
+			\hline
+			Translation [m] & 0.16 & 0.08 \\
+			Orientation [m] & 2.23 & 1.62 \\
+			\hline
+		\end{tabular}
+		}
+		\caption{Estimate of reference vs ground truth poses errors. All the queries in the sequence were considered. Queries, for which we do not have a pose (Vicon got lost) are not considered in the statistics. Ground truth poses are estimated from the poses provided from HoloLens, after conversion to World coordinate system.}
+		\label{tab:HL1-ref-non-optimized-vs-HL-errors}
+	\end{subtable}
+	\caption{Quantitave evaluation of reference poses quality. HoloLens1 sequence shown. Tables show performance on the parameters, describing the Omega to camera transformation, \textbf{prior} using brute-force search optimization.}
+	\label{tab:HL1-ref-non-optimized-poses-errors}
 \end{table}
 
-\textbf{Pre-optimized params}
-
-\begin{table}[t]
-    \centering
-    {\footnotesize
-	\begin{tabular}{|r|c|c|c|}
-	\hline
-	Query ID & Average projection error [px] & Sum of projection errors [px] \\
-	\hline
-	1 & 3.38 & 30.42 \\
-	94 & 11.96 & 107.66 \\
-	237 & 9.22 & 82.98 \\
-	281 & 3.62 & 32.57 \\
-	155 & 5.99 & 53.91 \\
-	198 & 3.08 & 27.68 \\
-	\hline
-	\hline
-	Sum & N/A & 335.22 \\
-	\hline
-    \end{tabular}
-	\caption{Reprojection error of non-optimized transformation params of holoLens1 query set. TODO: note that the average pixel error diff is about 2 pixels (versus the optimized version), so a naked eye can barely tell which image has lower reprojection error.}
-	\label{tab:interesting-reprojection-non-optimized-s10e}
-    }
-\end{table}
-
-\begin{figure}
-	\centering
- 	\includegraphics[width=0.80\textwidth]{HL1-query2-non-optimized-reprojection}
- 	\caption{Query 94 of holoLens1 and its reprojections errors. The non-optimized transformation params were used.}
- 	\label{fig:interesting-reprojection-non-optimized-s10e-query-2}
-\end{figure} 
-
-\begin{table}[t]
-    \centering
-    {\footnotesize
-	\begin{tabular}{|r||c|c|}
-	\hline
-	& Mean errors & Standard deviation of errors \\
-	\hline
-	Translation [m] & 0.16 & 0.08 \\
-	Orientation [m] & 2.23 & 1.62 \\
-	\hline
-    \end{tabular}
-	\caption{Estimate of reference vs ground truth poses errors on non-optimized transformation params of holoLens1 query set. All the queries in the sequence were considered. Queries, for which we do not have a pose (Vicon got lost) are not considered in the statistics. Ground truth poses are estimated from the poses provided from HoloLens, after conversion to World coordinate system.}
-	\label{tab:HL1-ref-non-optimized-vs-HL-errors}
-    }
-\end{table}
+%\begin{figure}
+%	\centering
+% 	\includegraphics[width=0.80\textwidth]{HL1-query2-non-optimized-reprojection}
+% 	\caption{Query 94 of holoLens1 and its reprojections errors. The non-optimized transformation params were used. TODO: note that the average pixel error diff is about 2 pixels (versus the optimized version), so a naked eye can barely tell which image has lower reprojection error.}
+% 	\label{fig:interesting-reprojection-non-optimized-s10e-query-2}
+%\end{figure} 
 
 The resulting reference poses are not perfectly matching ground truth poses, which can be seen when projecting the reference poses and comparing the results with the query images. I have created the following procedure in order to estimate the mean translation and orientation error (reference vs ground truth poses). Although we do not know the true ground truth poses, one can use the poses from HoloLens. According to TODO:citation, the poses estimated by HoloLens have the following mean accuracy with respect to the ground truth poses:
 
