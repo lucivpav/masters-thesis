@@ -381,14 +381,14 @@ Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the qualit
 % 	\label{fig:interesting-reprojection-non-optimized-s10e-query-2}
 %\end{figure} 
 
-The resulting reference poses are not perfectly matching ground truth poses, which can be seen when projecting the reference poses and comparing the results with the query images. I have created the following procedure in order to estimate the mean translation and orientation error (reference vs ground truth poses). Although we do not know the true ground truth poses, one can use the poses from HoloLens. According to TODO:citation, the poses estimated by HoloLens have the following mean accuracy with respect to the ground truth poses:
+The resulting reference poses are not perfectly matching ground truth poses, which can be seen when projecting the reference poses and comparing the results with the query images. I have created the following procedure in order to estimate the mean translation and orientation error (reference vs ground truth poses). Although we do not know the true ground truth poses, one can use the poses from HoloLens. According to \cite{HoloLensEvaluation}, the poses estimated by HoloLens have the following mean accuracy with respect to the ground truth poses:
 
 \begin{itemize}
 	\item 1.6 $\pm$ 0.2 cm translation error,
 	\item 2.2 $\pm$ $0.3\degree$ orientation error.
 \end{itemize}
 
-Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes TODO:citation, which find a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we have ground truth estimates. Using these, we can compute the mean reference vs ground truth pose errors, which is:
+Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes TODO:citation, which finds a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we have ground truth estimates. Using these, we can compute the mean reference vs ground truth pose errors, which is:
 
 \begin{itemize}
 	\item 15 cm translation error,
@@ -575,7 +575,7 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 		1.00m & 69.9\% & \bfseries 92.50\% & 100.00\% & 91.43\% \\
 		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset. \textbf{TODO: evaluate estimated poses by procruses with poses from HoloLens} (if the queries are from HoloLens).}
+	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset. \textbf{TODO: evaluate estimated poses by procrustes with poses from HoloLens} (if the queries are from HoloLens).}
 	\label{tab:estimation-performance}
 \end{table}
 
