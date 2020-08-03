@@ -527,11 +527,17 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/errmap} \\
 	\hline
-	\makecell{Query 6 \\ 0.13 m, 1.02$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/query_6} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/chosen_cutout_B-315_2_30_0} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/synthesized_PV} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/6.jpg/6.jpg/errmap} \\
+	\makecell{Query 16 \\ 0.31 m, 4.02$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/query_16} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/chosen_cutout_B-315_1_60_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/errmap} \\
+	\hline
+	\makecell{Query 26 \\ 0.47 m, 2.23$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/query_26} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/chosen_cutout_B-315_10_30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/errmap} \\
 	\hline
 	\makecell{Query 31 \\ 0.12 m, 0.41$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/query_31} &
@@ -545,20 +551,14 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/errmap} \\
 	\hline
-	\makecell{Query 16 \\ 0.31 m, 4.02$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/query_16} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/chosen_cutout_B-315_1_60_0} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/synthesized_PV} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/errmap} \\
-	\hline
-	\makecell{Query 26 \\ 0.47 m, 2.23$\degree$} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/query_26} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/chosen_cutout_B-315_10_30_0} &
-    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/synthesized_PV} &
-	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/errmap} \\
+	\makecell{Query 40 \\ 7.81 m, 152.38$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/query_40} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/chosen_cutout_B-315_3_-150_-30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/synthesized_PV} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The query images shows here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. TODO: show query 40, which is currently broken (in evaluation-s10e-v4.2).
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see section \ref{section:sources-of-errors} for an investigation (TODO).
     \label{fig:queryPipeline}}
     }
 \end{figure*}
@@ -601,6 +601,10 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
  	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. No s10e queries were incorrectly localized to this room.}
  	\label{fig:topView-B-670}
 \end{figure} 
+
+\section{Sources of errors}
+\label{section:sources-of-errors}
+TODO
 
 \appendix
 
