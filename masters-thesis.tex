@@ -78,6 +78,13 @@
 
 \setlength{\parskip}{5ex plus 0.2ex minus 0.2ex}
 
+
+% Custom constants
+\newcommand{\topRetrieval}{100} % ht_retrieval output
+\newcommand{\topGV}{10} % number of cutout candidates for each query
+\newcommand{\topPE}{10} % PE output (number of candidate poses for each query)
+\newcommand{\topPV}{1} % obviously
+
 % Abstract in Czech
 \begin{abstract-czech}
 TODO. Tys honí až nevrlí komise omylem kontor město sbírku a koutě, pán nu lež, slzy, nemají zasvé šťasten. Tetě veselá. Vem lépe ty jí cíp vrhá. Novinám prachy kabát. Býti čaj via pakujte přeli, dyť do chuť kroutí kolínský bába odkrouhnul. Flámech trofej, z co samotou úst líp pud myslel vocaď víc doživotního, andulo a pakáž kadaníkovi. Čímž protiva v žába vězí duní.
@@ -87,9 +94,9 @@ Jé ní ticho vzoru. Lepší zburcují učil nepořádku zboží ní mučedník 
 
 % Abstract in English
 \begin{abstract-english}
-TODO. Let us suppose we are given a modulus $d$.  In \cite{cite:10}, the main result was the extension of Newton random variables.  We show that ${\Gamma_{\mathfrak{{r}},b}} ( {Z_{\beta,f}} ) \sim \bar{E}$.  The work in \cite{cite:20} did not consider the infinite, hyper-reversible, local case. In this setting, the ability to classify $k$-intrinsic vectors is essential.
+TODO. Let us suppose we are given a modulus $d$.  In \\cite{cite:10}, the main result was the extension of Newton random variables.  We show that ${\Gamma_{\mathfrak{{r}},b}} ( {Z_{\beta,f}} ) \sim \bar{E}$.  The work in \\cite{cite:20} did not consider the infinite, hyper-reversible, local case. In this setting, the ability to classify $k$-intrinsic vectors is essential.
  
-Let us suppose $\mathfrak{{a}} > \mathfrak{{c}}''$.  Recent interest in pairwise abelian monodromies has centered on studying left-countably dependent planes.  We show that $\Delta \ge 0$.  It was Brouwer who first asked whether classes can be described. B. Artin \cite{cite:30} improved upon the results of M. Bernoulli by deriving nonnegative classes.
+Let us suppose $\mathfrak{{a}} > \mathfrak{{c}}''$.  Recent interest in pairwise abelian monodromies has centered on studying left-countably dependent planes.  We show that $\Delta \ge 0$.  It was Brouwer who first asked whether classes can be described. B. Artin \\cite{cite:30} improved upon the results of M. Bernoulli by deriving nonnegative classes.
 
 \end{abstract-english}
 
@@ -168,6 +175,7 @@ TODO:
 TODO: Relevant work with regards to HoloLens or indoor localization.
 
 \chapter{Literature overview}
+\label{literature-overview-chapter}
 TODO:
 \begin{itemize}
 	\item NetVLAD (and what is a neural network?),
@@ -271,7 +279,7 @@ Given reference poses for 6 queries and corresponding poses from Vicon, we can a
 
 A brute-force search is employed to find an improved version of the baseline transformation and synchronization constant in nearby space. First, an improved synchronization constant is estimated, by simply evaluating the interesting queries on the same transformation but for different synchronization constants, that are close to the baseline constant. Then, different transformations are being tried. An Omega to camera transformation is described by a 3D translation vector and a 3x3 rotation matrix. Note that this rotation matrix can be represented by three parameters (yaw, roll and pitch). Thus, the code iterates over predefined values of the 6 parameters, such that every combination is tried. For each combination, the reprojection error is computed and stored for later. The parameters are continuous, but I try a sequence of values nearby the baseline value, where the offset is a constant. When it comes to the translation parameters, I have had good experience with trying 17 values, where the middle value is the baseline. The offset was 0.023 Matterport meters. Each orientation parameter was evaluated on 11 values with even offsets, where the middle value was the baseline. The offset was 0.5\degree. Additionally, the brute-force search is very time consuming, taking about 20 hours on a machine capable of processing 45 threads at once. Optionally, one can iterate over 5 synchronization constant values, for even more optimal parameters to be found. Of course, by doing that, the search will take asymptotically 5 times as much time and memory resources.
 
-Table \ref{tab:HL1-ref-poses-errors} shows quantitave evaluation of the quality of reference poses, after the brute-force optimization. Table \ref{tab:HL1-ref-non-optimized-poses-errors} shows the same statistics for parameters prior to the optimization (baseline transformation). The improvement is not significant: 1 cm lower translation error and $0.14\degree$ lower orientation error. Figure \ref{fig:interesting-reprojection-s10e-query-2} shows an example of the 9 manually defined correspondences and their reprojection errors.
+Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the quality of reference poses, after the brute-force optimization. Table \ref{tab:HL1-ref-non-optimized-poses-errors} shows the same statistics for parameters prior to the optimization (baseline transformation). The improvement is not significant: 1 cm lower translation error and $0.14\degree$ lower orientation error. Figure \ref{fig:interesting-reprojection-s10e-query-2} shows an example of the 9 manually defined correspondences and their reprojection errors.
 
 \begin{table}
 	\begin{subtable}{.9\linewidth}\centering
@@ -362,7 +370,7 @@ Table \ref{tab:HL1-ref-poses-errors} shows quantitave evaluation of the quality 
 		\caption{Estimate of reference vs ground truth poses errors. All the queries in the sequence were considered. Queries, for which we do not have a pose (Vicon got lost) are not considered in the statistics. Ground truth poses are estimated from the poses provided from HoloLens, after conversion to World coordinate system.}
 		\label{tab:HL1-ref-non-optimized-vs-HL-errors}
 	\end{subtable}
-	\caption{Quantitave evaluation of reference poses quality. HoloLens1 sequence shown. Tables show performance on the parameters, describing the Omega to camera transformation, \textbf{prior} using brute-force search optimization.}
+	\caption{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Tables show performance on the parameters, describing the Omega to camera transformation, \textbf{prior} using brute-force search optimization.}
 	\label{tab:HL1-ref-non-optimized-poses-errors}
 \end{table}
 
@@ -380,7 +388,7 @@ The resulting reference poses are not perfectly matching ground truth poses, whi
 	\item 2.2 $\pm$ $0.3\degree$ orientation error.
 \end{itemize}
 
-Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes TODO:citation, which find a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procruses minimizes the sum of squered errors of points in the same coordinate system. After the conversion, we have ground truth estimates. Using these, we can compute the mean reference vs ground truth pose errors, which is:
+Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes TODO:citation, which find a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we have ground truth estimates. Using these, we can compute the mean reference vs ground truth pose errors, which is:
 
 \begin{itemize}
 	\item 15 cm translation error,
@@ -441,11 +449,49 @@ InLoc \cite{taira2018inloc} authors provide a demonstration in MATLAB that opera
 
 The entire InLocCIIRC demo should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP server. However, the GPU node prohibited the use of more than 8 CPU threads per user. So I had to split the demo into 2 parts: in the first run, the GPU is used. In the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc demo as well.
 
-One difference from the original InLoc is that I am using a mesh model projection instead of a point cloud projection in the point verification step. This is because the code for point cloud projection did not support variable point size TODO: I have implemented PC projection with a point size parameter, but the problem is that it does not support headless rendering. Because the model is dense (compared to Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image.
+The original InLoc demo code uses point cloud projection in the pose verification step. The code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering (TODO: or is it software rendering actually?). I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (pyrender, trimesh, open3D). My projectMesh method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and call the render functions. However, this would require non-trivial implementation changes, at least in the demo, because the demo is in MATLAB and the projectMesh routine is in Python.
 
-TODO: describe many other major changes from the original demo.
+A major change to the demo was adding support for sequential queries. Currently the code supports specifically sequential queries from HoloLens. In fact, the name InLocCIIRC\_demo is not very accurate, because it is not really a implementing the InLoc paper \cite{taira2018inloc}. But the pose estimation algorithms are indeed based on InLoc. To estimate poses of sequential queries from HoloLens, poses from HoloLens must be provided. These poses are estimates of the ground-truth camera poses, and are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
+
+The first approach is called SequentialPV. It only leverages the other queries (in the segment) in the pose verification step. This approach aims to be more robust than the non-sequential one, by providing more evidence: the projection quality for all queries in the segment is considered and compared to the input query images. How is this done? We have top \topPE{} camera poses (given by P3P in the pose estimation step). These poses are the estimated poses of the current query. Next, we have camera pose estimates for every query in the segment, provided by HoloLens. Those poses are wrt Omega. Therefore, I convert the poses from HoloLens from Omega to World, by aligning the two poses of the last query in the segment. The two poses are:
+
+\begin{itemize}
+	\item the camera pose estimate (wrt World) provided from pose estimation step,
+	\item the camera pose estimate (wrt Omega) provided from HoloLens.
+\end{itemize}
+
+To match the two poses, we just need to compute a linear transformation (rotation, translation). With this transformation, the other poses from HoloLens are converted from Omega to World. With all camera pose estimates being with respect to World coordinate system, I run the pose verification step. The pose verification step returns a score, symbolizing the quality of the input query image and the reconstructed query image. I sum all the scores in the segment. TODO: mention other ways, like mean, maximum. This is done for those top \topPE{} poses from the pose estimation step. At the end, I choose the candidate with highest score to represent the final camera pose estimate. This approach is a basic way to leverage the fact that the queries were taken in a sequence (and captured with HoloLens).
+
+Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-3D correspondences are computed using the geometric verification step (and 2D to 3D transformation in parfor\_densePE. TODO: explain this better) in InLoc. Given these data, an external program called \emph{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the MultiCameraPose program and gsP4P, please see Chapter \ref{literature-overview-chapter}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cummulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
+
+There is an important change when MultiCameraPose is used, compared to processing non-sequential queries. To understand that, let me frist describe how the pose estimation step works in the non-sequential case:
+
+\begin{enumerate}
+	\item We are given top \topRetrieval{} candidate cutouts for each query. These cutouts aim to be visually similar to the query. They were constructed using the input score matrix.
+	\item Query and cutout features are extracted.
+	\item Geometric verification is executed for all query-cutout pairs. This gives us 2D-2D correspondences aka ``inliers'' (some of which are inaccurate).
+	\item \label{item:GV-reranking} The top \topRetrieval{} candidates are re-ranked and sorted, so that query-cutout pairs with the highest number of inliers are preferred. If the number of inliers is the same, the original input score is used on top of it (floating point value between zero and 1).
+	\item \label{item:topGV} Top \topGV{} candidate cutouts for each query are chosen.
+	\item Each query-cutout pair and its 2D-2D correspondences are processed. Because one of 2D corresponding point sets lies in the cutout image, we can extract its corresponding 3D points (the dataset provides depth and 3D point of every cutout pixel). The query-cutout 2D-3D correspondences are ``fed'' into P3P. The camera pose is estimated.
+	\item We now have \topPE{} candidate pose estimates for every query.
+\end{enumerate}
+
+In the MultiCameraPose approach, the segments have length k>1. We need to decide how to choose, for each query, top \topPE{} \emph{query-cutout segments}. The candidates will then be processed further using pose estimation and verification. Recall that the last query in the segment is always the one currently being processed (the one for which we want the camera pose). My current implementation does the following:
+
+\begin{enumerate}
+	\item We have the re-ranked and sorted top \topGV{} candidate cutouts for each query, as described in step \ref{item:topGV} of the non-sequential pose estimation appproach.
+	\item Generate all possible query-cutout segments of length k. There are $\topGV{}^{k}$ possibilities.
+	\item Because k is expected to be no more than 5, we can easily generate all the combinations.
+	\item \label{item:topGV-sequential} Every query-cutout has a score assigned, as described in step \ref{item:GV-reranking} of the non-sequential algorithm. I simply choose the combinations which have the cummulative (summed up) score the highest. Top \topPE{} combinations are selected.
+\end{enumerate}
+
+The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is TODO: in evaluation, where I discuss the source of errors, mention that issue where suboptimal query-cutout pairs are chosen in the top \topPE{} combinations having a (small) negative impact on the accuracy. The problem is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. Viz OneNote.
+
+TODO: describe other changes from the original demo.
 
 \chapter{Evaluation}
+
+TODO: This chapter currently only describes the s10e evaluation (non-sequential images taken from the phone).
 
 In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:estimation-performance} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
 
