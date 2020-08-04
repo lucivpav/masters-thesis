@@ -4,6 +4,7 @@
 
 % The class takes all the key=value arguments that \ctusetup does,
 % and a couple more: draft and oneside
+\PassOptionsToPackage{table}{xcolor} % avoid clash with \usepackage[table]{xcolor}
 \documentclass[twoside]{ctuthesis}
 
 \ctusetup{
@@ -130,6 +131,8 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage{cellspace} % for table rows padding
 \usepackage{subcaption} % for subfigures, subtables
 \usepackage[normalem]{ulem} % strikethrough
+\usepackage{diagbox} % split table cell into two diagonal cells
+\usepackage[table]{xcolor} % alternate row colors in table
 
 \begin{document}
 
@@ -458,7 +461,7 @@ The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notic
 	Cutout & 2,088 & 0 & 1,600$\times$1,200 & 106.26 \\[3pt]
 	\hline
     \end{tabular}
-	\caption{Statistics of the {\bf InLocCIIRC dataset}. Note that some queries are without a reference pose assigned to them. This occurs when Vicon gets lost (returns a non-sense pose for a certain period). Such queries are ignored in performance evaluation. Note that the HoloLens2 sequence contains a lot of queries, for which Vicon failed. This may be related to the fact that I moved slighly faster around the room in that sequence, making it harder for Vicon to keep track of the marker. Cutout poses are provided from Matterport and because of their quantity, not all of them were manually verified. For I never discovered a problem with the cutout poses, I consider their poses to be flawless.}
+	\caption{Statistics of the {\bf InLocCIIRC dataset}. Note that some queries are without a reference pose assigned to them. This occurs when Vicon gets lost (returns a non-sense pose for a certain period). Such queries are ignored in performance evaluation. Note that the HoloLens2 sequence contains a lot of queries, for which Vicon failed. This may be related to the fact that I moved slighly faster around the room in that sequence, making it harder for Vicon to keep track of the marker. Cutout poses are provided from Matterport and because of their quantity, not all of them were manually verified. For I never discovered a problem with the cutout poses, I consider their poses to be flawless. HFoV stands for the horizontal field of view.}
 	\label{tab:dataset-statistics}
     }
 \end{table}
@@ -528,7 +531,9 @@ The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for t
 
 \todo[This chapter currently only describes the s10e evaluation (non-sequential images taken from the phone).]
 
-In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:estimation-performance} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
+In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:estimation-performance} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
+
+\section{s10e query set}
 
 \begin{table}
 	\centering
@@ -636,6 +641,51 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
  	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. No s10e queries were incorrectly localized to this room.}
  	\label{fig:topView-B-670}
 \end{figure} 
+
+\section{HoloLens1 query set}
+
+\subsection{Summary}
+
+\begin{table}
+	\centering
+	\rowcolors{2}{gray!20}{}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\diagbox{Method}{Threshold} & 0.25m & 0.50m & 1.00m \\
+		\hline
+		k=1 (non-sequential) & 38.9\% & 56.5\% & 69.9\% \\
+		\hline
+		k=2, sequentialPV & 60.42\% & 79.14\% & 83.13\% \\
+		\hline
+		k=3, sequentialPV & 60.74\% & 80.06\% & 83.13\% \\
+		\hline
+		k=4, sequentialPV & 58.90\% & 79.14\% & 81.90\% \\
+		\hline
+		k=2, MultiCameraPose & 65.03\% & \bfseries 80.37\% & \bfseries 83.74\% \\
+		\hline
+		k=3, MultiCameraPose & \bfseries 65.34\% & 78.22\% & 82.82\% \\
+		\hline
+		k=5, MultiCameraPose & 63.80\% & 77.30\% & 82.20\% \\
+		\hline
+	\end{tabular}
+	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. InMap queries are queries for which we have a similar cutout in the dataset. \todo[evaluate estimated poses by procrustes with poses from HoloLens] (if the queries are from HoloLens). \todo[what would be the <poses from HL wrt Omega converted to be wrt World> InLoc performance? I am sure it would win, lol.]}
+	\label{tab:HL1-estimation-performance}
+\end{table}
+
+%\subsection{Non-sequential method}
+%
+%
+%\subsection{SequentialPV method}
+%\subsubsection{k=2}
+%\subsubsection{k=3}
+%\subsubsection{k=4}
+%
+%\subsection{MultiCameraPose method}
+%\subsubsection{k=2}
+%\subsubsection{k=3}
+%\subsubsection{k=5}
+
+\subsection{Best method vs the non-sequential method}
 
 \section{Sources of errors}
 \label{section:sources-of-errors}
