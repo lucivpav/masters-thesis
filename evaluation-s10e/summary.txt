@@ -7,5 +7,6 @@ InLocCIIRC got completely lost 0 out of 40 times. (Not included in the mean/medi
 
 Errors (InLocCIIRC poses wrt reference poses):
  	translation [m]	orientation [deg]
-Mean	0.44	5.64
-Median	0.14	1.26
+Mean	0.44	5.70
+Median	0.14	1.45
+Std	1.26	24.00

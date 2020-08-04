@@ -250,7 +250,7 @@ For every query we need to know its reference pose, in order to evaluate how acc
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{coordinateSystems.pdf}
-	\caption{Viualization of the coordinate systems we are dealing with. Omega is the initial unknown HoloLens CS \todo[what is CS?]. Notice that Omega has a scaling independent of the World CS scaling. Linear transformations are shown by the arrows. There are in fact two slightly different Camera coordinate systems -- one that is estimated from HoloLens and another one (reference pose) that is estimated using Vicon. OmegaToCamera is known for most of the HoloLens queries \protect\footnote{For exceptions caused by delays take a look here \ref{tab:HL-pose-delays}.}, because the data comes from HoloLens. ViconToMarker is provided from Vicon tracking. WorldToVicon has been manually determined. MarkerToCamera has been approximated by an algorithm described in the Reference poses section \ref{section:reference-poses}.}
+	\caption{Visualization of the coordinate systems we are dealing with. Omega is the initial unknown HoloLens CS \todo[what is CS?]. Notice that Omega has a scaling independent of the World CS scaling. Linear transformations are shown by the arrows. There are in fact two slightly different Camera coordinate systems -- one that is estimated from HoloLens and another one (reference pose) that is estimated using Vicon. OmegaToCamera is known for most of the HoloLens queries \protect\footnote{For exceptions caused by delays take a look here \ref{tab:HL-pose-delays}.}, because the data comes from HoloLens. ViconToMarker is provided from Vicon tracking. WorldToVicon has been manually determined. MarkerToCamera has been approximated by an algorithm described in the Reference poses section \ref{section:reference-poses}.}
 	\label{fig:coordinate-systems}
 \end{figure}
 
@@ -281,7 +281,7 @@ Let's now focus on a more difficult scenario, which is the reference pose determ
 \begin{figure}
 	\centering
  	\includegraphics[width=1.0\textwidth]{HL_and_vicon_time}
- 	\caption{Visualization of the HoloLens and Vicon timelines. The synchronization constant must be found. Note that the sampling frequencies are vastly different. However, given a query image from HoloLens taken at some point in time (HoloLens sampling frequency), we find the corresponding reference pose that has the nearest timestamp (after taking the synchronization constant into acount; Vicon sampling frequency).}
+ 	\caption{Visualization of the HoloLens and Vicon timelines. The synchronization constant must be found. Note that the sampling frequencies are vastly different. However, given a query image from HoloLens taken at some point in time (HoloLens sampling frequency), we find the corresponding reference pose that has the nearest timestamp (after taking the synchronization constant into account; Vicon sampling frequency).}
  	\label{fig:HL_and_vicon_time}
 \end{figure} 
 
@@ -500,9 +500,9 @@ The first approach is called SequentialPV. It only leverages the other queries (
 
 To match the two poses, we just need to compute a linear transformation (rotation, translation). With this transformation, the other poses from HoloLens are converted from Omega to World. With all camera pose estimates being with respect to World coordinate system, I run the pose verification step. The pose verification step returns a score, symbolizing the quality of the input query image and the reconstructed query image. I sum all the scores in the segment. \todo[mention other ways, like mean, maximum]. This is done for those top \topPE{} poses from the pose estimation step. At the end, I choose the candidate with highest score to represent the final camera pose estimate. This approach is a basic way to leverage the fact that the queries were taken in a sequence (and captured with HoloLens).
 
-Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-3D correspondences are computed using the geometric verification step (and 2D to 3D transformation in parfor\_densePE. \todo[explain this better]) in InLoc. Given these data, an external program called \emph{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the MultiCameraPose program and gsP4P, please see Chapter \ref{literature-overview-chapter}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cummulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
+Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-3D correspondences are computed using the geometric verification step (and 2D to 3D transformation in parfor\_densePE. \todo[explain this better]) in InLoc. Given these data, an external program called \emph{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the MultiCameraPose program and gsP4P, please see Chapter \ref{literature-overview-chapter}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
 
-There is an important change when MultiCameraPose is used, compared to processing non-sequential queries. To understand that, let me frist describe how the pose estimation step works in the non-sequential case:
+There is an important change when MultiCameraPose is used, compared to processing non-sequential queries. To understand that, let me first describe how the pose estimation step works in the non-sequential case:
 
 \begin{enumerate}
 	\item We are given top \topRetrieval{} candidate cutouts for each query. These cutouts aim to be visually similar to the query. They were constructed using the input score matrix.
@@ -517,10 +517,10 @@ There is an important change when MultiCameraPose is used, compared to processin
 In the MultiCameraPose approach, the segments have length k>1. We need to decide how to choose, for each query, top \topPE{} \emph{query-cutout segments}. The candidates will then be processed further using pose estimation and verification. Recall that the last query in the segment is always the one currently being processed (the one for which we want the camera pose). My current implementation does the following:
 
 \begin{enumerate}
-	\item We have the re-ranked and sorted top \topGV{} candidate cutouts for each query, as described in step \ref{item:topGV} of the non-sequential pose estimation appproach.
+	\item We have the re-ranked and sorted top \topGV{} candidate cutouts for each query, as described in step \ref{item:topGV} of the non-sequential pose estimation approach.
 	\item Generate all possible query-cutout segments of length k. There are $\topGV{}^{k}$ possibilities.
 	\item Because k is expected to be no more than 5, we can easily generate all the combinations.
-	\item \label{item:topGV-sequential} Every query-cutout has a score assigned, as described in step \ref{item:GV-reranking} of the non-sequential algorithm. I simply choose the combinations which have the cummulative (summed up) score the highest. Top \topPE{} combinations are selected.
+	\item \label{item:topGV-sequential} Every query-cutout has a score assigned, as described in step \ref{item:GV-reranking} of the non-sequential algorithm. I simply choose the combinations which have the cumulative (summed up) score the highest. Top \topPE{} combinations are selected.
 \end{enumerate}
 
 The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is \todo[in evaluation, where I discuss the source of errors, mention that issue where suboptimal query-cutout pairs are chosen in the top \topPE{} combinations having a (small) negative impact on the accuracy]. The problem is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. Viz OneNote.
@@ -531,7 +531,7 @@ The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for t
 
 \todo[This chapter currently only describes the s10e evaluation (non-sequential images taken from the phone).]
 
-In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:estimation-performance} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
+In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
 
 \section{s10e query set}
 
@@ -616,7 +616,24 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset. \todo[evaluate estimated poses by procrustes with poses from HoloLens] (if the queries are from HoloLens).}
-	\label{tab:estimation-performance}
+	\label{tab:s10e-InLoc-statistics}
+\end{table}
+
+\begin{table}
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		\diagbox{Statistics}{Error type} & Translation [m] & Orientation [$\degree$] \\
+		\hline
+		Mean & 0.44 & 5.70 \\
+		\hline
+		Median & 0.14 & 1.45 \\
+		\hline
+		Standard deviation & 1.26 & 24.00 \\
+		\hline
+	\end{tabular}
+	\caption{Statistics of the s10e pose estimation errors. InLocCIIRC got completely lost 0 out of 40 times. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. Notice that the deviations are high. This is caused by the query 40 performing extraordinarily poorly.}
+	\label{tab:s10e-other-statistics}
 \end{table}
 
 \begin{figure}
@@ -669,7 +686,7 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. InMap queries are queries for which we have a similar cutout in the dataset. \todo[evaluate estimated poses by procrustes with poses from HoloLens] (if the queries are from HoloLens). \todo[what would be the <poses from HL wrt Omega converted to be wrt World> InLoc performance? I am sure it would win, lol.]}
-	\label{tab:HL1-estimation-performance}
+	\label{tab:HL1-InLoc-statistics}
 \end{table}
 
 %\subsection{Non-sequential method}
