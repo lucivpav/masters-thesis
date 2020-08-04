@@ -241,9 +241,15 @@ In InLoc, there are point cloud models for every sweep. On the contrary, in InLo
 The InLoc demo requires the knowledge of scores between every pair of a query image and a cutout image. An individual score describes similarity between the two images. When the demo is run, InLoc chooses, for each query, top N cutouts with the highest scores. The other cutouts will not be considered. It is thus quite important that these scores are relevant. NetVLAD \cite{Arandjelovic16} descriptors are computed for both cutouts and query images. The features are the output of the L2 normalization layer. A score between a query image and a cutout is computed using a dot product between the two feature vectors. Note that the similarity scores of cutouts for a query do not represent a probability distribution, and thus don't need to sum up to one. The code for doing so was not provided in InLoc, so I came up with an implementation that reuses existing InLoc MATLAB components. The resulting scores seem to be meaningful, but a reference implementation would have been better.
 
 \section{Reference poses}
+\label{section:reference-poses}
 For every query we need to know its reference pose, in order to evaluate how accurate the pose estimation algorithms are. The pose of the cameras used to take the query pictures in query sets was also being tracked by a pose estimation system -- Vicon. Figure \ref{fig:s10e-tracker} shows the s10e camera (thus also its coordinate system) and a coordinate system that is being tracked by Vicon. Let the latter coordinate system be called Marker. 
 
-\todo[we need an image with the following coordinate systems: World, Vicon, Marker (the stuff with beacons), Camera (maybe two cameras: one as the reference pose, one from HoloLens), Omega (initial unknown HL CS).]
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{coordinateSystems.pdf}
+	\caption{Viualization of the coordinate systems we are dealing with. Omega is the initial unknown HoloLens CS \todo[what is CS?]. Notice that Omega has a scaling independent of the World CS scaling. Linear transformations are shown by the arrows. There are in fact two slightly different Camera coordinate systems -- one that is estimated from HoloLens and another one (reference pose) that is estimated using Vicon. OmegaToCamera is known for most of the HoloLens queries \protect\footnote{For exceptions caused by delays take a look here \ref{tab:HL-pose-delays}.}, because the data comes from HoloLens. ViconToMarker is provided from Vicon tracking. WorldToVicon has been manually determined. MarkerToCamera has been approximated by an algorithm described in the Reference poses section \ref{section:reference-poses}.}
+	\label{fig:coordinate-systems}
+\end{figure}
 
 \begin{figure}
 	\begin{subfigure}{0.45\textwidth}
