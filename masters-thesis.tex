@@ -242,7 +242,7 @@ The InLoc demo requires the knowledge of scores between every pair of a query im
 
 \section{Reference poses}
 \label{section:reference-poses}
-For every query we need to know its reference pose, in order to evaluate how accurate the pose estimation algorithms are. The pose of the cameras used to take the query pictures in query sets was also being tracked by a pose estimation system -- Vicon. Figure \ref{fig:s10e-tracker} shows the s10e camera (thus also its coordinate system) and a coordinate system that is being tracked by Vicon. Let the latter coordinate system be called Marker. 
+For every query we need to know its reference pose, in order to evaluate how accurate the pose estimation algorithms are. The pose of the cameras used to take the query pictures in query sets was also being tracked by a pose estimation system -- Vicon. Figure \ref{fig:s10e-marker} shows the s10e camera (thus also its coordinate system) and a coordinate system that is being tracked by Vicon. Let the latter coordinate system be called Marker. 
 
 \begin{figure}
 	\centering
@@ -253,18 +253,18 @@ For every query we need to know its reference pose, in order to evaluate how acc
 
 \begin{figure}
 	\begin{subfigure}{0.45\textwidth}
-		\includegraphics[width=\textwidth]{s10e_beacon}
-		\caption{s10e camera and an object being tracked by Vicon. \todo[replace drawings with vector graphics (albeit converted into raster).]}
-		\label{fig:s10e-tracker}
+		\includegraphics[width=\textwidth]{s10e_marker}
+		\caption{s10e sequence.}
+		\label{fig:s10e-marker}
 	\end{subfigure}
 	\hspace*{\fill}	% maximize separation between the subfigures
 	\begin{subfigure}{0.45\textwidth}
-		\includegraphics[width=\textwidth]{holoLens1_beacon}
-		\caption{HoloLens camera and an object being tracked by Vicon. HoloLens2 sequence set-up shown.}
-		\label{fig:holoLens-tracker}
+		\includegraphics[width=\textwidth]{HL1_marker}
+		\caption{HoloLens2 sequence.}
+		\label{fig:holoLens-marker}
 	\end{subfigure}
-	\caption{The camera and an object tracked by Vicon. The tracked coordinate system is called Marker and is visualized in subfigure \ref{fig:s10e-tracker} by the xyz arrows. \todo[make the images of same resolution.]}
-	\label{fig:camera-trackers}
+	\caption{The camera and marker (the object tracked by Vicon). Marker coordinate system is visualized in subfigure \ref{fig:s10e-marker} by the xyz arrows.}
+	\label{fig:camera-markers}
 \end{figure}
 
 Let's now focus on a more difficult scenario, which is the reference pose determination of the HoloLens queries. There are three reasons why the reference poses cannot be simply taken from the Vicon tracking:
