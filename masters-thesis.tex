@@ -133,7 +133,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage[normalem]{ulem} % strikethrough
 \usepackage{diagbox} % split table cell into two diagonal cells
 \usepackage[table]{xcolor} % alternate row colors in table
-\usepackage[section]{placeins}
+\usepackage[section]{placeins} % to help keep floats within their section
 
 \begin{document}
 
@@ -530,11 +530,17 @@ The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for t
 
 \chapter{Evaluation}
 
-\todo[This chapter currently only describes the s10e evaluation (non-sequential images taken from the phone).]
+\section{Experiment design}
+Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by contant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The visualizations are used to better understand the sources of errors, which are described in section \ref{section:sources-of-errors}.
 
-In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
+In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Another metric is to compute statistics on the translation and orientation errors. For this, the mean, median, and standard deviation (std) were chosen.
+
+A descriptive way to compare multiple methods is to compare percent of correctly localized queries, as the translation threshold increases (the orientation threshold is fixed).
+
+I provide two kinds of visualization. The first one shows, for a subset of queries, how they are processed - the closest cutout found, the inliers used to reconstruct the camera pose, and an error map. This is also useful when determining why InLocCIIRC performs poorly on certain queries. The second visualization shows a top level view of the physical environment. The queries, estimated query poses and sweeps are drawn.
 
 \section{s10e query set}
+Evaluation results of the non-sequential s10e query set are shown in this section. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Error statistics are shown in table \ref{tab:s10e-other-statistics}. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
 
 \begin{table}[htb!]
 	\centering
