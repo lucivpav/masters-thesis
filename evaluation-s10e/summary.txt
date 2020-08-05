@@ -3,7 +3,7 @@ Conditions: (0.25 [m], 10 [deg]) / (0.5 [m], 10 [deg]) / (1 [m], 10 [deg])
 100.00 [%] / 100.00 [%] / 100.00 [%] -- InMap
 74.29 [%] / 88.57 [%] / 91.43 [%] -- OffMap
 
-InLocCIIRC got completely lost 0 out of 40 times. (Not included in the mean/median errors)
+InLocCIIRC got completely lost 0 out of 40 times. Not included in the mean/median/std errors.
 
 Errors (InLocCIIRC poses wrt reference poses):
  	translation [m]	orientation [deg]

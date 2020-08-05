@@ -574,31 +574,31 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/errmap} \\
 	\hline
-	\makecell{Query 16 \\ 0.31 m, 4.02$\degree$} &
+	\makecell{Query 16 \\ 0.13 m, 1.19$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/query_16} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/chosen_cutout_B-315_1_60_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/errmap} \\
 	\hline
-	\makecell{Query 26 \\ 0.47 m, 2.23$\degree$} &
+	\makecell{Query 26 \\ 0.48 m, 1.60$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/query_26} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/chosen_cutout_B-315_10_30_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/errmap} \\
 	\hline
-	\makecell{Query 31 \\ 0.12 m, 0.41$\degree$} &
+	\makecell{Query 31 \\ 0.13 m, 1.17$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/query_31} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/chosen_cutout_B-315_2_0_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/errmap} \\
 	\hline
-	\makecell{Query 38 \\ 0.07 m, 0.87$\degree$} &
+	\makecell{Query 38 \\ 0.08 m, 1.42$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/query_38} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/chosen_cutout_B-315_2_-180_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/errmap} \\
 	\hline
-	\makecell{Query 40 \\ 7.81 m, 152.38$\degree$} &
+	\makecell{Query 40 \\ 7.84 m, 153.09$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/query_40} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/chosen_cutout_B-315_3_-150_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/synthesized_PV} &
@@ -645,7 +645,7 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 
 \begin{figure}[htb!]
 	\centering
-	\input{distThreshVsAccuracy}
+	\input{distThreshVsAccuracy-s10e/distThreshVsAccuracy-s10e.tex}
 	\caption{Comparison between InLoc and InLocCIIRC on their respective datasets. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
 	\label{fig:dist-thresh-vs-accuracy}
 \end{figure}
@@ -677,19 +677,19 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\hline
 		\diagbox{\small Method}{\small Threshold} & 0.25m & 0.50m & 1.00m \\
 		\hline
-		k=1 (non-sequential) & 38.9\% & 56.5\% & 69.9\% \\
+		k=1 (non-sequential) & 63.80\% & 81.90\% & 85.89\% \\
 		\hline
-		sequentialPV, k=2 & 60.42\% & 79.14\% & 83.13\% \\
+		sequentialPV, k=2 & 63.80\% & 82.52\% & 86.50\% \\
 		\hline
-		sequentialPV, k=3 & 60.74\% & 80.06\% & 83.13\% \\
+		sequentialPV, k=3 & 63.80\% & 83.44\% & 86.50\% \\
 		\hline
-		sequentialPV, k=4 & 58.90\% & 79.14\% & 81.90\% \\
+		sequentialPV, k=4 & 61.96\% & 82.52\% & 85.28\% \\
 		\hline
-		MultiCameraPose, k=2 & 65.03\% & \bfseries 80.37\% & \bfseries 83.74\% \\
+		MultiCameraPose, k=2 & \bfseries 68.41\% & \bfseries 83.74\% & \bfseries 87.12\% \\
 		\hline
-		MultiCameraPose, k=3 & \bfseries 65.34\% & 78.22\% & 82.82\% \\
+		MultiCameraPose, k=3 & \bfseries 68.41\% & 81.60\% & 86.20\% \\
 		\hline
-		MultiCameraPose, k=5 & 63.80\% & 77.30\% & 82.20\% \\
+		MultiCameraPose, k=5 & 67.18\% & 80.67\% & 85.58\% \\
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. InMap queries are queries for which we have a similar cutout in the dataset. \todo[evaluate estimated poses by procrustes with poses from HoloLens] (if the queries are from HoloLens). \todo[what would be the <poses from HL wrt Omega converted to be wrt World> InLoc performance? I am sure it would win, lol.]}
@@ -718,14 +718,30 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		MCP, k=5 & 0.60m & 3.59$\degree$ & 0.17m & 2.02$\degree$ & 1.92m & 11.26$\degree$ \\
 		\hline
 	\end{tabular}
-	\caption{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold.}
+	\caption{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold. MCP stands for MultiCameraPose.}
 	\label{tab:HL1-other-statistics}
 \end{table}
 
+\begin{figure}[htb!]
+	\centering
+	\input{distThreshVsAccuracy-HL1/distThreshVsAccuracy-HL1.tex}
+	\caption{Comparison between different methods (and segment lengths) of InLocCIIRC on the HoloLens1 query set. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$. \todo[this plot is ugly.]}
+	\label{fig:HL1-dist-thresh-vs-accuracy}
+\end{figure}
+
 \subsection{Best method vs the non-sequential method}
+\begin{itemize}
+	\item \todo[query pipeline on the best method]
+\end{itemize}
 
 \section{Sources of errors}
 \label{section:sources-of-errors}
+\todo[]
+
+\chapter{Conclusion}
+\todo[I should mention that all the methods are still far away from being better than the original HL poses!]
+
+\section{Future work}
 \todo[]
 
 \appendix
