@@ -5,5 +5,7 @@
     "spellright.documentTypes": [
         "markdown",
         "plaintext"
-    ]
+    ],
+    "latex-workshop.message.error.show": false,
+    "latex-workshop.message.warning.show": false,
 }

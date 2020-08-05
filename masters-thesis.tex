@@ -623,7 +623,7 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 	\centering
 	\begin{tabular}{|c|c|c|}
 		\hline
-		\diagbox{Statistics}{Error type} & Translation [m] & Orientation [$\degree$] \\
+		\diagbox{\small Statistics}{\small Error type} & Translation [m] & Orientation [$\degree$] \\
 		\hline
 		Mean & 0.44 & 5.70 \\
 		\hline
@@ -668,25 +668,51 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 	\rowcolors{2}{gray!20}{}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		\diagbox{Method}{Threshold} & 0.25m & 0.50m & 1.00m \\
+		\diagbox{\small Method}{\small Threshold} & 0.25m & 0.50m & 1.00m \\
 		\hline
 		k=1 (non-sequential) & 38.9\% & 56.5\% & 69.9\% \\
 		\hline
-		k=2, sequentialPV & 60.42\% & 79.14\% & 83.13\% \\
+		sequentialPV, k=2 & 60.42\% & 79.14\% & 83.13\% \\
 		\hline
-		k=3, sequentialPV & 60.74\% & 80.06\% & 83.13\% \\
+		sequentialPV, k=3 & 60.74\% & 80.06\% & 83.13\% \\
 		\hline
-		k=4, sequentialPV & 58.90\% & 79.14\% & 81.90\% \\
+		sequentialPV, k=4 & 58.90\% & 79.14\% & 81.90\% \\
 		\hline
-		k=2, MultiCameraPose & 65.03\% & \bfseries 80.37\% & \bfseries 83.74\% \\
+		MultiCameraPose, k=2 & 65.03\% & \bfseries 80.37\% & \bfseries 83.74\% \\
 		\hline
-		k=3, MultiCameraPose & \bfseries 65.34\% & 78.22\% & 82.82\% \\
+		MultiCameraPose, k=3 & \bfseries 65.34\% & 78.22\% & 82.82\% \\
 		\hline
-		k=5, MultiCameraPose & 63.80\% & 77.30\% & 82.20\% \\
+		MultiCameraPose, k=5 & 63.80\% & 77.30\% & 82.20\% \\
 		\hline
 	\end{tabular}
 	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. InMap queries are queries for which we have a similar cutout in the dataset. \todo[evaluate estimated poses by procrustes with poses from HoloLens] (if the queries are from HoloLens). \todo[what would be the <poses from HL wrt Omega converted to be wrt World> InLoc performance? I am sure it would win, lol.]}
 	\label{tab:HL1-InLoc-statistics}
+\end{table}
+
+\begin{table}
+	\centering
+	\rowcolors{2}{gray!20}{}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		\diagbox{\small Method}{\small Statistics} & \multicolumn{2}{c|}{Mean} & \multicolumn{2}{c|}{Median} & \multicolumn{2}{c|}{Std} \\
+		\hline
+		k=1 & 0.52m & 3.62$\degree$ & 0.18m & 2.01$\degree$ & 1.64m & 11.33$\degree$ \\
+		\hline
+		sequentialPV, k=2 & 0.52m & 3.05$\degree$ & 0.17m & 2.06$\degree$ & 1.64m & 5.21$\degree$ \\
+		\hline
+		sequentialPV, k=3 & \bfseries 0.45m & 3.04$\degree$ & 0.18m & 2.02$\degree$ & \bfseries 1.36m & 5.21$\degree$ \\
+		\hline
+		sequentialPV, k=4 & 0.60m & 3.61$\degree$ & 0.19m & 2.02$\degree$ & 1.93m & 11.47$\degree$ \\
+		\hline
+		MCP, k=2 & 0.53m & 2.76$\degree$ & \bfseries 0.16m & \bfseries 1.85$\degree$ & 1.84m & 4.41$\degree$ \\
+		\hline
+		MCP, k=3 & 0.54m & \bfseries 2.68$\degree$ & \bfseries 0.16m & 1.99$\degree$ & 1.85m & \bfseries 3.06$\degree$ \\
+		\hline
+		MCP, k=5 & 0.60m & 3.59$\degree$ & 0.17m & 2.02$\degree$ & 1.92m & 11.26$\degree$ \\
+		\hline
+	\end{tabular}
+	\caption{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold.}
+	\label{tab:HL1-other-statistics}
 \end{table}
 
 %\subsection{Non-sequential method}
