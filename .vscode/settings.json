@@ -3,8 +3,7 @@
         "en"
     ],
     "spellright.documentTypes": [
-        "markdown",
-        "plaintext"
+        "markdown"
     ],
     "latex-workshop.message.error.show": false,
     "latex-workshop.message.warning.show": false,

@@ -398,6 +398,8 @@ Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the qualit
 % 	\label{fig:interesting-reprojection-non-optimized-s10e-query-2}
 %\end{figure} 
 
+\phantomsection
+\label{paragraph:gt-vs-ref-poses}
 The resulting reference poses are not perfectly matching ground truth poses, which can be seen when projecting the reference poses and comparing the results with the query images. I have created the following procedure in order to estimate the mean translation and orientation error (reference vs ground truth poses). Although we do not know the true ground truth poses, one can use the poses from HoloLens. According to \cite{HoloLensEvaluation}, the poses estimated by HoloLens have the following mean accuracy with respect to the ground truth poses:
 
 \begin{itemize}
@@ -526,6 +528,7 @@ In the MultiCameraPose approach, the segments have length k>1. We need to decide
 
 The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is \todo[in evaluation, where I discuss the source of errors, mention that issue where suboptimal query-cutout pairs are chosen in the top \topPE{} combinations having a (small) negative impact on the accuracy]. The problem is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. Viz OneNote.
 
+\todo[How I am dealing with queries-cutouts not having the same aspect ratio.]
 \todo[describe other changes from the original demo.]
 
 \chapter{Evaluation}
@@ -555,10 +558,10 @@ Evaluation results of the non-sequential s10e query set are shown in this sectio
 	\label{tab:estimation-errors}
 \end{table}
 
-Figure \ref{fig:queryPipeline} shows example queries, how they are being processed and what is the localization result.
+Figure \ref{fig:s10e-queryPipeline} shows example queries, how they are being processed and what is the localization result.
 
-\newcommand{\thiswidth}{0.19\linewidth} 
 {
+\newcommand{\thiswidth}{0.19\linewidth} 
 \setlength{\tabcolsep}{1pt}
 \cellspacetoplimit 2pt
 \cellspacebottomlimit 2pt
@@ -568,45 +571,45 @@ Figure \ref{fig:queryPipeline} shows example queries, how they are being process
 	\begin{tabular}{Sc|Sc|Sc|Sc|Sc|}
 	& Query image & Closest cutout & Synthesized view & Error map \\
 	\hline
-	\makecell{Query 3 \\ 0.17 m, 1.44$\degree$} &
+	\makecell{Query 3 \\ OffMap \\ 0.17 m, 1.44$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/query_3} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/chosen_cutout_B-315_22_120_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/3.jpg/3.jpg/errmap} \\
 	\hline
-	\makecell{Query 16 \\ 0.13 m, 1.19$\degree$} &
+	\makecell{Query 16 \\ OffMap \\ 0.13 m, 1.19$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/query_16} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/chosen_cutout_B-315_1_60_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/16.jpg/16.jpg/errmap} \\
 	\hline
-	\makecell{Query 26 \\ 0.48 m, 1.60$\degree$} &
+	\makecell{Query 26 \\ OffMap \\ 0.48 m, 1.60$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/query_26} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/chosen_cutout_B-315_10_30_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/26.jpg/26.jpg/errmap} \\
 	\hline
-	\makecell{Query 31 \\ 0.13 m, 1.17$\degree$} &
+	\makecell{Query 31 \\ OffMap \\ 0.13 m, 1.17$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/query_31} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/chosen_cutout_B-315_2_0_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/31.jpg/31.jpg/errmap} \\
 	\hline
-	\makecell{Query 38 \\ 0.08 m, 1.42$\degree$} &
+	\makecell{Query 38 \\ OffMap \\ 0.08 m, 1.42$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/query_38} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/chosen_cutout_B-315_2_-180_0} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/38.jpg/38.jpg/errmap} \\
 	\hline
-	\makecell{Query 40 \\ 7.84 m, 153.09$\degree$} &
+	\makecell{Query 40 \\ OffMap \\ 7.84 m, 153.09$\degree$} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/query_40} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/chosen_cutout_B-315_3_-150_-30} &
     \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/synthesized_PV} &
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see section \ref{section:sources-of-errors} for an investigation (\todo[]).
-    \label{fig:queryPipeline}}
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see section \ref{section:sources-of-errors} for an investigation (\todo[]).}
+    \label{fig:s10e-queryPipeline}
     }
 \end{figure*}
 }
@@ -691,8 +694,10 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\hline
 		MultiCameraPose, k=5 & 67.18\% & 80.67\% & 85.58\% \\
 		\hline
+		\bfseries HoloLens & \bfseries 84.36\% & \bfseries 97.55\% & \bfseries 97.55\% \\
+		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. InMap queries are queries for which we have a similar cutout in the dataset. \todo[evaluate estimated poses by procrustes with poses from HoloLens] (if the queries are from HoloLens). \todo[what would be the <poses from HL wrt Omega converted to be wrt World> InLoc performance? I am sure it would win, lol.]}
+	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The HoloLens method are the poses provided by HoloLens tracking itself, after being converted to be wrt World coordinate system. As can be seen, it is superior to all the custom methods I have tried.}
 	\label{tab:HL1-InLoc-statistics}
 \end{table}
 
@@ -717,21 +722,80 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\hline
 		MCP, k=5 & 0.60m & 3.59$\degree$ & 0.17m & 2.02$\degree$ & 1.92m & 11.26$\degree$ \\
 		\hline
+		\bfseries HoloLens & \bfseries 0.15m & \bfseries 2.09$\degree$ & \bfseries 0.14m & \bfseries 1.51$\degree$ & \bfseries 0.08m & \bfseries 1.69$\degree$ \\
+		\hline
 	\end{tabular}
-	\caption{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold. MCP stands for MultiCameraPose.}
+	\caption{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods (except the HoloLens method). The HoloLens method got completely lost 6 out of 350 times, which is caused by the HoloLens delay (see table \ref{tab:HL-pose-delays}). The \emph{completely lost} cases are not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates (or the pose estimates from HoloLens converted to be wrt World CS) with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold. MCP stands for MultiCameraPose. The original HoloLens method is superior to all the custom methods I have tried. Note that if the estimated poses were compared to the (unknown) ground-truth poses, the errors would likely be even lower, as discussed in the Reference poses section \ref{paragraph:gt-vs-ref-poses}.}
 	\label{tab:HL1-other-statistics}
 \end{table}
+
+\subsection{Best custom method}
+
+Judging from the results above, the best performing custom method is MultiCameraPose with sequence length $k=2$. 
 
 \begin{figure}[htb!]
 	\centering
 	\input{distThreshVsAccuracy-HL1/distThreshVsAccuracy-HL1.tex}
-	\caption{Comparison between different methods (and segment lengths) of InLocCIIRC on the HoloLens1 query set. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$. \todo[this plot is ugly.]}
+	\caption{Evaluation of methods on the HoloLens1 query set. Comparison between the baseline method ($k=1$, i.e. non-sequential) with the best performing custom method ($k=2$, MultiCameraPose). The original HoloLens method, that we are aiming to surpass is also shown. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
 	\label{fig:HL1-dist-thresh-vs-accuracy}
 \end{figure}
 
-\subsection{Best method vs the non-sequential method}
+{
+\newcommand{\thiswidth}{0.27\linewidth} 
+\setlength{\tabcolsep}{1pt}
+\cellspacetoplimit 2pt
+\cellspacebottomlimit 2pt
+\begin{figure*}[htb!]
+    \centering
+    {\footnotesize
+	\begin{tabular}{Sc|Sc|Sc|Sc|}
+	& Query image & Closest cutout & Synthesized view \\
+	\hline
+	\makecell{Query 37 \\ OffMap \\ 0.05 m, 2.64$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/37.jpg/37.jpg/query_37} &
+	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/37.jpg/37.jpg/chosen_cutout_B-315_1_-30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/37.jpg/37.jpg/synthesized_PV} \\
+	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/37.jpg/37.jpg/errmap} \\
+	\hline
+	\makecell{Query 57 \\ InMap \\ 0.17 m, 2.23$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/57.jpg/57.jpg/query_57} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/57.jpg/57.jpg/chosen_cutout_B-315_2_-60_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/57.jpg/57.jpg/synthesized_PV} \\
+	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/57.jpg/57.jpg/errmap} \\
+	\hline
+	\makecell{Query 84 \\ InMap \\ 12.18 m, 0.29$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/84.jpg/84.jpg/query_84} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/84.jpg/84.jpg/chosen_cutout_B-315_19_-30_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/84.jpg/84.jpg/synthesized_PV} \\
+	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/84.jpg/84.jpg/errmap} \\
+	\hline
+	\makecell{Query 155 \\ OffMap \\ 0.17 m, 0.70$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/155.jpg/155.jpg/query_155} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/155.jpg/155.jpg/chosen_cutout_B-315_6_60_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/155.jpg/155.jpg/synthesized_PV} \\
+	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/155.jpg/155.jpg/errmap} \\
+	\hline
+	\makecell{Query 206 \\ OffMap \\ 0.15 m, 0.80$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/206.jpg/206.jpg/query_206} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/206.jpg/206.jpg/chosen_cutout_B-315_10_30_30} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/206.jpg/206.jpg/synthesized_PV} \\
+	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/206.jpg/206.jpg/errmap} \\
+	\hline
+	\makecell{Query 322 \\ OffMap \\ 0.69 m, 3.41$\degree$} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/322.jpg/322.jpg/query_322} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/322.jpg/322.jpg/chosen_cutout_B-315_2_-90_0} &
+    \adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/322.jpg/322.jpg/synthesized_PV} \\
+	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/322.jpg/322.jpg/errmap} \\
+	\hline
+    \end{tabular}
+    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by geometric verification. The pose estimation of query 84 is not completely wrong by human standards. InLocCIIRC matched the query image with a very similar cutout image, that is, however, at another location. Although this query is InMap, the chosen cutout is not the one that forms the InMap propery. Note that the query images have a different aspect ratio than the cutout images. The error maps not shown to save space.}
+    \label{fig:HL1-queryPipeline}
+    }
+\end{figure*}
+}
+
 \begin{itemize}
-	\item \todo[query pipeline on the best method]
+	\item \todo[top views (reduced)]
 \end{itemize}
 
 \section{Sources of errors}
