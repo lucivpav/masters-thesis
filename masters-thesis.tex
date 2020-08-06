@@ -805,7 +805,35 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 
 \section{Sources of errors}
 \label{section:sources-of-errors}
-\todo[]
+
+\subsection{Previous queries have meaningful correspondences but current query does not have any correspondences}
+\emph{This was observed on MultiCameraPose, k=2 experiment}. This results in InLocCIIRC completely being lost (returning NaN estimated pose), thus limiting the number of correctly localized queries given translation/orientation thresholds. In this scenario, the queries in the segment prior to the current query being processed have 2D-3D correspondences (found using geometric verification). Furthermore, those queries look meaningful upon manual inspection. However, we are interested in the current query, which does not have any correspondences. MultiCameraPose does not support a rig containing a camera for which there are no correspondences. Of course, we cannot use P3P on the current query, without knowing the query-cutout correspondences. Potential solution to this problem is: use the last estimated non-NaN pose in a sequence of queries ending with the current query. Limit the number as to how far into history to go. I did not have time to implement it. Known affected queries in HoloLens1 query set: 88, 122, 148, 231, 233, 236, 315, 319, 341. Why did we find no correspondences at those affected queries? For query 122 it is understandable - there was a very fast movement. For query 174 - it is somehow difficult, even the preceding queries 170-173 were hard to estimate (resulting poses were not NaN, but the errors from reference poses were high). However, for some affected queries, namely query 88, 148 and 231, a problem was discovered. The next subsection describes the problem.
+
+\subsection{Bad input score matrix}
+\emph{This was observed on non-sequential (k=1) and MultiCameraPose, k=2 experiments}. Known affected queries: 88, 148, 231\footnote{This query is somewhat blurry, which may also have an inpact.}. This issue probably affects more queries than is currently known by me. It causes no 2D-3D corresponences to be found. It is a problem, that currently causes NaN pose estimate for the affected queries. But it can also lower estimation accuracy for the sucessor queries, if the affected query is considered within its segment. This is because currently, P3P is used (non-sequential pose estimation), if some of the queries in a segment have no correspondences. For those 3 known affected queries, investigation revealed that the chosen cutout (i.e. the top one in pose verification output) from the previous query was not even considered in the top \topRetrieval{} cutouts in the pose estimation step. The reason the previous query's chosen cutout was picked is that the queries have not changed much during the two frames. The score for those cutouts was:
+
+\begin{table}[htb!]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		Query ID & Ranking of the previous query's chosen cutout \\
+		\hline
+		88 & 714 \\
+		\hline
+		148 & 138 \\
+		\hline
+		231 & 518 \\
+		\hline
+	\end{tabular}
+	\caption{The ranking after sorting all cutouts for a given query by highest score. Only \topRetrieval{} make it to the pose estimation step, others are not considered. This suggests that the scores are not completely correct.}
+	\label{tab:bad-scores-wrong-candidates}
+\end{table}
+
+\subsection{Hard to pick top \topPE{} combinations for non-trivial segments}
+Geometric verification step chooses top \topGV{} cutouts for each query based on the highest number of inliers. The wrong ones would normally be filtered by pose verification. However, if segments of length k>1 are used, the good query-cutout pairs simply won't make it to the top \topPE{} list. This is because we are only choosing top \topPE{} combinations from $\topGV^k$ possible combinations. \todo[use of the word "combinations" is technically incorrect/inaccurate.] As a result, average correspondences in queries within a non-trivial segment have lower quality (many matches are incorrect/imprecise) \todo[show the examples from OneNote - I had to call queryPipeline again. Cannot reproduce! Honestly cannot tell which method has more non-corresponding matches!]. There is no easy solution to this problem. Making pose estimation return significantly more than top \topPE{} candidates for each query will have a performance impact, because the pose verification step is already time consuming.
+
+\subsection{No HoloLens poses}
+Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by the end of the HoloLens1/HoloLens2 sequence do not have a pose estimated from HoloLens. In such a case we have to resort to using standard P3P, which performs (on average) worse than MultiCameraPose. Hopefully the delay was only caused by the software extracting the data from HoloLens and the delay is not actually present in real use. If it is present, it is a problem as the techniques based on InLoc described in this paper would not work in real-time.
 
 \chapter{Conclusion}
 \todo[I should mention that all the methods are still far away from being better than the original HL poses!]
