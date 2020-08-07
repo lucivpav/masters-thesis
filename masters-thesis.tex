@@ -830,10 +830,11 @@ Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by th
 
 \chapter{Conclusion}
 \label{chapter:conclusion}
-\todo[I should mention that all the methods are still far away from being better than the original HL poses!]
+
+I have created a new dataset suitable for indoor visual localization either on single RGB images or on a sequence of query images and localization data from HoloLens. I have adjusted the original InLoc implementation \todo[github citation] and made it work on the newly acquired dataset. The performance on the non-sequential s10e query set is very good (compared to results in InLoc paper). This is likely caused by the fact that my dataset is much smaller than the InLoc dataset. I have also implemented two novel methods that are based on InLoc \cite{taira2018inloc} - the sequentialPV method and the MultiCameraPose method. It was expected that the sequentialPV method would not to perform very well compared to HoloLens tracking. The MultiCameraPose method is more accurate than both the baseline InLoc method and the sequentialPV method. The resulting estimated poses are usable. However its performance is still significantly below the precision of HoloLens tracking itself. It is not clear why the new MultiCameraPose method is not performing that well. In the previous chapter, I have described known sources of errors, a lot of which can be targeted in a future work. This will certainly improve the evaluation performance.
 
 \section{Future work}
-\todo[]
+Improve the accuracy of the MultiCameraPose method by fixing known sources of errors. Spend extra time to analyze why there are inaccurate poses for certain queries and suggest an enhancement. The work on the HoloLens2 sequence should be continued - we need to compute reference poses. The code is there, but currently we are missing more manually set-up 2D-3D correspondences. Also, the work on synthetic dataset generation using Habitat AI shall be continued. Although it cannot give us data from HoloLens tracking, it can be used to generate new indoor localization datasets, without the need for expensive equipment (such as a Matterport scanner). There are extra parameters such as setting up the cutout horizontal field of view, \todo[dslevel], MultiCameraPose software \cite{MultiCameraPose} parameters and more. The accuracy of the reference poses wrt ground truth poses shall be also improved.
 
 \appendix
 
