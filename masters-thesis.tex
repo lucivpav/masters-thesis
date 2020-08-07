@@ -129,6 +129,8 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 \usepackage{diagbox} % split table cell into two diagonal cells
 \usepackage[table]{xcolor} % alternate row colors in table
 \usepackage[section]{placeins} % to help keep floats within their section
+\usepackage{listings}
+
 
 \begin{document}
 
@@ -150,6 +152,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 	\item Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy.
 	\item The ctuthesis style is kind of ugly. Consider removal of blank page after chapter (is it on purpose?). Remove "F3" on the top page.
 	\item Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).
+	\item Time and space complexity. Consider asymptotic complexity too.
 \end{itemize}
 
 %\part{Your Party}
@@ -513,10 +516,243 @@ In the MultiCameraPose approach, the segments have length k>1. We need to decide
 	\item \label{item:topGV-sequential} Every query-cutout has a score assigned, as described in step \ref{item:GV-reranking} of the non-sequential algorithm. I simply choose the combinations which have the cumulative (summed up) score the highest. Top \topPE{} combinations are selected.
 \end{enumerate}
 
-The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is \todo[in evaluation, where I discuss the source of errors, mention that issue where suboptimal query-cutout pairs are chosen in the top \topPE{} combinations having a (small) negative impact on the accuracy]. The problem is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. Viz OneNote.
+The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is \todo[in evaluation, where I discuss the source of errors, mention that issue where suboptimal query-cutout pairs are chosen in the top \topPE{} combinations having a (small) negative impact on the accuracy]. The problem is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. \todo[Viz OneNote].
 
 \todo[How I am dealing with queries-cutouts not having the same aspect ratio.]
 \todo[describe other changes from the original demo.]
+
+\section{Pseudocode}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstdefinestyle{pseudocode}{
+	frame=tb,
+	language=Python,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	frame=single,
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=2,
+	captionpos=b,
+	escapechar=\%
+}
+\renewcommand{\lstlistingname}{Algorithm} % Listing -> Algorithm
+\renewcommand{\lstlistlistingname}{List of \lstlistingname s} % List of Listings -> List of Algorithms
+
+\begin{lstlisting}[style=pseudocode, caption={InLocCIIRC pseudocode. \todo[pseudocode review.]}]
+	mdoe = 'non-sequential' or 'sequentialPV' or 'MultiCameraPose'
+	segmentLength = 3 # aka `k`; considered in 'sequentialPV', 'MultiCameraPose' modes
+	topRetrieval = %\topRetrieval%
+	topGV = %\topGV%
+	topPE = %\topPE%
+	topPV = %\topPV%
+	neuralNet = NetVLAD()
+	coarseLayer = 'conv5'
+	fineLayer = 'conv3'
+
+	def addSecondaryQueries(ImgList, score, queryNames, cutoutNames):
+		# primary query is a query user requested to perform pose estimation on.
+		# secondary queries are part of the k-segments of primary queries.
+		# they need to be added in 'MultiCameraPose' mode to be processed by
+		# poseEstimation() onward
+		implementationDetail()
+
+	def retrieval(score, queryNames, cutoutNames):
+		ImgList = list()
+		for i in len(queryNames):
+			queryName = queryNames
+			ImgList[i].queryname = queryName
+			sortedScores, ind = sort(score[queryName].scores, 'descend')
+			ImgList[i].topNname = cutoutNames[ind[0:topRetrieval]]
+			ImgList[i].topNscore = sortedScores[0:topRetrieval]
+		if mode == 'MultiCameraPose'
+			addSecondaryQueries(ImgList, score, queryNames, cutoutNames)
+		return ImgList
+
+	def extractFeatures(image):
+		image = neturalNet.averagingImageNormalization(image)
+		allLayerResults = neuralNet.forward(image)
+		features = allLLayerResults # we need features from different layers
+		return features
+
+	def loadQueryImageCompatibleWithCutouts(queryImage):
+		TODO
+
+	def adjustInliersToMatchOriginalQuery(queryTentatives, queryDimensions, cutoutDimensions):
+		# reverts loadQueryImageCompatibleWithCutouts(...)
+		return implementationDetail(...)
+
+	def buildFeatures(ImgList):
+		features = list()
+		for i in range(len(ImgList)):
+			queryName = ImgList[i].queryname
+			thisQueryFeatures = list() # query image features followed by `topRetrieval` cutout features
+			queryImage = loadImage(queryName)
+			queryImage = loadQueryImageCompatibleWithCutouts(queryImage)
+			thisQueryFeatures.append(queryImage)
+			for j in topRetrieval:
+				cutoutName = Imglist[i].topNname[j]
+				cutoutImage = loadImage(cutoutName)
+				thisQueryFeatures.append(extractFeatures(cutoutImage))
+			features.append(thisQueryFeatures)
+		return features
+
+	def coarseToFineMatching(queryFeatures, cutotuFeatures):
+		queryCoarseFeats = getFeaturesAtLayer(queryFeatures, coarseLayer)
+		cutoutCoarseFeats = getFeaturesAtLayer(cutoutFeatures, coarseLayer)
+		queryFineFeats = getFeaturesAtLayer(queryFeatures, fineLayer)
+		cutoutFineFeats = getFeaturesAtLayer(cutoutFeatures, fineLayer)
+		f1 = queryFineFeats
+		f2 = cutoutFineFeats
+		match12 = findNearestMatches(queryCoarseFeats, cutoutCoarseFeats)
+		return f1, f2, match12
+
+	def sortImgListRowByHighestScores(ImgListRow)
+		for i in len(queryNames):
+			sortedScores, ind = sort(ImgListRow[i].topNscore, 'descend')
+			ImgListRow[i].topNname = ImgListRow[i].topNname[ind]
+			ImgListRow[i].topNscore = ImgListRow[i]topNscore[ind]
+		return ImgListRow
+
+	def geometricVerification(ImgList, features):
+		NewImageList = ImgList.copy()
+		for i in range(len(ImgList)):
+			thisQueryFeatues = features[i]
+			queryName = ImgList[i].queryname 
+			parfor j in range(topRetrieval):
+				cutoutName = Imglist[i].topNname[j]
+				queryImgFeatures = thisQueryFeatures[0]
+				cutoutImgFeatures = thisQueryFeatures[1+j]
+				match12, f1, f2 = coarseToFineMatching(queryImgFeatures, cutoutImgFeatures)
+				inls12 = denseRansac(f1, f2, match12)
+				save(queryName, cutoutName, f1, f2, match12, inls12)
+				NewImgList[i].topNscore[j] += len(inls12) # NOTE: the previous scores were between zero and one
+			NewImageList[i] = sortImgListRowByHighestScores(NewImgList[i])
+		return NewImageList
+
+	def getActualSegmentLength(idx, desiredSegmentLength, ImgList):
+		return getSegmentLengthSuchThatSegmentQueriesAreWithinSequenceBounds(idx, desiredSegmentLength, ImgList)
+
+	def getCandidateIdx():
+		# for each query, we have multiple candidate solutions.
+		# parfor_densePE and parfor_densePV functions must be executed on
+		# all of those candidates
+		return implementationDetail()
+
+	def poseEstimation(ImgList):
+		features = buildFeatures(ImgList)
+		ImgList = geometricVerification(ImgList, features)
+		treatQueriesSequentually = mode == 'MultiCameraPose'
+		if not treatQueriesSequentually:
+			desiredSegmentLength = 1
+		ImgListSequential = keepPrimaryQueriesOnly(ImgList)
+		for i in range(len(ImgListSequential)):
+			actualSegmentLength = getActualSegmentLength(i, desiredSegmentLength, ImgListSequential)
+			combinations = permuteIndices([0:topGV], actualSegmentLength)
+			scores = computeScoresForSegmentCombinations('cummulative-sum')
+			ind = findBestCombinations(scores, topPE)
+			updateTopCutoutsAnsScoresInTheSegment(ImgListSequential[i], scores, ind)
+		if treatQueriesSequentually:
+			posesFromHoloLens = getPosesFromHoloLens()
+		else:
+			posesFromHoloLens = list()
+
+		parfor i in len(ImgListSequential):
+			candidateIdx = getCandidateIdx()
+			parfor_densePE(ImgListSequential, i, posesFromHoloLens, candidateIdx)
+
+		for i in len(ImgListSequential)
+			ImgListSequential[i].Ps = list(size=topPE) # estimated poses in the segment, for topPE combinations
+			for j in topPE:
+				ImgListSequential[i].Ps[j] = load_parfor_densePE_segment_poses(i, j)
+
+		return ImgListSequential
+
+	def parfor_densePE(ImgList, idx, posesFromHoloLens, candidateIdx):
+		actualSegmentLength = getActualSegmentLength(idx, implementationDetail(), ImgList)
+		Ps = list(size=actualSegmentLength)
+		useP3P = segmentLength == 1
+		if invalidPosesDueToDelay(posesFromHoloLens):
+			useP3P = True
+		for j in segmentLength:
+			f1, f2, match12, inls12 = load(queryName, cutoutName, candidateIdx)
+			queryTentatives = f1[inls12[0]]
+			cutoutTentatives = f2[inls12[2]]
+			queryTentatives = upscale(queryTentatives, cutoutSize)
+			queryTentatives = adjustInliersToMatchOriginalQuery(queryTentatives, queryDimensions, cutoutDimensions)
+			correspondences = build2D3DCorrespondences(queryTentatives, cutoutTentatives)
+
+		if useP3P:
+			P, inls = P3P(correspondences)
+			Ps[end] = P
+			save(inls, candidateIdx=candidateIdx)
+		else:
+			Ps = multiCameraPose(correspondences, posesFromHoloLens)
+
+		save(Ps, candidateIdx=candidateIdx)
+
+	def convertHLPosesToBeWrtCurrentQueryPoseEstimate(posesFromHoloLens):
+		# it should be clear how to do this from my textual description in the Implementation Chapter %\ref{chapter:implementation}%
+		return implementationDetail()
+
+	def parfor_densePV(ImgList, queries, idx, candidateIdx):
+		parentQuery = queries[idx]
+		queriesInSegment = getQueriesInSegment(parentQuery)
+		cutouts = getCutoutsInSegment(parentQuery)
+		Ps = load(parentQuery, candidateIdx=candidateIdx)
+		for i in range(len(queriesInSegment))
+			query = queriesInSegment[i]
+			cutout = cutouts[i]
+			P = Ps[i]
+			queryImage = loadQueryImage(query)
+			synthQueryImage = projectPose(P)
+			error = compute_DSIFT_error(queryImage, synthQueryImage)
+			save(parentQuery, query, cutout, error, synthImage, candidateIdx=candidateIdx)
+
+	def poseVerification(ImgList):
+		PV_list = setUpListForPoseVerificationProcessing(ImgList)
+		if mode == 'sequentialPV':
+			posesFromHoloLens = getPosesFromHoloLens()
+			posesFromHoloLens = convertHLPosesToBeWrtCurrentQueryPoseEstimate(posesFromHoloLens)
+			addPosesFromHoloLensForPoseVerificationProcessing(PV_list, posesFromHoloLens)
+		spaces = getSpacesAtWhichPoseEstimatesAre(ImgList)
+		for space in spaces:
+			queries = getQueriesInSpace(ImgList, space)
+			parfor i in len(queries):
+				candidateIdx = getCandidateIdx()
+				parfor_densePV(ImgList, queries, i, candidateIdx)
+
+		ImgList = reRankSortAndChooseTop(topPV)
+
+	def evaluate(ImgList):
+		# chooses top 1 poseVerification results for each query
+		visualEvaluationQueryByQuery(ImgList)
+		visualEvaluationQuerySegments(ImgList)
+		computeTranslationAndOrientationErrorsWrtReferencePoses(ImgList)
+		showLocalizationAccuracyGivenThresholds()
+		showErrorStatistics()
+
+	def main()
+		score, queryNames, cutoutNames = initialize()
+		assertNonSequentialModeUsedIfQuerySetIsNonSequential()
+		# score represents query-cutout score matrix
+		ImgList = retrieval(score, queryNames, cutoutNames)
+		ImgList = poseEstimation(ImgList)
+		ImgList = poseVerification(ImgList)
+		evaluate(ImgList)
+\end{lstlisting}
+
+Note that in the current actual source code, I do not have the 'non-sequential' mode. Instead, it is determined by choosing 'MultiCameraPose' mode and setting segmentLength to 1.
 
 \chapter{Evaluation}
 \label{chapter:evaluation}
