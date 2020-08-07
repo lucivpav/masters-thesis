@@ -148,7 +148,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
     \item Level-2: localize initial segments of length > 1. How t do it? Use the maximal 1st/2nd NN ratio to select the best image in the indexing phase. Next use the sequence as a generalized camera and replace p3p with GP6P. 
 	\item Level-3: Combine images before image indexing. How to do it? We don't know as of now.
 	\item Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy.
-	\item The ctuthesis style is kind of ugly. Increase the width of the text and remove blank page after chapter.
+	\item The ctuthesis style is kind of ugly. Consider removal of blank page after chapter (is it on purpose?). Remove "F3" on the top page.
 	\item Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).
 \end{itemize}
 
@@ -645,14 +645,14 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 
 \begin{figure}[htb!]
 	\centering
- 	\includegraphics[width=0.86\textwidth]{evaluation-s10e/topView-B-315}
+ 	\includegraphics[width=0.79\textwidth]{evaluation-s10e/topView-B-315}
  	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses.}
  	\label{fig:topView-B-315}
 \end{figure} 
 
 \begin{figure}[htb!]
 	\centering
- 	\includegraphics[width=0.76\textwidth]{evaluation-s10e/topView-B-670}
+ 	\includegraphics[width=0.69\textwidth]{evaluation-s10e/topView-B-670}
  	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. No s10e queries were incorrectly localized to this room.}
  	\label{fig:topView-B-670}
 \end{figure} 
@@ -729,7 +729,7 @@ Judging from the results above, the best performing custom method is MultiCamera
 \end{figure}
 
 {
-\newcommand{\thiswidth}{0.27\linewidth} 
+\newcommand{\thiswidth}{0.26\linewidth} 
 \setlength{\tabcolsep}{1pt}
 \cellspacetoplimit 2pt
 \cellspacebottomlimit 2pt
@@ -786,7 +786,7 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 
 \begin{figure}[htb!]
 	\centering
- 	\includegraphics[width=0.83\textwidth]{evaluation-HL1-v4.2-k2/topView-B-315}
+ 	\includegraphics[width=0.80\textwidth]{evaluation-HL1-v4.2-k2/topView-B-315}
  	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. Every 20th HoloLens1 query rendered.}
  	\label{fig:HL1-topView-B-315}
 \end{figure} 
@@ -821,7 +821,7 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 Geometric verification step chooses top \topGV{} cutouts for each query based on the highest number of inliers. The wrong ones would normally be filtered by pose verification. However, if segments of length k>1 are used, the good query-cutout pairs simply won't make it to the top \topPE{} list. This is because we are only choosing top \topPE{} combinations from $\topGV^k$ possible combinations. \todo[use of the word "combinations" is technically incorrect/inaccurate.] As a result, average correspondences in queries within a non-trivial segment have lower quality (many matches are incorrect/imprecise) \todo[show the examples from OneNote - I had to call queryPipeline again. Cannot reproduce! Honestly cannot tell which method has more non-corresponding matches!]. There is no easy solution to this problem. Making pose estimation return significantly more than top \topPE{} candidates for each query will have a performance impact, because the pose verification step is already time consuming.
 
 \subsection{No HoloLens poses}
-Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by the end of the HoloLens1/HoloLens2 sequence do not have a pose estimated from HoloLens. In such a case we have to resort to using standard P3P, which performs (on average) worse than MultiCameraPose. Hopefully the delay was only caused by the software extracting the data from HoloLens and the delay is not actually present in real use. If it is present, it is a problem as the techniques based on InLoc described in this paper would not work in real-time.
+Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by the end of the HoloLens1 and HoloLens2 sequences do not have a pose estimated from HoloLens. In such a case we have to resort to using standard P3P, which performs (on average) worse than MultiCameraPose. Hopefully the delay was only caused by the software extracting the data from HoloLens and the delay is not actually present in real use. If it is present, it is a problem as the techniques based on InLoc described in this paper would not work in real-time.
 
 \chapter{Conclusion}
 \label{chapter:conclusion}
