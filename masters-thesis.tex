@@ -153,41 +153,31 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
     \item Level-2: localize initial segments of length > 1. How t do it? Use the maximal 1st/2nd NN ratio to select the best image in the indexing phase. Next use the sequence as a generalized camera and replace p3p with GP6P. 
 	\item Level-3: Combine images before image indexing. How to do it? We don't know as of now.
 	\item Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy.
-\end{itemize}
-
-\chapter{Outline}
-
-\begin{itemize}
-	\item Introduction.
-	\item Relevant work.
-	\item Literature overview
-	\item Newly acquired datasets - how they were build, description, statistics, examples. I need a dataset with query images and reference poses (done). I also need a dataset with query sequences and reference poses - this will be simulated by Habitat.
-	\item Describe, demonstrate the method for query localization on the newly acquired dataset.
-	\item Describe, demonstrate and evaluate the improved method for HoloLens localization.
-	\item Analyze the sources of errors and inaccuracies. Analyze the influence of incorrectly constructed 3D models \sout{and its maintenance in time}, this can be only done on the datasets that are not completely synthetic, i.e. queries are from real world.
+	\item The ctuthesis style is kind of ugly. Increase the width of the text and remove blank page after chapter.
 	\item Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).
-	\item Conclusion and possible future extensions.
 \end{itemize}
 
 %\part{Your Party}
 
 \chapter{Introduction}
-InLocCIIRC is a modification of the InLoc \cite{taira2018inloc}, that runs on a dataset taken at CIIRC.
+
+Visual localization is a common computer vision problem where, given an RGB image, we want to estimate the camera pose. Such a camera pose can be specified by 6 parameters - 3 of which describe its position in space and the other 3 represent its orientation in the space. In case of outdoor visual localization, the problem can be simplified by making use of GPS for approximate position localization. Visual localization is a problem that also needs to be addressed indoors, however. It has use cases in e.g. Augmented and Mixel Reality applications. Of course, the GPS signal is unusable in a building. In this thesis, I am going to focus on indoor visual localization with HoloLens. HoloLens is a mixed reality device. HoloLens provides a powerful tracking of the camera as user navigates around a room. An idea of this thesis is to improve it further. Imagine a use case where we place virtual objects into the mixed reality. As user navigates around the room, we need to track the pose of HoloLens in order to maintain the object placements. The indoor environment is problematic for several reasons. One of them being that there are a lot of similar areas - the same type of windows, doors, textureless walls. Furthermore, the environment can change easily as people interact with it.
+
+The objectives of this work are as follows. State of the art in indoor localization must be reviewed, in particular the NetVLAD \cite{Arandjelovic16} and InLoc \cite{taira2018inloc} papers. Create a new indoor dataset based on the InLoc dataset \cite{taira2018inloc}. The WUSTL dataset was used in InLoc. The new dataset must also contain query images that were taken in a sequence (as user with HoloLens walks in the room). Make InLoc run on the newly created dataset, by prossing the query images in non-sequential fashion. Implement an improvement that takes the HoloLens data into account. One of the improvements should include taking multiple historical camera data into account (InLoc currently only uses a single camera pose, because it does not deal with sequential data). At last, the performance of the newly implemented algorithms shall be evaluated.
+
+This work is organized the following way. Chapter \ref{chapter:literature-review} contains related work on the topic of indoor visual localization. Background that my software and algortihms rely on is also described. The newly acquired dataset is described in Chapter \ref{chapter:dataset}. It contains statistics of the dataset, its structure and how it was created. An implementation of the techniques described here area covered in Chapter \ref{chapter:implementation}. Note that it is only a proof-of-concept implementation, unsuitable for real-world use out of the box (just as the InLoc implementation). Chapter \ref{chapter:evaluation} evaluates the newly developed methods and compares them with some baseline methods. Sources of errors are also noted. Finally, the Chapter \ref{chapter:conclusion} is a summary of this work, whether it fullfilled the assignment and possible future work.
 
 \todo[]:
 \begin{itemize}
 	\item repeat some info about InLoc,
-	\item motivation
 	\item state of the art HoloLens v1 accuracy so far?
 \end{itemize}
 
-\chapter{Related work}
-\todo[Relevant work with regards to HoloLens or indoor localization.]
-
-\chapter{Literature overview}
-\label{literature-overview-chapter}
+\chapter{Literature review}
+\label{chapter:literature-review}
 \todo[]:
 \begin{itemize}
+	\item Relevant work with regards to HoloLens or indoor localization,
 	\item NetVLAD (and what is a neural network?),
 	\item InLoc,
 	\item camera coordinate system (copy some image from GVG and cite it),
@@ -203,7 +193,8 @@ InLocCIIRC is a modification of the InLoc \cite{taira2018inloc}, that runs on a 
 \end{itemize}
 
 \chapter{Dataset}
-The original InLoc demo is using the InLoc dataset \cite{taira2018inloc}, which is based on data taken at the Washington University in St. Louis (WUSTL dataset). The InLocCIIRC dataset aims to keep the same structure as the InLoc dataset.
+\label{chapter:dataset}
+The original InLoc implementation is using the InLoc dataset \cite{taira2018inloc}, which is based on data taken at the Washington University in St. Louis (WUSTL dataset). The InLocCIIRC dataset aims to keep the same structure as the InLoc dataset. The new dataset was created at the Czech Institute of Informatics, Robotics and Cybernetics (CIIRC).
 
 The dataset is a result of scanning two rooms at CIIRC: the B-670 lecture hall and a room B-315. For scanning the environments, a Matterport 3D scanner is used. Let's call the environments \emph{spaces}. This scanner is much faster to operate and cheaper than the Faro 3D scanner used in InLoc (WUSTL dataset). The disadvantage is that the resulting point cloud model tends to be of lower quality. Matterport creates a point cloud and a mesh model of each space. This is made possible by scanning the area at various locations. Let's call each such scan a \emph{sweep}, to match the Matterport API terminology. To construct the models, RGBD panoramas are taken around the rooms. In B-670, I have taken 31 such panoramas. In B-315, I have taken 27 panoramas. Overall, there are 58 RGBD panoramas taken by Matterport 3D scanner. The scanner was mounted on a tripod at height of approximately 1.52cm and I tried to avoid walls and objects in 60cm radius.
 
@@ -224,7 +215,7 @@ The dataset contains sets of query images (queries). The first set, called s10e,
 
 All of the query images were taken in this area, so that their reference pose is known. No queries were taken in room B-670, as it would be time consuming to estimate the reference poses manually (or creating a program that does this). Hence, its only purpose is to serve as a confuser.
 
-The queries in the s10e set have a pixel resolution $4032 \times 3024$. InLoc demo requires the knowledge of focal length of the camera that was used when taking the query images. I found conflicting information about the S10e's field of view (FoV) online, and the focal length didn't add up. \todo[talk about a similar problem with HL.] I ended up computing the focal length manually with the help of a tripod and a ruler. The focal length turned out to be 3172 pixels. The IDs of query images are sorted in a non-decreasing difficulty, e.g. queries with IDs 1 to 10 were taken such that the camera's direction vector is roughly parallel with the floor. Queries with higher IDs have the camera rotated on a tripod under any direction.
+The queries in the s10e set have a pixel resolution $4032 \times 3024$. InLoc implementation requires the knowledge of focal length of the camera that was used when taking the query images. I found conflicting information about the S10e's field of view (FoV) online, and the focal length didn't add up. \todo[talk about a similar problem with HL.] I ended up computing the focal length manually with the help of a tripod and a ruler. The focal length turned out to be 3172 pixels. The IDs of query images are sorted in a non-decreasing difficulty, e.g. queries with IDs 1 to 10 were taken such that the camera's direction vector is roughly parallel with the floor. Queries with higher IDs have the camera rotated on a tripod under any direction.
 
 The HoloLens queries have a pixel resolution of $1344 \times 756$ pixels and according to the official documentation, the horizontal FoV is 67\degree. However, looking at the data generated while capturing the sequences, HoloLens provides a cameraProjectionTransform matrix. According to an article, the effective hFoV can be computed as
 
@@ -242,7 +233,7 @@ Alignments define the pose of individual sweeps within the space they are in. Be
 
 In InLoc, there are point cloud models for every sweep. On the contrary, in InLocCIIRC we have a model for each space.
 
-The InLoc demo requires the knowledge of scores between every pair of a query image and a cutout image. An individual score describes similarity between the two images. When the demo is run, InLoc chooses, for each query, top N cutouts with the highest scores. The other cutouts will not be considered. It is thus quite important that these scores are relevant. NetVLAD \cite{Arandjelovic16} descriptors are computed for both cutouts and query images. The features are the output of the L2 normalization layer. A score between a query image and a cutout is computed using a dot product between the two feature vectors. Note that the similarity scores of cutouts for a query do not represent a probability distribution, and thus don't need to sum up to one. The code for doing so was not provided in InLoc, so I came up with an implementation that reuses existing InLoc MATLAB components. The resulting scores seem to be meaningful, but a reference implementation would have been better.
+The InLoc implementation requires the knowledge of scores between every pair of a query image and a cutout image. An individual score describes similarity between the two images. When the software is run, InLoc chooses, for each query, top N cutouts with the highest scores. The other cutouts will not be considered. It is thus quite important that these scores are relevant. NetVLAD \cite{Arandjelovic16} descriptors are computed for both cutouts and query images. The features are the output of the L2 normalization layer. A score between a query image and a cutout is computed using a dot product between the two feature vectors. Note that the similarity scores of cutouts for a query do not represent a probability distribution, and thus don't need to sum up to one. The code for doing so was not provided in InLoc, so I came up with an implementation that reuses existing InLoc MATLAB components. The resulting scores seem to be meaningful, but a reference implementation would have been better.
 
 \section{Reference poses}
 \label{section:reference-poses}
@@ -484,15 +475,16 @@ The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notic
 \todo[how are reflective surfaces handled?]
 \todo[describe the steps taken in dataset construction tool, maybe also some technical details.]
 
-\chapter{Demo}
+\chapter{Implementation}
+\label{chapter:implementation}
 
 InLoc \cite{taira2018inloc} authors provide a demonstration in MATLAB that operates on the InLoc dataset. I have taken this demonstration and adjusted it, so that it works on the InLocCIIRC dataset instead. I have added an evaluation script, that was missing from the original code. Although the evaluation of InLoc is handled by \url{visuallocalization.net}, this tool of course doesn't handle the newly created InLocCIIRC dataset yet.
 
-The entire InLocCIIRC demo should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP server. However, the GPU node prohibited the use of more than 8 CPU threads per user. So I had to split the demo into 2 parts: in the first run, the GPU is used. In the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc demo as well.
+The entire InLocCIIRC implementation should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP server. However, the GPU node prohibited the use of more than 8 CPU threads per user. So I had to split the implementation into 2 parts: in the first run, the GPU is used. In the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc implementation as well.
 
-The original InLoc demo code uses point cloud projection in the pose verification step. The code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering (\todo[or is it software rendering actually?]). I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (pyrender, trimesh, open3D). My projectMesh method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and call the render functions. However, this would require non-trivial implementation changes, at least in the demo, because the demo is in MATLAB and the projectMesh routine is in Python.
+The original InLoc implementation uses point cloud projection in the pose verification step. The code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering (\todo[or is it software rendering actually?]). I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (pyrender, trimesh, open3D). My projectMesh method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and call the render functions. However, this would require non-trivial implementation changes, at least in the demo, because the implementation is in MATLAB and the projectMesh routine is in Python.
 
-A major change to the demo was adding support for sequential queries. Currently the code supports specifically sequential queries from HoloLens. In fact, the name InLocCIIRC\_demo is not very accurate, because it is not really a implementing the InLoc paper \cite{taira2018inloc}. But the pose estimation algorithms are indeed based on InLoc. To estimate poses of sequential queries from HoloLens, poses from HoloLens must be provided. These poses are estimates of the ground-truth camera poses, and are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
+A major change to the implementation was adding support for sequential queries. Currently the code supports specifically sequential queries from HoloLens. \todo[In fact, the name InLocCIIRC\_demo is not very accurate, because it is not really a implementing the InLoc paper \cite{taira2018inloc}]. But the pose estimation algorithms are indeed based on InLoc. To estimate poses of sequential queries from HoloLens, poses from HoloLens must be provided. These poses are estimates of the ground-truth camera poses, and are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
 
 The first approach is called SequentialPV. It only leverages the other queries (in the segment) in the pose verification step. This approach aims to be more robust than the non-sequential one, by providing more evidence: the projection quality for all queries in the segment is considered and compared to the input query images. How is this done? We have top \topPE{} camera poses (given by P3P in the pose estimation step). These poses are the estimated poses of the current query. Next, we have camera pose estimates for every query in the segment, provided by HoloLens. Those poses are wrt Omega. Therefore, I convert the poses from HoloLens from Omega to World, by aligning the two poses of the last query in the segment. The two poses are:
 
@@ -503,7 +495,7 @@ The first approach is called SequentialPV. It only leverages the other queries (
 
 To match the two poses, we just need to compute a linear transformation (rotation, translation). With this transformation, the other poses from HoloLens are converted from Omega to World. With all camera pose estimates being with respect to World coordinate system, I run the pose verification step. The pose verification step returns a score, symbolizing the quality of the input query image and the reconstructed query image. I sum all the scores in the segment. \todo[mention other ways, like mean, maximum]. This is done for those top \topPE{} poses from the pose estimation step. At the end, I choose the candidate with highest score to represent the final camera pose estimate. This approach is a basic way to leverage the fact that the queries were taken in a sequence (and captured with HoloLens).
 
-Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-3D correspondences are computed using the geometric verification step (and 2D to 3D transformation in parfor\_densePE. \todo[explain this better]) in InLoc. Given these data, an external program called \emph{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the MultiCameraPose program and gsP4P, please see Chapter \ref{literature-overview-chapter}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
+Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-3D correspondences are computed using the geometric verification step (and 2D to 3D transformation in parfor\_densePE. \todo[explain this better]) in InLoc. Given these data, an external program called \emph{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the MultiCameraPose program and gsP4P, please see Chapter \ref{chapter:literature-review}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
 
 There is an important change when MultiCameraPose is used, compared to processing non-sequential queries. To understand that, let me first describe how the pose estimation step works in the non-sequential case:
 
@@ -532,6 +524,7 @@ The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for t
 \todo[describe other changes from the original demo.]
 
 \chapter{Evaluation}
+\label{chapter:evaluation}
 
 \section{Experiment design}
 Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by contant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The visualizations are used to better understand the sources of errors, which are described in section \ref{section:sources-of-errors}.
@@ -836,6 +829,7 @@ Geometric verification step chooses top \topGV{} cutouts for each query based on
 Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by the end of the HoloLens1/HoloLens2 sequence do not have a pose estimated from HoloLens. In such a case we have to resort to using standard P3P, which performs (on average) worse than MultiCameraPose. Hopefully the delay was only caused by the software extracting the data from HoloLens and the delay is not actually present in real use. If it is present, it is a problem as the techniques based on InLoc described in this paper would not work in real-time.
 
 \chapter{Conclusion}
+\label{chapter:conclusion}
 \todo[I should mention that all the methods are still far away from being better than the original HL poses!]
 
 \section{Future work}
