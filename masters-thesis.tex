@@ -177,28 +177,74 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item NetVLAD (and what is a neural network?),
-	\item InLoc,
+	\item P3P,
+	\item MultiCameraPose and the related theory (Kukelova2016CVPR paper),
+	\item CNN
 	\item camera coordinate system (copy some image from GVG and cite it),
 	\item HoloLens,
 	\item Matterport,
 	\item Vicon,
-	\item P3P,
-	\item MultiCameraPose and the related theory (Kukelova2016CVPR paper),
 	\item procrustes? I think I just need one or two sentences,
 	\item Single view depth estimation,
 	\item Deep depth completion,
 	\item more?
 \end{itemize}
 
-\section{NetVLAD}
-NetVLAD \cite{Arandjelovic16} is a convolutional netural network (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
-
 \section{InLoc}
+InLoc \cite{taira2018inloc} a powerful method (state-of-the-art in 2018) for indoor visual localization. All the newly developed algorithms in this work use InLoc or its modification at its core. Not necessarily because there is no better method out there, but because it is the topic of this thesis (and the thesis supervisor is a co-author of the InLoc paper, which is beneficial for getting familiar with the method quickly). To understand the methods developed in this work better, it is useful to learn about InLoc first.
+
+InLoc operates on top of an InLoc dataset. The dataset contains:
+
+\begin{itemize}
+	\item 256 query RGB photos,
+	\item $10\,000$ cutout RGBD images,
+	\item 277 reference panorama poses (determined using \cite{wijmans17rgbd}),
+	\item reference query poses,
+	\item query-cutout similarity matrix (known as score).
+\end{itemize}
+
+The dataset has been acquired at the Washington University in St. Louis. Five floors (at two buildings) were used to build the dataset. The InLoc method assumes existence of a 3D map - which is represented by the RGBD cutouts. The cutout RGBD images are a result of perpesctive view extraction from RGBD panorama images. The panorama images were captured accross all five floors using a high-end Faro 3D scanner. The query RGB images represent the images for which we aim to determine camera pose. These were taken using a smartphone camera with no depth information. Queries were taken only at two floors; the other floors serve as a confusion for InLoc.
+
+The query photos were taken at a different time of the day, to take illimunation and interior changes into account. The query reference poses are needed, to attest how well InLoc performs on the pose estimation task. These reference poses were determined using (taken from \cite{taira2018inloc}):
+
+\begin{enumerate}
+	\item Selection of the visually most similar database images.
+	\item Automatic matching of query images to selected database images.
+	\item Computing the query camera pose and visually veri- fying the reprojection.
+	\item Manual matching of difficult queries to selected database images.
+	\item Quantitative and visual inspection.
+\end{enumerate}
+
+Understanding the details of reference pose generation is not necessary for understanding this work. This is because, as we will see in Chapter \ref{chapter:dataset}, our \todo[or my?] new dataset:
+
+\begin{itemize}
+	\item Already contains reference panorama poses from Matterport.
+	\item Uses a pose-tracking system Vicon to estimate the reference query poses.
+\end{itemize}
+
+Let's take a look at a high-level overview of how the InLoc method operates. The following is a simplified and paraphrased (from the InLoc paper \cite{taira2018inloc}) description:
+
+\begin{enumerate}
+	\item For every query image: find top N similar cutout images using the score similarity matrix.
+	\item For every query-cutout pair: find tentative pixel-to-pixel correspondences using matching of NetVLAD \ref{section:NetVLAD} features.
+	\item Re-rank the top N cutout lists according to the highest number of tentatives found (if there is a draw, the original query-cutout score decides the order).
+	\item Choose top $M \le N$ cutouts in the lists.
+	\item For all query-cutout pairs, construct a pose estimate using P3P-RANSAC \footnote{P3P is covered in section \ref{section:P3P}; refer to \cite{RANSAC} for RANSAC description.}. This is possible since the pixel-to-pixel correspondences can be converted into 2D-3D correspondences (cutouts are RGBD).
+	\item Project the estimated poses and evaluate their similarities to the query images.
+	\item For every query: choose the cutout for which we have a synthesized query image with highest similarity to the query image (using DenseRootSIFT \cite{RootSIFT} \cite{DenseSIFT}).
+\end{enumerate}
+
+The computational requirements are missing from the InLoc paper. However, the authors mention the need for about 14 GB RAM in their experiment, to hold the image descriptors in memory.
+
+\section{NetVLAD}
+\label{section:NetVLAD}
+NetVLAD \cite{Arandjelovic16} is a convolutional netural network (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
 
 \section{Multi-camera pose estimation}
 Theory by Kukelova. A particular implementation of GP4Ps/gsP4P is MultiCameraPose \cite{MultiCameraPosePaper}.
 
+\section(P3P)
+\label{section:P3P}
 
 \chapter{Dataset}
 \label{chapter:dataset}
