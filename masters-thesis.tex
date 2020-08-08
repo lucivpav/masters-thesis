@@ -178,11 +178,9 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
 	\item HoloLens,
-	\item Matterport,
-	\item Vicon,
-	\item procrustes? I think I just need one or two sentences,
 	\item Single view depth estimation,
 	\item Deep depth completion,
+	\item Is this the right place? CVPR 2019 (InLoc enhancement)
 	\item more?
 \end{itemize}
 
@@ -283,6 +281,15 @@ This work often operates on query images that were taken in a sequence: imagine 
 
 \section{Procrustes analysis}
 Give two sets of points in $n$-dimensional space, we wish to find an (approximate) transformation beetween them. Assuming the two points represent the same or similar points, but are wrt a different coordinate system; procrustes analysis \cite{procrustes} finds the linear transformation. Procrustes minimizes the sum of squared errors of points, after both sets of points are represented in the same coordinate system using a transformation being considered. We will be using an implementation in MATLAB. The function is called \emph{procrustes} and is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
+
+\section{Devices used}
+\paragraph{Matterport}
+Matterport is a device capable of creating a 3D map of indoor environments. Compared to the Faro 3D scanner used in InLoc dataset \cite{taira2018inloc}, Matterport is a cheaper alternative. Matterport operating time is also lower, due to the resulting point cloud being of lower quality \todo[source?].
+
+\paragraph{Vicon}
+Vicon is a stationary system capable of tracking an object's pose with high accuracy \cite{Vicon}. The tracked object, Marker, contains spheres which have a reflexive surface. Vicon is used for reference pose determination in the newly created dataset within this work.
+
+\paragraph{HoloLens}
 
 \chapter{Dataset}
 \label{chapter:dataset}
