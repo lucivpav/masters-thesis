@@ -153,6 +153,7 @@ V Praze, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 	\item The ctuthesis style is kind of ugly. Consider removal of blank page after chapter (is it on purpose?). Remove "F3" on the top page.
 	\item Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).
 	\item Time and space complexity. Consider asymptotic complexity too.
+	\item Use more of "Our", "We" than "My" and "I"
 \end{itemize}
 
 %\part{Your Party}
@@ -189,6 +190,15 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 	\item Deep depth completion,
 	\item more?
 \end{itemize}
+
+\section{NetVLAD}
+NetVLAD \cite{Arandjelovic16} is a convolutional netural network (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
+
+\section{InLoc}
+
+\section{Multi-camera pose estimation}
+Theory by Kukelova. A particular implementation of GP4Ps/gsP4P is MultiCameraPose \cite{MultiCameraPosePaper}.
+
 
 \chapter{Dataset}
 \label{chapter:dataset}
