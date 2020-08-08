@@ -177,7 +177,6 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item CNN,
 	\item camera coordinate system (copy some image from GVG and cite it),
 	\item HoloLens,
 	\item Matterport,
@@ -236,7 +235,7 @@ The computational requirements are missing from the InLoc paper. However, the au
 
 \section{NetVLAD}
 \label{section:NetVLAD}
-NetVLAD \cite{Arandjelovic16} is a convolutional netural network (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
+NetVLAD \cite{Arandjelovic16} is a convolutional netural network \footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
 
 \section{P3P}
 \label{section:P3P}
