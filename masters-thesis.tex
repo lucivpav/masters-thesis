@@ -177,7 +177,6 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item camera coordinate system (copy some image from GVG and cite it),
 	\item HoloLens,
 	\item Matterport,
 	\item Vicon,
@@ -244,6 +243,39 @@ The P3P problem \cite{RANSAC} is a problem of estimating a calibrated camera pos
 \section{Camera coordinate system}
 \label{section:cameraCS}
 
+Figure \ref{fig:cameraCoordinateSystem} shows a camera coordinate system $\gamma$, that defines the camera pose.
+
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=1.0\textwidth,viewport=2.93cm 7.54cm 19.49cm 25.3cm,clip]{GVG_page_cameraCS.pdf}
+	\caption{Camera coordinate system $\gamma$ with origin at $\vec C$ with respect to some World coordinate system $\gamma$; and bases $\vec c_1, \vec c_2, \vec c_3$. Camera points the $\vec c_3$ direction, having $\vec c_1$ on its right. $\vec b_3$ defines the start of image coordinate system (pixel at 0,0). Vectors $\vec b_1, \vec b_2$ are considered to be orthogonal, as we are dealing with a rectangular sensor in this thesis. Point $X$ with 3D coordinates $\vec X$ projects onto the image plane to a point $x$ with image coordinates $\vec u$. The two points form a 2D-3D correspondence. Figure is from \cite{GVG}.}
+	\label{fig:cameraCoordinateSystem}
+\end{figure}
+
+\paragraph{Calibration matrix}
+A camera calibration matrix K is a linear transformation that converts points in camera coordinate system $\gamma$ into points in image coordinate system $\beta$. It is defined by five parameters \cite{GVG}:
+
+\begin{equation}
+	\text{K} = \begin{bmatrix}
+		k_{11} & k_{12} & k_{13} \\
+		0 & k_{22} & k_{23} \\
+		0 & 0 & 1
+		\end{bmatrix}.
+\end{equation}
+
+They represent focal length, sensor dimensions, origin of the image coordinate system and more.
+
+Our implementation, however, only requires a subset of those parameters. Thus the calibration matrix K can be construced as:
+
+\begin{equation}
+	\text{K} = \begin{bmatrix}
+		f & 0 & w/2 \\
+		0 & f & h/2 \\
+		0 & 0 & 1
+		\end{bmatrix},
+\end{equation}
+
+where $w$ and $h$ are width and height of the camera sensor in pixels. Focal length is also in pixel units.
 
 \section{Multi-camera pose estimation}
 
