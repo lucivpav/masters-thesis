@@ -177,9 +177,7 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item P3P,
-	\item MultiCameraPose and the related theory (Kukelova2016CVPR paper),
-	\item CNN
+	\item CNN,
 	\item camera coordinate system (copy some image from GVG and cite it),
 	\item HoloLens,
 	\item Matterport,
@@ -240,11 +238,17 @@ The computational requirements are missing from the InLoc paper. However, the au
 \label{section:NetVLAD}
 NetVLAD \cite{Arandjelovic16} is a convolutional netural network (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
 
-\section{Multi-camera pose estimation}
-Theory by Kukelova. A particular implementation of GP4Ps/gsP4P is MultiCameraPose \cite{MultiCameraPosePaper}.
-
-\section(P3P)
+\section{P3P}
 \label{section:P3P}
+The P3P problem \cite{RANSAC} is a problem of estimating a calibrated camera pose using at least three 2D-3D correspondences. A calibrated camera is a camera for which we know its calibration matrix (see section \ref{section:cameraCS}). RANSAC \cite{RANSAC} can be used to further improve estimation accuracy, if some of the correspondences are imprecise or incorrect.
+
+\section{Camera coordinate system}
+\label{section:cameraCS}
+
+
+\section{Multi-camera pose estimation}
+
+This work often operates on query images that were taken in a sequence: imagine a person walking around a room and taking a picture every once in a while. Considering the sequential nature of the queries can help us improve localization performance. To achieve this, we need to be able to estimate poses of multiple cameras in the sequence. In general, these cameras are referred to as a rig of cameras. The generalized pose-and-scale problem (GP4Ps/gsP4P), defined in \cite{Kukelova2016CVPR} describes such a problem in general and provides an efficient solution. A particular implementation of the solver, called MultiCameraPose, is provided as an open source software. The project is a result of a recent work \cite{MultiCameraPosePaper}; for my use-case, I had to modify the implementation slightly and it is available at \cite{MultiCameraPose}. The implementation is very fast, computing the pose estimates of a rig with 5 cameras in about 60 milliseconds. A concrete usage of the MultiCameraPose program is described in the Implementation chapter \ref{chapter:implementation}.
 
 \chapter{Dataset}
 \label{chapter:dataset}
