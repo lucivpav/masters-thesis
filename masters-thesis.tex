@@ -177,7 +177,6 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item HoloLens,
 	\item Single view depth estimation,
 	\item Deep depth completion,
 	\item Is this the right place? CVPR 2019 (InLoc enhancement)
@@ -290,6 +289,24 @@ Matterport is a device capable of creating a 3D map of indoor environments. Comp
 Vicon is a stationary system capable of tracking an object's pose with high accuracy \cite{Vicon}. The tracked object, Marker, contains spheres which have a reflexive surface. Vicon is used for reference pose determination in the newly created dataset within this work.
 
 \paragraph{HoloLens}
+HoloLens is a mixed reality device. Mixed reality (MR) is the blending of virtual and real environemnt, such that the user of MR can interact with both of these environments; see \cite{VR_AR_MR_taxonomy} for a difference between augmented reality, virtual reality and mixed reality. HoloLens is a head-worn device capable of mapping the real environment and localizing itself within it \cite{HoloLensEvaluation}. In this thesis, we are making use of 1st generation HoloLens \cite{HoloLens1stGen}, referred to as \emph{HoloLens} for simplicity.
+
+HoloLens contains the following sensors \cite{HoloLensEvaluation} \cite{HoloLens1stGen}:
+
+\begin{itemize}
+	\item main RGB camera,
+	\item 4 environment-understanding grayscale cameras,
+	\item a depth sensor,
+	\item 4 microphones,
+	\item other sensors.
+\end{itemize}
+
+The environment mapping and localization are done directly on the device in real-time in a SLAM \footnote{See \cite{SLAM1}, \cite{SLAM2}, \cite{SLAM3}.} -like manner \cite{HoloLensEvaluation}. In an experiment conducted in \cite{HoloLensEvaluation}, the poses estimated by HoloLens had the following mean accuracy with respect to the ground truth poses:
+
+\begin{itemize}
+	\item 1.6 $\pm$ 0.2 cm translation error,
+	\item 2.2 $\pm$ $0.3\degree$ orientation error.
+\end{itemize}
 
 \chapter{Dataset}
 \label{chapter:dataset}
@@ -316,7 +333,7 @@ All of the query images were taken in this area, so that their reference pose is
 
 The queries in the s10e set have a pixel resolution $4032 \times 3024$. InLoc implementation requires the knowledge of focal length of the camera that was used when taking the query images. I found conflicting information about the S10e's field of view (FoV) online, and the focal length didn't add up. \todo[talk about a similar problem with HL.] I ended up computing the focal length manually with the help of a tripod and a ruler. The focal length turned out to be 3172 pixels. The IDs of query images are sorted in a non-decreasing difficulty, e.g. queries with IDs 1 to 10 were taken such that the camera's direction vector is roughly parallel with the floor. Queries with higher IDs have the camera rotated on a tripod under any direction.
 
-The HoloLens queries have a pixel resolution of $1344 \times 756$ pixels and according to the official documentation, the horizontal FoV is 67\degree. However, looking at the data generated while capturing the sequences, HoloLens provides a cameraProjectionTransform matrix. According to an article, the effective hFoV can be computed as
+The HoloLens queries have a pixel resolution of $1344 \times 756$ pixels and according to the official documentation, the horizontal FoV is 67\degree. However, looking at the data generated while capturing the sequences, HoloLens provides a cameraProjectionTransform matrix. According to an article \todo[source], the effective hFoV can be computed as
 
 \begin{equation}
 	\text{hFoV} = 2*\arctan \left(\frac{1}{\text{cameraProjectionTransform.m11}}\right),
