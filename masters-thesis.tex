@@ -94,12 +94,12 @@
 
 % Abstract in Czech
 \begin{abstract-czech}
-Vizuální lokalizace je často řešená problematika v počítačovém vidění. Typicky chceme určit pózu (polohu a orientaci) fotoaparátu, který pořídil daný RGB snímek. Odhadnutá póza se vztahuje k nějakému námi definovanému souřadnicovému systému. Konkrétně se tento problém řeší ve smíšené realitě v HoloLens. Promítáme zde virtuální objekty to reálného prostoru. Abychom mohli udržet tyto objekty na správném místě, zatímco se uživatel brýlý pohybuje, je potřeba vědět, kde se HoloLens nachází. HoloLens jako takové umí sledovat svou vlastní pózu, ale výsledek není perfektní. Vytvořil jsem novou sadu dat, která obsahuje skeny dvou místností a tři množiny query obrázků. Dvě z nich pochází právě z HoloLens. Obsahem datové sady jsou i referenční pózy fotoaparátu (u některých zatím chybí, ale dají se v případě potřeby vygenerovat). Navrhl jsem nové algoritmy, které kombinují metodu InLoc \cite{taira2018inloc} s daty, co nám dává HoloLens. Má implementace je na sekvenčních obrázcích přesnější, než původní InLoc. Mé metody jsou ale výrazně méně přesné, než lokalizace ze samotných HoloLens. V práci shrnuji mé poznatky, proč vnikají určité chyby související s novými metodami nebo s InLocem. V budoucnu je možné na práci navázat a chyby zredukovat.
+Vizuální lokalizace je často řešená problematika v počítačovém vidění. Typicky chceme určit pózu (polohu a orientaci) fotoaparátu, který pořídil daný RGB snímek. Odhadnutá póza se vztahuje k nějakému námi definovanému souřadnicovému systému. Konkrétně se tento problém řeší ve smíšené realitě v HoloLens. Promítáme zde virtuální objekty to reálného prostoru. Abychom mohli udržet tyto objekty na správném místě, zatímco se uživatel brýlí pohybuje, je potřeba vědět, kde se HoloLens nachází. HoloLens jako takové umí sledovat svou vlastní pózu, ale výsledek není perfektní. Vytvořil jsem novou sadu dat, která obsahuje skeny dvou místností a tři množiny query obrázků. Dvě z nich pochází právě z HoloLens. Obsahem datové sady jsou i referenční pózy fotoaparátu (u některých zatím chybí, ale dají se v případě potřeby vygenerovat). Navrhl jsem nové algoritmy, které kombinují metodu InLoc \cite{taira2018inloc} s daty, co nám dává HoloLens. Má implementace je na sekvenčních obrázcích přesnější, než původní InLoc. Mé metody jsou ale výrazně méně přesné, než lokalizace ze samotných HoloLens. V práci shrnuji mé poznatky, proč vnikají určité chyby související s novými metodami nebo s InLocem. V budoucnu je možné na práci navázat a chyby zredukovat.
 \end{abstract-czech}
 
 % Abstract in English
 \begin{abstract-english}
-Visual localization is a common computer vision poroblem of estimation of the camera pose that took a particular RGB image. The pose is estimated relative to a certain coordinate system. One particular instance of this problem occurs in HoloLens mixed reality. In a mixed reality settings, we are projecting virtual objects into the real world environment. In order to maintain the objects as the user navigates around a room, we need to keep track of the device pose. HoloLens already does this, however there is a room for improvement. A new indoor visualization datasets, consisting of 2 rooms and 3 query sets, has been created. Two of these query sets are sequential images (from HoloLens). Reference poses are also provided (although not for all queries). We have designed new methods that aim to merge InLoc \cite{taira2018inloc} approach to indoor visual localization with the data from HoloLens. My implementation outperformed the original InLoc paper on the task of sequential localization from RGB images. However, our approach turned out to perform significantly worse than the pose estimation from HoloLens itself. I provide an overview of sources of errors in the new and InLoc methods for potential future improvement.
+Visual localization is a common computer vision problem of estimation of the camera pose that took a particular RGB image. The pose is estimated relative to a certain coordinate system. One particular instance of this problem occurs in HoloLens mixed reality. In a mixed reality settings, we are projecting virtual objects into the real world environment. In order to maintain the objects as the user navigates around a room, we need to keep track of the device pose. HoloLens already does this, however there is a room for improvement. A new indoor visualization datasets, consisting of 2 rooms and 3 query sets, has been created. Two of these query sets are sequential images (from HoloLens). Reference poses are also provided (although not for all queries). We have designed new methods that aim to merge InLoc \cite{taira2018inloc} approach to indoor visual localization with the data from HoloLens. My implementation outperformed the original InLoc paper on the task of sequential localization from RGB images. However, our approach turned out to perform significantly worse than the pose estimation from HoloLens itself. I provide an overview of sources of errors in the new and InLoc methods for potential future improvement.
 \end{abstract-english}
 
 % Acknowledgements / Podekovani
@@ -164,7 +164,7 @@ Visual localization is a common computer vision problem where, given an RGB imag
 
 The objectives of this work are as follows. State of the art in indoor localization must be reviewed, in particular the NetVLAD \cite{Arandjelovic16} and InLoc \cite{taira2018inloc} papers. A new indoor dataset based on the InLoc dataset \cite{taira2018inloc} shall be created. The new dataset must also contain query images that were taken in a sequence (as user with HoloLens walks in the room). Make InLoc run on the newly created dataset, by processing the query images in non-sequential fashion. Implement an improvement that takes the HoloLens data into account. One of the improvements should include taking multiple historical camera data into account (InLoc currently only uses a single camera pose, because it does not deal with sequential data). At last, the performance of the newly implemented algorithms shall be evaluated.
 
-This work is organized the following way. Chapter \ref{chapter:literature-review} contains related work on the topic of indoor visual localization. Background that my software and algortihms rely on is also described. The newly acquired dataset is described in Chapter \ref{chapter:dataset}. It contains statistics of the dataset, its structure and how it was created. An implementation of the techniques described here are covered in Chapter \ref{chapter:implementation}. Note that it is only a proof-of-concept implementation, unsuitable for deployment out of the box (just as the InLoc implementation). Chapter \ref{chapter:evaluation} evaluates the newly developed methods and compares them with some baseline methods. Sources of errors are also noted. Finally, the Chapter \ref{chapter:conclusion} is a summary of this work, whether it fullfilled the assignment and possible future work.
+This work is organized the following way. Chapter \ref{chapter:literature-review} contains related work on the topic of indoor visual localization. Background that my software and algorithms rely on is also described. The newly acquired dataset is described in Chapter \ref{chapter:dataset}. It contains statistics of the dataset, its structure and how it was created. An implementation of the techniques described here are covered in Chapter \ref{chapter:implementation}. Note that it is only a proof-of-concept implementation, unsuitable for deployment out of the box (just as the InLoc implementation). Chapter \ref{chapter:evaluation} evaluates the newly developed methods and compares them with some baseline methods. Sources of errors are also noted. Finally, the Chapter \ref{chapter:conclusion} is a summary of this work, whether it fulfilled the assignment and possible future work.
 
 \chapter{Literature review}
 \label{chapter:literature-review}
@@ -184,14 +184,14 @@ InLoc operates on top of an InLoc dataset. The dataset contains:
 	\item query-cutout similarity matrix (known as score).
 \end{itemize}
 
-The dataset has been acquired at the Washington University in St. Louis. Five floors (at two buildings) were used to build the dataset. The InLoc method assumes existence of a 3D map - which is represented by the RGBD cutouts. The cutout RGBD images are a result of perpesctive view extraction from RGBD panorama images. The panorama images were captured accross all five floors using a high-end Faro 3D scanner. The query RGB images represent the images for which we aim to determine camera pose. These were taken using a smartphone camera with no depth information. Queries were taken only at two floors; the other floors serve as a confusion for InLoc.
+The dataset has been acquired at the Washington University in St. Louis. Five floors (at two buildings) were used to build the dataset. The InLoc method assumes existence of a 3D map - which is represented by the RGBD cutouts. The cutout RGBD images are a result of perspective view extraction from RGBD panorama images. The panorama images were captured across all five floors using a high-end Faro 3D scanner. The query RGB images represent the images for which we aim to determine camera pose. These were taken using a smartphone camera with no depth information. Queries were taken only at two floors; the other floors serve as a confusion for InLoc.
 
-The query photos were taken at a different time of the day, to take illimunation and interior changes into account. The query reference poses are needed, to attest how well InLoc performs on the pose estimation task. These reference poses were determined using (taken from \cite{taira2018inloc}):
+The query photos were taken at a different time of the day, to take illumination and interior changes into account. The query reference poses are needed, to attest how well InLoc performs on the pose estimation task. These reference poses were determined using (taken from \cite{taira2018inloc}):
 
 \begin{enumerate}
 	\item Selection of the visually most similar database images.
 	\item Automatic matching of query images to selected database images.
-	\item Computing the query camera pose and visually veri- fying the reprojection.
+	\item Computing the query camera pose and visually verifying the reprojection.
 	\item Manual matching of difficult queries to selected database images.
 	\item Quantitative and visual inspection.
 \end{enumerate}
@@ -219,7 +219,7 @@ The computational requirements are missing from the InLoc paper. However, the au
 
 \section{NetVLAD}
 \label{section:NetVLAD}
-NetVLAD \cite{Arandjelovic16} is a convolutional netural network \footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
+NetVLAD \cite{Arandjelovic16} is a convolutional neural network \footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
 
 \section{P3P}
 \label{section:P3P}
@@ -250,7 +250,7 @@ A camera calibration matrix K is a linear transformation that converts points in
 
 They represent focal length, sensor dimensions, origin of the image coordinate system and more.
 
-Our implementation, however, only requires a subset of those parameters. Thus the calibration matrix K can be construced as:
+Our implementation, however, only requires a subset of those parameters. Thus the calibration matrix K can be constructed as:
 
 \begin{equation}
 	\text{K} = \begin{bmatrix}
@@ -267,7 +267,7 @@ where $w$ and $h$ are width and height of the camera sensor in pixels. Focal len
 This work often operates on query images that were taken in a sequence: imagine a person walking around a room and taking a picture every once in a while. Considering the sequential nature of the queries can help us improve localization performance. To achieve this, we need to be able to estimate poses of multiple cameras in the sequence. In general, these cameras are referred to as a rig of cameras. The generalized pose-and-scale problem (GP4Ps/gsP4P), defined in \cite{Kukelova2016CVPR} describes such a problem in general and provides an efficient solution. A particular implementation of the solver, called MultiCameraPose, is provided as an open source software. The project is a result of a recent work \cite{MultiCameraPosePaper}; for my use-case, I had to modify the implementation slightly and it is available at \cite{MultiCameraPose}. The implementation is very fast, computing the pose estimates of a rig with 5 cameras in about 60 milliseconds. A concrete usage of the MultiCameraPose program is described in the Implementation chapter \ref{chapter:implementation}.
 
 \section{Procrustes analysis}
-Give two sets of points in $n$-dimensional space, we wish to find an (approximate) transformation beetween them. Assuming the two points represent the same or similar points, but are wrt a different coordinate system; procrustes analysis \cite{procrustes} finds the linear transformation. Procrustes minimizes the sum of squared errors of points, after both sets of points are represented in the same coordinate system using a transformation being considered. We will be using an implementation in MATLAB. The function is called \emph{procrustes} and is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
+Give two sets of points in $n$-dimensional space, we wish to find an (approximate) transformation between them. Assuming the two points represent the same or similar points, but are with respect to (wrt) a different coordinate system; procrustes analysis \cite{procrustes} finds the linear transformation. Procrustes minimizes the sum of squared errors of points, after both sets of points are represented in the same coordinate system using a transformation being considered. We will be using an implementation in MATLAB. The function is called \emph{procrustes} and is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
 
 \section{Devices used}
 \paragraph{Matterport}
@@ -277,7 +277,7 @@ Matterport is a device capable of creating a 3D map of indoor environments. Comp
 Vicon is a stationary system capable of tracking an object's pose with high accuracy \cite{Vicon}. The tracked object, Marker, contains spheres which have a reflexive surface. Vicon is used for reference pose determination in the newly created dataset within this work.
 
 \paragraph{HoloLens}
-HoloLens is a mixed reality device. Mixed reality (MR) is the blending of virtual and real environemnt, such that the user of MR can interact with both of these environments; see \cite{VR_AR_MR_taxonomy} for a difference between augmented reality, virtual reality and mixed reality. HoloLens is a head-worn device capable of mapping the real environment and localizing itself within it \cite{HoloLensEvaluation}. In this thesis, we are making use of 1st generation HoloLens \cite{HoloLens1stGen}, referred to as \emph{HoloLens} for simplicity.
+HoloLens is a mixed reality device. Mixed reality (MR) is the blending of virtual and real environment, such that the user of MR can interact with both of these environments; see \cite{VR_AR_MR_taxonomy} for a difference between augmented reality, virtual reality and mixed reality. HoloLens is a head-worn device capable of mapping the real environment and localizing itself within it \cite{HoloLensEvaluation}. In this thesis, we are making use of 1st generation HoloLens \cite{HoloLens1stGen}, referred to as \emph{HoloLens} for simplicity.
 
 HoloLens contains the following sensors \cite{HoloLensEvaluation} \cite{HoloLens1stGen}:
 
@@ -309,7 +309,7 @@ The paper \cite{DeepDepthCompletion} also provides a solution to the problem of 
 In the paper \cite{HoloLensMarkerBasedLocalization}, authors suggest a method for improving the localization capability of 1st generation HoloLens. They do so by using placing markers (2D QR code-like objects) across the environment. The method then allows them to accurately place large virtual models into the environment within a spatial accuracy of few centimeters \cite{HoloLensMarkerBasedLocalization}. The problem of this approach is that it requires the knowledge of the location of the markers with respect to some model coordinate system.
 
 \section{Augmenting Microsoft’s HoloLens with vuforia tracking for neuronavigation}
-Paper \cite{HoloLensVuforia} describes a significant improvement of HoloLens accuracy in a medical scenario. It does so by using proprietary Vuforia SDK. The priprietary aspect of it is, however, not ideal for open-source projects.
+Paper \cite{HoloLensVuforia} describes a significant improvement of HoloLens accuracy in a medical scenario. It does so by using proprietary Vuforia SDK. The proprietary aspect of it is, however, not ideal for open-source projects.
 
 \section{Magnetic field and Visual Sensors for Indoor Localization}
 Paper \cite{MagneticAndVisualIndoorLocalization} shows how to improve localization accuracy by using both visual sensors and a magnetometer. The magnetometer is only present in 2nd generation HoloLens, which we do not have access to. We could use a custom sensor and attach it to the device, however.
@@ -519,7 +519,7 @@ The resulting reference poses are not perfectly matching ground truth poses, whi
 	\item 2.2 $\pm$ $0.3\degree$ orientation error.
 \end{itemize}
 
-Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes \ref{section:procrustes}, which finds a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we would have ground truth estimates.
+Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown HoloLens coordinate system, I first need to convert those poses to be wrt World. To achieve this, I use procrustes \cite{procrustes}, which finds a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we would have ground truth estimates.
 
 Unfortunately, there was another hidden problem that had to be dealt with, prior the reference vs ground truth pose errors could be computed. The problem is that the poses provided from HoloLens do not correspond to the query they are associated with in the data. It turns out the poses are delayed. To make matters worse, both the translation and orientation that are used to construct the camera pose are delayed by a different amount! To resolve this issue, the pose from HoloLens associated to a query is computed to be based on translation and orientation data, that comes from the future queries. I found that the best results were achieved with the following delays:
 
@@ -668,7 +668,7 @@ In the MultiCameraPose approach, the segments have length k>1. We need to decide
 
 The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. The second issue is described in more detail in subsection \ref{subsection:hard-top-pick-top-combinations}.
 
-Another problem not considered in the reference InLoc implementation is related to the different aspect ratios of HoloLens queries and cutouts. Recall that HoloLens query images have a $1344 \times 758$ pixel resolution, whereas the cutouts have resolution of $1600 \times 1200$. This makes the HoloLens queries have $16:9$ aspect ratio and the cutouts have a $4:3$ aspect ratio. Why is that a problem? The methods used in geometric verification (GV) would break - the tentative correspondenes would not be computed properly. Therefore, we need to provide the GV step with the same aspect ratio (and also the same resolution by scaling). Of course, if we rescale the query image to match the cutout image dimensions, we will deform the query view. Therefore my solution is to add padding \footnote{another approach would be to crop the query image to achieve the same aspect ratio; then rescale without deformation. Of course, the problem with this approach is that we would lower the horizontal field of view, which would mean less RGB data to work with in the transformed query image.} on top and bottom of the same image; where the added pixels share the same constant value. The padding is added so that the aspect ratio matches the cutout aspect ratio. Then we can also rescale without deformation. In the pose estimation estep, we have to undo the process on the query inliers, so that they correspond with the properties of the camera that took those images.
+Another problem not considered in the reference InLoc implementation is related to the different aspect ratios of HoloLens queries and cutouts. Recall that HoloLens query images have a $1344 \times 758$ pixel resolution, whereas the cutouts have resolution of $1600 \times 1200$. This makes the HoloLens queries have $16:9$ aspect ratio and the cutouts have a $4:3$ aspect ratio. Why is that a problem? The methods used in geometric verification (GV) would break - the tentative correspondences would not be computed properly. Therefore, we need to provide the GV step with the same aspect ratio (and also the same resolution by scaling). Of course, if we rescale the query image to match the cutout image dimensions, we will deform the query view. Therefore my solution is to add padding \footnote{another approach would be to crop the query image to achieve the same aspect ratio; then rescale without deformation. Of course, the problem with this approach is that we would lower the horizontal field of view, which would mean less RGB data to work with in the transformed query image.} on top and bottom of the same image; where the added pixels share the same constant value. The padding is added so that the aspect ratio matches the cutout aspect ratio. Then we can also rescale without deformation. In the pose estimation step, we have to undo the process on the query inliers, so that they correspond with the properties of the camera that took those images.
 
 \section{Structure: dataset (repo), demo, dataset, MCP, ...}
 \todo[title; add one line description on e.g. P3PvsMCP, PEstabilityCheck]
@@ -733,7 +733,7 @@ Another problem not considered in the reference InLoc implementation is related 
 		return ImgList
 
 	def extractFeatures(image):
-		image = neturalNet.averagingImageNormalization(image)
+		image = neuralNet.averagingImageNormalization(image)
 		allLayerResults = neuralNet.forward(image)
 		features = allLLayerResults # we need features from different layers
 		return features
@@ -762,7 +762,7 @@ Another problem not considered in the reference InLoc implementation is related 
 			features.append(thisQueryFeatures)
 		return features
 
-	def coarseToFineMatching(queryFeatures, cutotuFeatures):
+	def coarseToFineMatching(queryFeatures, cutoutFeatures):
 		queryCoarseFeats = getFeaturesAtLayer(queryFeatures, coarseLayer)
 		cutoutCoarseFeats = getFeaturesAtLayer(cutoutFeatures, coarseLayer)
 		queryFineFeats = getFeaturesAtLayer(queryFeatures, fineLayer)
@@ -807,17 +807,17 @@ Another problem not considered in the reference InLoc implementation is related 
 	def poseEstimation(ImgList):
 		features = buildFeatures(ImgList)
 		ImgList = geometricVerification(ImgList, features)
-		treatQueriesSequentually = mode == 'MultiCameraPose'
-		if not treatQueriesSequentually:
+		treatQueriesSequentially = mode == 'MultiCameraPose'
+		if not treatQueriesSequentially:
 			desiredSegmentLength = 1
 		ImgListSequential = keepPrimaryQueriesOnly(ImgList)
 		for i in range(len(ImgListSequential)):
 			actualSegmentLength = getActualSegmentLength(i, desiredSegmentLength, ImgListSequential)
 			combinations = permuteIndices([0:topGV], actualSegmentLength)
-			scores = computeScoresForSegmentCombinations('cummulative-sum')
+			scores = computeScoresForSegmentCombinations('cumulative-sum')
 			ind = findBestCombinations(scores, topPE)
 			updateTopCutoutsAnsScoresInTheSegment(ImgListSequential[i], scores, ind)
-		if treatQueriesSequentually:
+		if treatQueriesSequentially:
 			posesFromHoloLens = getPosesFromHoloLens()
 		else:
 			posesFromHoloLens = list()
@@ -913,7 +913,7 @@ Note that in the current actual source code, I do not have the 'non-sequential' 
 \label{chapter:evaluation}
 
 \section{Experiment design}
-Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by contant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The visualizations are used to better understand the sources of errors, which are described in section \ref{section:sources-of-errors}.
+Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by constant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The visualizations are used to better understand the sources of errors, which are described in section \ref{section:sources-of-errors}.
 
 In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Another metric is to compute statistics on the translation and orientation errors. For this, the mean, median, and standard deviation (std) were chosen.
 
@@ -1189,7 +1189,7 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 \emph{This was observed on MultiCameraPose, k=2 experiment}. This results in InLocCIIRC completely being lost (returning NaN estimated pose), thus limiting the number of correctly localized queries given translation/orientation thresholds. In this scenario, the queries in the segment prior to the current query being processed have 2D-3D correspondences (found using geometric verification). Furthermore, those queries look meaningful upon manual inspection. However, we are interested in the current query, which does not have any correspondences. MultiCameraPose does not support a rig containing a camera for which there are no correspondences. Of course, we cannot use P3P on the current query, without knowing the query-cutout correspondences. Potential solution to this problem is: use the last estimated non-NaN pose in a sequence of queries ending with the current query. Limit the number as to how far into history to go. I did not have time to implement it. Known affected queries in HoloLens1 query set: 88, 122, 148, 231, 233, 236, 315, 319, 341. Why did we find no correspondences at those affected queries? For query 122 it is understandable - there was a very fast movement. For query 174 - it is somehow difficult, even the preceding queries 170-173 were hard to estimate (resulting poses were not NaN, but the errors from reference poses were high). However, for some affected queries, namely query 88, 148 and 231, a problem was discovered. The next subsection describes the problem.
 
 \subsection{Bad input score matrix}
-\emph{This was observed on non-sequential (k=1) and MultiCameraPose, k=2 experiments}. Known affected queries: 88, 148, 231\footnote{This query is somewhat blurry, which may also have an inpact.}. This issue probably affects more queries than is currently known by me. It causes no 2D-3D corresponences to be found. It is a problem, that currently causes NaN pose estimate for the affected queries. But it can also lower estimation accuracy for the sucessor queries, if the affected query is considered within its segment. This is because currently, P3P is used (non-sequential pose estimation), if some of the queries in a segment have no correspondences. For those 3 known affected queries, investigation revealed that the chosen cutout (i.e. the top one in pose verification output) from the previous query was not even considered in the top \topRetrieval{} cutouts in the pose estimation step. The reason the previous query's chosen cutout was picked is that the queries have not changed much during the two frames. The score for those cutouts was:
+\emph{This was observed on non-sequential (k=1) and MultiCameraPose, k=2 experiments}. Known affected queries: 88, 148, 231\footnote{This query is somewhat blurry, which may also have an impact.}. This issue probably affects more queries than is currently known by me. It causes no 2D-3D correspondences to be found. It is a problem, that currently causes NaN pose estimate for the affected queries. But it can also lower estimation accuracy for the successor queries, if the affected query is considered within its segment. This is because currently, P3P is used (non-sequential pose estimation), if some of the queries in a segment have no correspondences. For those 3 known affected queries, investigation revealed that the chosen cutout (i.e. the top one in pose verification output) from the previous query was not even considered in the top \topRetrieval{} cutouts in the pose estimation step. The reason the previous query's chosen cutout was picked is that the queries have not changed much during the two frames. The score for those cutouts was:
 
 \begin{table}[htb!]
 	\centering
