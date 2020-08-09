@@ -177,7 +177,6 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item Deep depth completion,
 	\item more?
 \end{itemize}
 
@@ -311,6 +310,9 @@ The paper called \emph{Is This the Right Place? Geometric-Semantic Pose Verifica
 
 \section{Single View Depth Estimation}
 The authors of \cite{SingleViewDepthEstimation} provide a method for learning a convolutional neural network (CNN). The network's task is to, given an input RGB image, estimate the depth of each pixel. The impact of their work is that they managed to do so in unsupervised fashion; eliminating the cost of manually labelling the data \cite{SingleViewDepthEstimation}. The results of that paper could be useful for us, as we could use it to create depth data to improve localization accuracy. However, HoloLens already includes a depth sensor \cite{HoloLensEvaluation}. Although the sensor provides a limited field of view (FoV), it shall be first tested, whether the sensor data are sufficient for our purposes.
+
+\section{Deep Depth Completion}
+The paper \cite{DeepDepthCompletion} also provides a solution to the problem of depth estimation from a single RGB image. However, it makes use of the device's depth sensor to build upon it and improve its accuracy. The problem with many depth cameras is that they often fail to sense depth for shiny, bright, transparent, and distant surfaces \cite{DeepDepthCompletion}. This work, while promising, shall only be considered after we find that the HoloLens depth camera is not sufficient for our purposes.
 
 \chapter{Dataset}
 \label{chapter:dataset}
