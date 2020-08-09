@@ -139,21 +139,10 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 \chapter{TODO}
 
 \begin{itemize}
-    \item Check the assignment whether it corresponds to the plan below.
-    \item Make an outline.
-    \item Suggest a method for localization from a image sequences.
-    \item Evaluate and demonstrate it.
-    \item Get queries for B-670, inspect the data, localize, evaluate.
-    \item Localization of sequences will be based on predicting the next view from the pose obtained by localizing an initial segment of the sequence and attaching the next view(s) using the relative pose between the views provided by HoloLens pose tracking. 
-    \item Level-1: localize initial segment of length 1, evaluate, wait or this to work, ...
-    \item Evaluate w.r.t. to the Level-0 (baseline) obtained by localizing just one image without any verification by predicting the next views. Introduce another label = not-localized.
-    \item Level-2: localize initial segments of length > 1. How t do it? Use the maximal 1st/2nd NN ratio to select the best image in the indexing phase. Next use the sequence as a generalized camera and replace p3p with GP6P. 
-	\item Level-3: Combine images before image indexing. How to do it? We don't know as of now.
-	\item Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy.
-	\item The ctuthesis style is kind of ugly. Consider removal of blank page after chapter (is it on purpose?). Remove "F3" on the top page.
-	\item Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).
-	\item Time and space complexity. Consider asymptotic complexity too.
-	\item Use more of "Our", "We" than "My" and "I"
+	\item \todo[Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy].
+	\item \todo[The ctuthesis style is kind of ugly. Remove "F3" on the top page.]
+	\item \todo[Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).]
+	\item \todo[Use more of "Our", "We" than "My" and "I"]
 \end{itemize}
 
 %\part{Your Party}
@@ -1218,6 +1207,38 @@ Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by th
 \subsection{Geometric verification fails}
 \label{subsection:GV-fails}
 Our approach produced a completely wrong pose estimate in Query 40 of the s10e query set. Upon debugging the issue, it turns out that there actually were several viable cutouts, similar to the query image. One would expect the correspondences to be found there. However, the geometric verification step (GV) found zero correspondences. This issue shall be investigated further.
+
+\section{Computational complexity}
+The redesigned and improved pose estimation pipeline is a fairly complex piece of software. It is hard to compute the asymptotic complexity of processing a query image or a set of query images. The computational requirements are missing from the InLoc paper \cite{taira2018inloc}. However, the authors mention the need for about 14 GB RAM in their experiment, to hold the image descriptors in memory.
+
+Table \ref{tab:emperical-complexity} shows the following processing times I have measured. They are not necessarily accurate, as sometimes, the experiment was re-run while keeping some previously computed data.
+
+\begin{table}[htb!]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Experiment & Step & Very rough estimate \\
+		\hline
+		s10e & GPU & 11 min \\
+		s10e & CPU & 1h 46 min \\
+		\hline
+		HoloLens1-k1 & GPU & 11 min \\
+		HoloLens1-k1 & CPU & about 20 hours \\
+		\hline
+		HoloLens1-k5-MCP & GPU & 10 min \\
+		HoloLens1-k5-MCP & CPU & about 48 hours \\
+		\hline
+		HoloLens1-k4-sequentialPV & GPU & 5 min \\
+		HoloLens1-k4-sequentialPV & CPU & about 40 hours \\
+		\hline
+	\end{tabular}
+	\caption{The experiment is split into two parts; the first part runs on a GPU (feature extraction) and the rest runs on a CPU. For the CPU instance, a machine with 45 threads and K8 2000 CPUs (or similar) was used. GPU instance used a single NVIDIA 1080Ti GPU with 8 threads.}
+	\label{tab:emperical-complexity}
+\end{table}
+
+The recommended amount of RAM for re-running the experiments is 90 GB.
+
+\todo[preprocessing: time of: Build features then scores].
 
 \chapter{Conclusion}
 \label{chapter:conclusion}
