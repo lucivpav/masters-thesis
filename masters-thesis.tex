@@ -179,7 +179,6 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 	\item Relevant work with regards to HoloLens or indoor localization,
 	\item Single view depth estimation,
 	\item Deep depth completion,
-	\item Is this the right place? CVPR 2019 (InLoc enhancement)
 	\item more?
 \end{itemize}
 
@@ -307,6 +306,9 @@ The environment mapping and localization are done directly on the device in real
 	\item 1.6 $\pm$ 0.2 cm translation error,
 	\item 2.2 $\pm$ $0.3\degree$ orientation error.
 \end{itemize}
+
+\section{InLoc improvement}
+The paper called \emph{Is This the Right Place? Geometric-Semantic Pose Verification for Indoor Visual Localization} \cite{IsThisTheRightPlace} suggests an improvement to the original InLoc. It focuses on significantly improving the the pose verification step. As of \today, neither the source code nor the data have been published and there exists no other open-source implementation to my knowledge. Implementing the methods in this paper would be very time consuming. Thus, the results of this paper are not used in our work.
 
 \chapter{Dataset}
 \label{chapter:dataset}
@@ -1186,6 +1188,8 @@ I have created a new dataset suitable for indoor visual localization either on s
 
 \section{Future work}
 Improve the accuracy of the MultiCameraPose method by fixing known sources of errors. Spend extra time to analyze why there are inaccurate poses for certain queries and suggest an enhancement. The work on the HoloLens2 sequence should be continued - we need to compute reference poses. The code is there, but currently we are missing more manually set-up 2D-3D correspondences. Also, the work on synthetic dataset generation using Habitat AI shall be continued. Although it cannot give us data from HoloLens tracking, it can be used to generate new indoor localization datasets, without the need for expensive equipment (such as a Matterport scanner). There are extra parameters such as setting up the cutout horizontal field of view, \todo[dslevel], MultiCameraPose software \cite{MultiCameraPose} parameters and more. The accuracy of the reference poses wrt ground truth poses shall be also improved.
+
+The paper \cite{IsThisTheRightPlace} provides an improvement of the InLoc pose verification step. Once a reference implementation is available, I recommend incorporating the changes into our implementation.
 
 \appendix
 
