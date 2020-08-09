@@ -177,7 +177,6 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 \todo[]:
 \begin{itemize}
 	\item Relevant work with regards to HoloLens or indoor localization,
-	\item Single view depth estimation,
 	\item Deep depth completion,
 	\item more?
 \end{itemize}
@@ -308,7 +307,10 @@ The environment mapping and localization are done directly on the device in real
 \end{itemize}
 
 \section{InLoc improvement}
-The paper called \emph{Is This the Right Place? Geometric-Semantic Pose Verification for Indoor Visual Localization} \cite{IsThisTheRightPlace} suggests an improvement to the original InLoc. It focuses on significantly improving the the pose verification step. As of \today, neither the source code nor the data have been published and there exists no other open-source implementation to my knowledge. Implementing the methods in this paper would be very time consuming. Thus, the results of this paper are not used in our work.
+The paper called \emph{Is This the Right Place? Geometric-Semantic Pose Verification for Indoor Visual Localization} \cite{IsThisTheRightPlace} suggests an improvement to the original InLoc. It focuses on significantly improving the the pose verification step. Neither the source code nor the data have been published as of August 9, 2020; and there exists no other open-source implementation to my knowledge. Implementing the methods in this paper would be very time consuming. Thus, the results of this paper are not used in our work.
+
+\section{Single View Depth Estimation}
+The authors of \cite{SingleViewDepthEstimation} provide a method for learning a convolutional neural network (CNN). The network's task is to, given an input RGB image, estimate the depth of each pixel. The impact of their work is that they managed to do so in unsupervised fashion; eliminating the cost of manually labelling the data \cite{SingleViewDepthEstimation}. The results of that paper could be useful for us, as we could use it to create depth data to improve localization accuracy. However, HoloLens already includes a depth sensor \cite{HoloLensEvaluation}. Although the sensor provides a limited field of view (FoV), it shall be first tested, whether the sensor data are sufficient for our purposes.
 
 \chapter{Dataset}
 \label{chapter:dataset}
