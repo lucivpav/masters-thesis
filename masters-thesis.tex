@@ -174,11 +174,8 @@ This work is organized the following way. Chapter \ref{chapter:literature-review
 
 \chapter{Literature review}
 \label{chapter:literature-review}
-\todo[]:
-\begin{itemize}
-	\item Relevant work with regards to HoloLens or indoor localization,
-	\item more?
-\end{itemize}
+
+This chapter provides a review of relevant work. It also provides a theoretical or technical background on topics we are dealing with within this thesis.
 
 \section{InLoc}
 InLoc \cite{taira2018inloc} a powerful method (state-of-the-art in 2018) for indoor visual localization. All the newly developed algorithms in this work use InLoc or its modification at its core. Not necessarily because there is no better method out there, but because it is the topic of this thesis (and the thesis supervisor is a co-author of the InLoc paper, which is beneficial for getting familiar with the method quickly). To understand the methods developed in this work better, it is useful to learn about InLoc first.
@@ -313,6 +310,21 @@ The authors of \cite{SingleViewDepthEstimation} provide a method for learning a 
 
 \section{Deep Depth Completion}
 The paper \cite{DeepDepthCompletion} also provides a solution to the problem of depth estimation from a single RGB image. However, it makes use of the device's depth sensor to build upon it and improve its accuracy. The problem with many depth cameras is that they often fail to sense depth for shiny, bright, transparent, and distant surfaces \cite{DeepDepthCompletion}. This work, while promising, shall only be considered after we find that the HoloLens depth camera is not sufficient for our purposes.
+
+\section{Marker-based HoloLens localization}
+In the paper \cite{HoloLensMarkerBasedLocalization}, authors suggest a method for improving the localization capability of 1st generation HoloLens. They do so by using placing markers (2D QR code-like objects) across the environment. The method then allows them to accurately place large virtual models into the environment within a spatial accuracy of few centimeters \cite{HoloLensMarkerBasedLocalization}. The problem of this approach is that it requires the knowledge of the location of the markers with respect to some model coordinate system.
+
+\section{Augmenting Microsoft’s HoloLens with vuforia tracking for neuronavigation}
+Paper \cite{HoloLensVuforia} describes a significant improvement of HoloLens accuracy in a medical scenario. It does so by using proprietary Vuforia SDK. The priprietary aspect of it is, however, not ideal for open-source projects.
+
+\section{Magnetic field and Visual Sensors for Indoor Localization}
+Paper \cite{MagneticAndVisualIndoorLocalization} shows how to improve localization accuracy by using both visual sensors and a magnetometer. The magnetometer is only present in 2nd generation HoloLens, which we do not have access to. We could use a custom sensor and attach it to the device, however.
+
+\section{Visual Indoor Localization in Known Environments}
+The article \cite{VisualIndoorLocalizationInKnownEnvironments} suggests a different approach from InLoc to tackle the indoor localization problem. Instead of constructing a 3D model of the environment in the first stage, visual features are detected in a video sequence and SURF features \cite{SURF} are extracted. During the localization the query frames are matched to frames in the reference video sequence \cite{VisualIndoorLocalizationInKnownEnvironments}. Of course, InLoc is designed to work on a (non-sequential) set of query images, thus this paper may be worth considering when implementing an improvement of HoloLens localization.
+
+\section{Multi-sensor-based Indoor Localization System}
+The authors of \cite{MutliSensorLocalization} propose a method for robust indoor localization integrating multiple sensors and a visual localization from a single RGB camera. Promising results are shown, but I was unable to find a reference implementation. Creating my own based on the paper is very time consuming.
 
 \chapter{Dataset}
 \label{chapter:dataset}
