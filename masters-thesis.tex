@@ -140,7 +140,6 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 \begin{itemize}
 	\item \todo[Zadani ma byt umistene jinde, viz email z 14.7.2020. Fyzicka verze ma obsahovat take podpisy].
 	\item \todo[The ctuthesis style is kind of ugly. Remove "F3" on the top page.]
-	\item \todo[Mention what I have tried but haven't finished - Habitat (for synthetic datasets), HoloLens sequence \#2 evaluation).]
 	\item \todo[Use more of "Our", "We" than "My" and "I"]
 \end{itemize}
 
@@ -610,6 +609,23 @@ The scanned rooms contain a couple of types of objects that can confuse the Matt
 	\caption{Handling of reflective surfaces in the Matterport Capture app. The options are: Default, Window, Mirror. Best results were obtained using the values in this table.}
 	\label{tab:matterport-reflective-surfaces}
 \end{table}
+
+\section{Habitat}
+We provide an (incomplete) tool for generating synthetic datasets in InLoc dataset-like format. The tool is a modification of the Habitat AI platform \cite{habitat19iccv}. It currently supports creation of sequential query sets in digitalized environemnts, such as the Matterport3D dataset \cite{Matterport3D} and our InLocCIIRC dataset. The implementation is available at \cite{HabitatFork}. It can be used for creation of large datasets (for evaluation of indoor localization methods) without an expensive 3D scanning equipment. However, evaluating an improved HoloLens tracking accuracy is not very meaningful here, as the data from HoloLens would need to be simulated.
+
+\subsection{Usage}
+\begin{enumerate}
+	\item Navigate to \textbf{habitat-api/examples/capture\_sequence.py}.
+	\item Choose an environment in the \textbf{habitat-api/configs/datasets/pointnav/} folder.
+	\item Adjust the \textbf{environmentConfigPath} variable to the selected environment.
+	\item Adjust the \textbf{outputPath} variable.
+	\item Run the script.
+	\item Navigate around the environment using \textbf{WASD} and arrow keys.
+	\item After each movement, a query image is saved and its pose within that environment stored.
+	\item Press \textbf{F} to exit.
+\end{enumerate}
+
+A future work could add support for the creation of the panorama/cutout images.
 
 \chapter{Implementation}
 \label{chapter:implementation}
