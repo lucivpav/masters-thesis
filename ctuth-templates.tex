@@ -29,38 +29,18 @@
 		\\
 		\vspace*{3ex}
 
-		% A table containing: faculty number, faculty and deparment name
-		\begin{tabular}{@{}l@{\hspace*{5em}}l@{}}
-%			\begin{tabular}[c]{@{}l@{}}
-			\raisebox{-8pt}{
-			\color{ctubluetext}\fontsize{32.7}{32.7}\selectfont
-			\setbox0\hbox{\smash{\ctufield{facultynum}}\vphantom{X}}
-			\ifdim\wd0>2em \scalebox{0.9}[1]{\textls[-50]{\smash{\ctufield{facultynum}}\vphantom{X}}}\else\box0\fi
-			}
-%			\end{tabular}
-		&
-			\begin{tabular}[c]{@{}l@{}}\rlap{\ctufield[title]{faculty}}\\[2pt]\ctufield[title]{department}\end{tabular}
-		\end{tabular}\par
-		%
-		% The document type
-		{\ctufield[title]{doctype}\par}
-		%
-		\vspace*{3ex}
-		%
+		{\ctufield[title]{faculty}\par}
+		\vspace*{-3ex}
+		{\ctufield[title]{department}\par}
 		\vspace{8ex plus 1fill}
-		%
+		{\ctufield[title]{doctype}\par}
+		\vspace*{5ex}
 		% The title, in two languages
 		{\LARGE\color{ctubluetext}
 		\ctufield[title]{title}
 		\par}
 		%
-		\vspace{3ex}
-		%
-		{\Large\color{ctubluetext}
-		\ctufield[title]{subtitle}
-		\par}
-		%
-		\vspace*{8ex}
+		\vspace*{5ex}
 		%
 		% The author
 		{\Large
@@ -72,6 +52,7 @@
 		% The "metadata": supervisor, field of study, month and year
 		\parskip 1pt
 		\ctuiffield*{supervisor}{\supervisorname :~{\frenchspacing\ctufield{supervisor}}\par}{}
+		\vspace{5ex}
 		\ctuiffield*{supervisor-specialist}{\supervisorspecialistname :~{\frenchspacing\ctufield{supervisor-specialist}}\par}{}
 		\ctuiffield*[title]{fieldofstudy}{\fieldofstudyname :~\ctufield[title]{fieldofstudy}\par}{}
 		\ctuiffield*[title]{subfieldofstudy}{\subfieldofstudyname :~\ctufield[title]{subfieldofstudy}\par}{}
