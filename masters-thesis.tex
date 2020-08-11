@@ -1084,9 +1084,9 @@ The MATLAB function is present at \textbf{InLocCIIRC\_utils/multiCameraPose/ \al
 		\hline
 		queryInd & $n \times 1$ integer & The IDs of the queries we are processing. \\
 		\hline
-		allCorrespondences2D & $n \times 1$ cell array & \makecell{Each element contains the \\ 2D query correspondences. \\ \todo[in what format?]} \\
+		allCorrespondences2D & $n \times 1$ cell array & \makecell{Each element contains the \\ 2D query correspondences. \\ Each element is a $2 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
 		\hline
-		allCorrespondences3D & $n \times 1$ cell array & \makecell{Each element contains the \\ 3D cutout correspondences. \\ \todo[in what format?]} \\
+		allCorrespondences3D & $n \times 1$ cell array & \makecell{Each element contains the \\ 3D cutout correspondences. \\ Each element is a $3 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
 		\hline
 		inlierThreshold & double & Unused; not implemented. \\
 		\hline
