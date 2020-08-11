@@ -1451,9 +1451,9 @@ Table \ref{tab:emperical-complexity} shows the following processing times I have
 	\label{tab:emperical-complexity}
 \end{table}
 
-The recommended amount of RAM for re-running the experiments is 90 GB.
+The preprocessing step shall also be taken into account. It takes about 20 minutes to create the score matrix for an s10e query set. It is done by executing \textbf{buildFeatures.m} followed by \textbf{buildScores.m}. The same task takes 22 minutes on the HoloLens1 query set. Note that both tasks share the same number of cutouts that require processing in \textbf{buildFeatures.m}.
 
-\todo[preprocessing: time of: Build features then scores].
+The recommended amount of RAM for re-running the experiments is 90 GB.
 
 \chapter{Conclusion}
 \label{chapter:conclusion}
