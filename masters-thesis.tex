@@ -89,6 +89,8 @@
 \newcommand{\code}[1]{{\ttfamily #1%
 }}
 
+\newcommend{\TP}[1]{{\color{blue}#1}}
+
 \newcommand{\topRetrieval}{100} % ht_retrieval output
 \newcommand{\topGV}{10} % number of cutout candidates for each query
 \newcommand{\topPE}{10} % PE output (number of candidate poses for each query)
@@ -150,6 +152,8 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 \chapter{Introduction}
 
 Visual localization is a common computer vision problem where, given an RGB image, we want to estimate the camera pose. Such a camera pose can be specified by 6 parameters - 3 of which describe its position in space and the other 3 represent its orientation in the space. In case of outdoor visual localization, the problem can be simplified by making use of GPS for approximate position localization. Visual localization is a problem that also needs to be addressed indoors, however. It has use cases in e.g. Augmented and Mixed Reality applications. Of course, the GPS signal is unusable in a building. In this thesis, I am going to focus on indoor visual localization with HoloLens. HoloLens is a mixed reality device; providing a powerful tracking of the camera as user navigates around a room. The accuracy is already high, however the idea of this thesis is to improve it further. Imagine a use case where we place virtual objects into the mixed reality. As user navigates around the room, we need to track the pose of HoloLens in order to maintain the object placements. The indoor environment is problematic for several reasons. One of them being that there are a lot of similar areas - the same type of windows, doors, textureless walls. Furthermore, the environment can change easily as people interact with it.
+
+\TP{Rewrite the following paragraph to a homogeneous style, e.g., The objectives of this work is to (i) ...., (ii), ..., and (...)...}.
 
 The objectives of this work are as follows. State of the art in indoor localization must be reviewed, in particular the NetVLAD \cite{Arandjelovic16} and InLoc \cite{taira2018inloc} papers. A new indoor dataset based on the InLoc dataset \cite{taira2018inloc} shall be created. The new dataset must also contain query images that were taken in a sequence (as user with HoloLens walks in the room). Make InLoc run on the newly created dataset, by processing the query images in non-sequential fashion. Implement an improvement that takes the HoloLens data into account. One of the improvements should include taking multiple historical camera data into account (InLoc currently only uses a single camera pose, because it does not deal with sequential data). At last, the performance of the newly implemented algorithms shall be evaluated.
 
