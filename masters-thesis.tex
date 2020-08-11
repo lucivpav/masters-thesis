@@ -91,6 +91,8 @@
 
 \newcommand{\TP}[1]{{\color{blue}#1}}
 
+\DeclareMathOperator*{\argmin}{arg\,min}
+
 \newcommand{\topRetrieval}{100} % ht_retrieval output
 \newcommand{\topGV}{10} % number of cutout candidates for each query
 \newcommand{\topPE}{10} % PE output (number of candidate poses for each query)
@@ -183,15 +185,15 @@ InLoc operates on top of an InLoc dataset. The dataset contains:
 	\item query-cutout similarity matrix (known as \code{score}).
 \end{itemize}
 
-The dataset has been acquired at the Washington University in St. Louis. Five floors (at two buildings) were used to build the dataset. The InLoc method assumes existence of a 3D map - which is represented by the RGBD cutouts. The cutout RGBD images are a result of perspective view extraction from RGBD panorama images. The panorama images were captured across all five floors using a high-end Faro 3D scanner. The query RGB images represent the images for which we aim to determine camera pose. These were taken using a smartphone camera with no depth information. Queries were taken only at two floors; the other floors serve as a confusion for InLoc.
+The dataset has been acquired at the Washington University in St. Louis. Five floors (at two buildings) were used to build the dataset. The InLoc method assumes existence of a 3D map. In the InLoc dataset, the 3D map was constructed using a high-end Faro 3D scanner. Each scan with that device produces an RGBD panorama image. The data from the various scans was then merged to create a single 3D model for each floor (using \cite{wijmans17rgbd}). In addition, database images, also called \emph{cutouts} were produced. The cutout RGBD images are a result of perspective view extraction from the RGBD panorama images. The panorama images were captured across all five floors using a high-end Faro 3D scanner. The query RGB images represent the images for which we aim to determine camera pose. These were taken using a smartphone camera with no depth information. Queries were taken only at two floors; the other floors serve as a confusion for InLoc.
 
-The query photos were taken at a different time of the day, to take illumination and interior changes into account. The query reference poses are needed, to attest how well InLoc performs on the pose estimation task. These reference poses were determined using (taken from \cite{taira2018inloc}):
+The query photos were taken at a different time of the day, to take illumination and interior changes into account. The query reference poses are needed, to attest how well InLoc performs on the pose estimation task. These reference poses were determined using (paraphrased from \cite{taira2018inloc}):
 
 \begin{enumerate}
-	\item Selection of the visually most similar database images.
-	\item Automatic matching of query images to selected database images.
+	\item Selection of the visually most similar cutout images.
+	\item Automatic matching of query images to selected cutout images.
 	\item Computing the query camera pose and visually verifying the reprojection.
-	\item Manual matching of difficult queries to selected database images.
+	\item Manual matching of difficult queries to selected cutout images.
 	\item Quantitative and visual inspection.
 \end{enumerate}
 
@@ -218,7 +220,7 @@ The computational requirements are missing from the InLoc paper. However, the au
 
 \section{NetVLAD}
 \label{section:NetVLAD}
-NetVLAD \cite{Arandjelovic16} is a convolutional neural network\footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
+NetVLAD \cite{Arandjelovic16} is a convolutional neural network\footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they resemble the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
 
 \section{P3P}
 \label{section:P3P}
@@ -232,7 +234,7 @@ Figure \ref{fig:cameraCoordinateSystem} shows a camera coordinate system $\gamma
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=1.0\textwidth,viewport=2.93cm 7.54cm 19.49cm 25.3cm,clip]{GVG_page_cameraCS.pdf}
-	\caption{Camera coordinate system $\gamma$ with origin at $\vec C$ with respect to some World coordinate system $\gamma$; and bases $\vec c_1, \vec c_2, \vec c_3$. Camera points the $\vec c_3$ direction, having $\vec c_1$ on its right. $\vec b_3$ defines the start of image coordinate system (pixel at 0,0). Vectors $\vec b_1, \vec b_2$ are considered to be orthogonal, as we are dealing with a rectangular sensor in this thesis. Point $X$ with 3D coordinates $\vec X$ projects onto the image plane to a point $x$ with image coordinates $\vec u$. The two points form a 2D-3D correspondence. Figure is from \cite{GVG}.}
+	\caption{Camera coordinate system $\gamma$ with bases $\vec c_1, \vec c_2, \vec c_3$; and with origin at $\vec C$ with respect to some World coordinate system $\gamma$. Camera points the $\vec c_3$ direction, having $\vec c_1$ on its right. $\vec b_3$ defines the origin of image coordinate system (pixel at 0,0). Vectors $\vec b_1, \vec b_2$ are considered to be orthogonal, as we are dealing with a rectangular sensor in this thesis. Point $X$ with 3D coordinates $\vec X$ projects onto the image plane to a point $x$ with image coordinates $\vec u$. The two points form a 2D-3D correspondence. Figure is from \cite{GVG}.}
 	\label{fig:cameraCoordinateSystem}
 \end{figure}
 
@@ -259,15 +261,42 @@ Our implementation, however, only requires a subset of those parameters. Thus th
 		\end{bmatrix},
 \end{equation}
 
-where $w$ and $h$ are width and height of the camera sensor in pixels. Focal length is also in pixel units.
+where $w$ and $h$ are width and height of the camera sensor in pixels. Focal length $f$ is also in pixel units.
 
 \section{Multi-camera pose estimation}
 
-Throughout this work, we often operate on query images that were taken in a sequence: imagine a person walking around a room and taking a picture every once in a while. Considering the sequential nature of the queries can help us improve localization performance. To achieve this, we need to be able to estimate poses of multiple cameras in the sequence. In general, these cameras are referred to as a rig of cameras. The generalized pose-and-scale problem (GP4Ps/gsP4P), defined in \cite{Kukelova2016CVPR} describes such a problem in general and provides an efficient solution. A particular implementation of the solver, called \code{MultiCameraPose}, is provided as an open source software. The project is a result of a recent work \cite{MultiCameraPosePaper}; for my use-case, I modified the implementation slightly and it is available at \cite{MultiCameraPose}. The implementation is very fast, computing the pose estimates of a rig with 5 cameras in about 60 milliseconds. A concrete usage of the \code{MultiCameraPose} program and the changes I have made are described in the Implementation chapter \ref{chapter:implementation}.
+Throughout this work, we often operate on query images that were taken in a sequence. Imagine a person walking around a room and taking a picture every once in a while. Considering the sequential nature of the queries can help us improve the localization performance. To achieve this, we need to be able to estimate poses of multiple cameras in the sequence. In general, these cameras are referred to as a rig of cameras. The generalized pose-and-scale problem (GP4Ps/gsP4P), defined in \cite{Kukelova2016CVPR} describes such a problem in general and provides an efficient solution. A particular implementation of the solver is provided as an open source software, named \code{MultiCameraPose}. The project is a result of a recent work \cite{MultiCameraPosePaper}. For my use-case, I modified the implementation slightly and it is available at \cite{MultiCameraPose}. The implementation is very fast, computing the pose estimates of a rig with 5 cameras in about 60 milliseconds. A concrete usage of the \code{MultiCameraPose} program and the changes I have made are described in the Implementation chapter \ref{chapter:implementation}.
 
 \section{Procrustes analysis}
 \label{section:procrustes}
-Give two sets of points in $n$-dimensional space, we wish to find an (approximate) transformation between them. Assuming the two points represent the same or similar points, but are with respect to (wrt) a different coordinate system; procrustes analysis \cite{procrustes} finds the linear transformation. Procrustes minimizes the sum of squared errors of points, after both sets of points are represented in the same coordinate system using a transformation being considered. We will be using an implementation in MATLAB. The function is called \code{procrustes} and is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
+Consider two $k$-tuples containing points in $n$-dimensional space:
+
+\begin{equation}
+	X = (\vec x_1,\ \vec x_2,\ ...,\ \vec x_k),
+	Y = (\vec y_1,\ \vec y_2,\ ...,\ \vec y_k).
+\end{equation}
+
+We wish to find an (approximate) linear transformation for the corresponding pairs of points:
+
+\begin{equation}
+	\vec x_i \approx \text{T} \cdot \vec y_i, \quad \forall i \in [1,k].
+\end{equation}
+
+This is especially meaningful if:
+
+\begin{enumerate}
+	\item Points in $X$ are all with respect a common coordinate system, call it $\alpha$.
+	\item Points in $Y$ are all with respect a common coordinate system, call it $\beta$.
+	\item The points $\vec x_i$ and $\vec y_i$ represent (with possible noise) a common point in $\alpha$.
+\end{enumerate}
+
+Procrustes minimizes the sum of squared errors of points:
+
+\begin{equation}
+	\argmin_{\text{T}} \> \sum_{i=1}^k{(\vec x_i - \text{T} \cdot \vec y_i)^2}.
+\end{equation}
+
+We will be using an implementation in MATLAB called \code{procrustes}; it is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
 
 \section{Devices used}
 \paragraph{Matterport}
@@ -277,7 +306,7 @@ Matterport is a device capable of creating a 3D map of indoor environments. Comp
 Vicon is a stationary system capable of tracking an object's pose with high accuracy \cite{Vicon}. The tracked object, Marker, contains spheres which have a reflexive surface. Vicon is used for reference pose determination in the newly created dataset within this work.
 
 \paragraph{HoloLens}
-HoloLens is a mixed reality device. Mixed reality (MR) is the blending of virtual and real environment, such that the user of MR can interact with both of these environments; see \cite{VR_AR_MR_taxonomy} for a difference between augmented reality, virtual reality and mixed reality. HoloLens is a head-worn device capable of mapping the real environment and localizing itself within it \cite{HoloLensEvaluation}. In this thesis, we are making use of 1st generation HoloLens \cite{HoloLens1stGen}, referred to as \emph{HoloLens} for simplicity.
+HoloLens is a mixed reality device. Mixed reality (MR) is the blending of virtual and real environment, such that the user of MR can interact with both of these environments; see \cite{VR_AR_MR_taxonomy} for a difference between augmented reality, virtual reality and mixed reality. HoloLens is a head-worn device capable of mapping the real environment and localizing itself within it \cite{HoloLensEvaluation}. In this thesis, we are making use of the 1st generation HoloLens \cite{HoloLens1stGen}, referred to as \emph{HoloLens} for simplicity.
 
 HoloLens contains the following sensors \cite{HoloLensEvaluation} \cite{HoloLens1stGen}:
 
@@ -297,16 +326,16 @@ The environment mapping and localization are done directly on the device in real
 \end{itemize}
 
 \section{InLoc improvement}
-The paper called \emph{Is This the Right Place? Geometric-Semantic Pose Verification for Indoor Visual Localization} \cite{IsThisTheRightPlace} suggests an improvement to the original InLoc. It focuses on significantly improving the the pose verification step. Neither the source code nor the data have been published as of August 9, 2020; and there exists no other open-source implementation to my knowledge. Implementing the methods in this paper would be very time consuming. Thus, the results of this paper are not used in our work.
+The paper called \emph{Is This the Right Place? Geometric-Semantic Pose Verification for Indoor Visual Localization} \cite{IsThisTheRightPlace} suggests an improvement to the original InLoc. It focuses on significantly improving the the pose verification step. Neither the source code nor the data have been published as of August 9, 2020; and there exists no other open-source implementation to my knowledge. Implementing the methods in this paper would be very time consuming; thus, the results of this paper are not used in our work.
 
 \section{Single View Depth Estimation}
-The authors of \cite{SingleViewDepthEstimation} provide a method for learning a convolutional neural network (CNN). The network's task is to, given an input RGB image, estimate the depth of each pixel. The impact of their work is that they managed to do so in unsupervised fashion; eliminating the cost of manually labelling the data \cite{SingleViewDepthEstimation}. The results of that paper could be useful for us, as we could use it to create depth data to improve localization accuracy. However, HoloLens already includes a depth sensor \cite{HoloLensEvaluation}. Although the sensor provides a limited field of view (FoV), it shall be first tested, whether the sensor data are sufficient for our purposes.
+The authors of \cite{SingleViewDepthEstimation} provide a method for learning a convolutional neural network (CNN). The network's task is to, given an input RGB image, estimate the depth of each pixel. The impact of their work is that they managed to do so in unsupervised fashion; eliminating the cost of manually labelling the data \cite{SingleViewDepthEstimation}. The results of that paper could be useful to us, as we could use it to create depth data to improve localization accuracy. However, HoloLens already includes a depth sensor \cite{HoloLensEvaluation}. Although the sensor provides a limited field of view (FoV), it shall be first tested, whether the sensor data are sufficient for our purposes.
 
 \section{Deep Depth Completion}
-The paper \cite{DeepDepthCompletion} also provides a solution to the problem of depth estimation from a single RGB image. However, it makes use of the device's depth sensor to build upon it and improve its accuracy. The problem with many depth cameras is that they often fail to sense depth for shiny, bright, transparent, and distant surfaces \cite{DeepDepthCompletion}. This work, while promising, shall only be considered after we find that the HoloLens depth camera is not sufficient for our purposes.
+The paper \cite{DeepDepthCompletion} also provides a solution to the problem of depth estimation from a single RGB image. However, it makes use of the device's depth sensor, builds upon it and improves its accuracy. The problem with many depth cameras is that they often fail to sense depth for shiny, bright, transparent, and distant surfaces \cite{DeepDepthCompletion}. This work, while promising, shall only be considered after we find that the HoloLens depth camera is not sufficient for our purposes.
 
 \section{Marker-based HoloLens localization}
-In the paper \cite{HoloLensMarkerBasedLocalization}, authors suggest a method for improving the localization capability of 1st generation HoloLens. They do so by using placing markers (2D QR code-like objects) across the environment. The method then allows them to accurately place large virtual models into the environment within a spatial accuracy of few centimeters \cite{HoloLensMarkerBasedLocalization}. The problem of this approach is that it requires the knowledge of the location of the markers with respect to some model coordinate system.
+In the paper \cite{HoloLensMarkerBasedLocalization}, authors suggest a method for improving the localization capability of 1st generation HoloLens. They do so by placing markers (2D QR code-like objects) across the environment. The method then allows them to accurately place large virtual models into the environment within a spatial accuracy of few centimeters \cite{HoloLensMarkerBasedLocalization}. The problem of this approach is that it requires the knowledge of the location of the markers with respect to some model coordinate system.
 
 \section{Augmenting Microsoft’s HoloLens with vuforia tracking for neuronavigation}
 Paper \cite{HoloLensVuforia} describes a significant improvement of HoloLens accuracy in a medical scenario. It does so by using proprietary Vuforia SDK. The proprietary aspect of it is, however, not ideal for open-source projects.
@@ -315,10 +344,14 @@ Paper \cite{HoloLensVuforia} describes a significant improvement of HoloLens acc
 Paper \cite{MagneticAndVisualIndoorLocalization} shows how to improve localization accuracy by using both visual sensors and a magnetometer. The magnetometer is only present in 2nd generation HoloLens, which we do not have access to. We could use a custom sensor and attach it to the device, however.
 
 \section{Visual Indoor Localization in Known Environments}
-The article \cite{VisualIndoorLocalizationInKnownEnvironments} suggests a different approach from InLoc to tackle the indoor localization problem. Instead of constructing a 3D model of the environment in the first stage, visual features are detected in a video sequence and SURF features \cite{SURF} are extracted. During the localization the query frames are matched to frames in the reference video sequence \cite{VisualIndoorLocalizationInKnownEnvironments}. Of course, InLoc is designed to work on a (non-sequential) set of query images, thus this paper may be worth considering when implementing an improvement of HoloLens localization.
+The article \cite{VisualIndoorLocalizationInKnownEnvironments} suggests a different approach from InLoc to tackle the indoor localization problem. Instead of constructing a 3D model of the environment in the first stage, visual features are detected in a video sequence and SURF features \cite{SURF} are extracted. According to the article: ``the sequence must cover all the areas in which localization will be needed. ... each
+frame is manually labeled with positional information with a
+time-consuming procedure''. During the localization, query video frames are matched to frames in the reference video sequence.
+
+This article may be worth considering when we do not have access to a dedicated 3D-environment scanning device.
 
 \section{Multi-sensor-based Indoor Localization System}
-The authors of \cite{MutliSensorLocalization} propose a method for robust indoor localization integrating multiple sensors and a visual localization from a single RGB camera. Promising results are shown, but I was unable to find a reference implementation. Creating my own based on the paper is very time consuming.
+The authors of \cite{MutliSensorLocalization} propose a method for robust indoor localization integrating multiple sensors and a visual localization from a single RGB camera. Promising results are shown, but I was unable to find a reference implementation. Creating my own based on the paper would be very time consuming.
 
 \chapter{Dataset}
 \label{chapter:dataset}
