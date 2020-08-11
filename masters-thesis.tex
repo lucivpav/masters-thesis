@@ -83,7 +83,7 @@
 % Custom constants and macros
 \usepackage{xifthen}
 \newcommand{\todo}[1][]{%
-\ifthenelse{\isempty{#1}}{\textbf{TODO}}{\textbf{TODO: #1}}%
+\ifthenelse{\isempty{#1}}{{\color{red}{TODO}}}{{\color{red}{TODO: #1}}}%
 }
 
 \newcommand{\code}[1]{{\ttfamily #1%
@@ -99,7 +99,7 @@
 
 % Abstract in Czech
 \begin{abstract-czech}
-Vizuální lokalizace je často řešená problematika v počítačovém vidění. Typicky chceme určit pózu (polohu a orientaci) fotoaparátu, který pořídil daný RGB snímek. Odhadnutá póza se vztahuje k nějakému námi definovanému souřadnicovému systému. Konkrétně se tento problém řeší ve smíšené realitě v HoloLens. Promítáme zde virtuální objekty to reálného prostoru. Abychom mohli udržet tyto objekty na správném místě, zatímco se uživatel brýlí pohybuje, je potřeba vědět, kde se HoloLens nachází. HoloLens jako takové umí sledovat svou vlastní pózu, ale výsledek není perfektní. Vytvořil jsem novou sadu dat, která obsahuje skeny dvou místností a tři množiny query obrázků. Dvě z nich pochází právě z HoloLens. Obsahem datové sady jsou i referenční pózy fotoaparátu (u některých zatím chybí, ale dají se v případě potřeby vygenerovat). Navrhl jsem nové algoritmy, které kombinují metodu InLoc \cite{taira2018inloc} s daty, co nám dává HoloLens. Má implementace je na sekvenčních obrázcích přesnější, než původní InLoc. Mé metody jsou ale výrazně méně přesné, než lokalizace ze samotných HoloLens. V práci shrnuji mé poznatky, proč vnikají určité chyby související s novými metodami nebo s InLocem. V budoucnu je možné na práci navázat a chyby zredukovat.
+Vizuální lokalizace je často řešená problematika v počítačovém vidění. Typicky chceme určit pózu (polohu a orientaci) fotoaparátu, který pořídil daný RGB snímek. Odhadnutá póza se vztahuje k nějakému námi definovanému souřadnicovému systému. Tento problém se například řeší ve smíšené realitě v HoloLens. Promítáme zde virtuální objekty to reálného prostoru. Abychom mohli udržet tyto objekty na správném místě, zatímco se uživatel brýlí pohybuje, je potřeba vědět, kde se HoloLens nachází. HoloLens jako takové umí sledovat svou vlastní pózu, ale výsledek není perfektní. Vytvořil jsem novou sadu dat, která obsahuje skeny dvou místností a tři množiny query obrázků. Dvě z nich pochází právě z HoloLens. Obsahem datové sady jsou i referenční pózy fotoaparátu (u některých zatím chybí, ale dají se v případě potřeby vygenerovat). Navrhl jsem nové algoritmy, které kombinují metodu InLoc \cite{taira2018inloc} s daty, co nám dává HoloLens. Má implementace je na sekvenčních obrázcích přesnější, než původní InLoc. Mé metody jsou ale výrazně méně přesné, než lokalizace ze samotných HoloLens. V práci shrnuji mé poznatky, proč vnikají určité chyby související s novými metodami nebo s InLocem. V budoucnu je možné na práci navázat a chyby zredukovat.
 \end{abstract-czech}
 
 % Abstract in English
@@ -109,7 +109,7 @@ Visual localization is a common computer vision problem of estimation of the cam
 
 % Acknowledgements / Podekovani
 \begin{thanks}
-I would like to thank my family for their support and motivation; especially during the times when I was struggling to make progress. My supervisor Tomáš Pajdla was very helpful with his suggestions and leadership. Special thanks to Torsten Sattler, who took the time to explain how to use his open-source software; and Anna Zderadičková whose experience with HoloLens allowed me to capture the sequential data quickly.
+I would like to thank my family for their support and motivation; especially during the times when I was struggling to make progress. My supervisor Tomáš Pajdla was very helpful with his suggestions and leadership. Special thanks to Torsten Sattler, who took the time to clarify my questions about the use his open-source software; and Anna Zderadičková whose experience with HoloLens allowed me to capture the raw sequential data quickly.
 \end{thanks}
 
 % Declaration / Prohlaseni
@@ -151,11 +151,17 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 
 \chapter{Introduction}
 
-Visual localization is a common computer vision problem where, given an RGB image, we want to estimate the camera pose. Such a camera pose can be specified by 6 parameters - 3 of which describe its position in space and the other 3 represent its orientation in the space. In case of outdoor visual localization, the problem can be simplified by making use of GPS for approximate position localization. Visual localization is a problem that also needs to be addressed indoors, however. It has use cases in e.g. Augmented and Mixed Reality applications. Of course, the GPS signal is unusable in a building. In this thesis, I am going to focus on indoor visual localization with HoloLens. HoloLens is a mixed reality device; providing a powerful tracking of the camera as user navigates around a room. The accuracy is already high, however the idea of this thesis is to improve it further. Imagine a use case where we place virtual objects into the mixed reality. As user navigates around the room, we need to track the pose of HoloLens in order to maintain the object placements. The indoor environment is problematic for several reasons. One of them being that there are a lot of similar areas - the same type of windows, doors, textureless walls. Furthermore, the environment can change easily as people interact with it.
+Visual localization is a common computer vision problem where, given an RGB image, we want to estimate the camera pose. Such a camera pose can be specified by 6 parameters - 3 of which describe its position in space and the other 3 represent its orientation in the space. In case of outdoor visual localization, the problem can be simplified by making use of GPS for approximate position localization. Visual localization is a problem that also needs to be addressed indoors, however. It has use cases in e.g. augmented and mixed reality applications. Of course, the GPS signal is unusable in a building. In this thesis, I am going to focus on indoor visual localization with HoloLens. HoloLens is a mixed reality device; providing a powerful tracking of the camera as user navigates around a room. The accuracy is already high, however the idea of this thesis is to improve it further. Imagine a use case where we place virtual objects into the mixed reality. As user navigates around the room, we need to track the pose of HoloLens in order to maintain the object placements. The indoor environment is problematic for several reasons. One of them being that there are a lot of similar areas - the same type of windows, doors, textureless walls. Furthermore, the environment can change easily as people interact with it.
 
-\TP{Rewrite the following paragraph to a homogeneous style, e.g., The objectives of this work is to (i) ...., (ii), ..., and (...)...}.
+The objectives of this work are as follows:
 
-The objectives of this work are as follows. State of the art in indoor localization must be reviewed, in particular the NetVLAD \cite{Arandjelovic16} and InLoc \cite{taira2018inloc} papers. A new indoor dataset based on the InLoc dataset \cite{taira2018inloc} shall be created. The new dataset must also contain query images that were taken in a sequence (as user with HoloLens walks in the room). Make InLoc run on the newly created dataset, by processing the query images in non-sequential fashion. Implement an improvement that takes the HoloLens data into account. One of the improvements should include taking multiple historical camera data into account (InLoc currently only uses a single camera pose, because it does not deal with sequential data). At last, the performance of the newly implemented algorithms shall be evaluated.
+\begin{enumerate}
+	\item State of the art in indoor localization must be reviewed; in particular the NetVLAD \cite{Arandjelovic16} and InLoc \cite{taira2018inloc} papers.
+	\item A new indoor dataset based on the InLoc dataset \cite{taira2018inloc} shall be created. The new dataset must also contain query images that were taken in a sequence (as an user with HoloLens walks in the room).
+	\item Make InLoc run on the newly created dataset, by processing the query images in non-sequential fashion.
+	\item Implement an improvement that takes the HoloLens data into account. One of the improvements should include taking multiple historical camera data into account (InLoc currently only uses a single camera pose, because it does not deal with sequential data).
+	\item At last, the performance of the newly implemented algorithms shall be evaluated.
+\end{enumerate}
 
 This work is organized the following way. Chapter \ref{chapter:literature-review} contains related work on the topic of indoor visual localization. Background that my software and algorithms rely on is also described. The newly acquired dataset is described in Chapter \ref{chapter:dataset}. It contains statistics of the dataset, its structure and how it was created. An implementation of the techniques described here are covered in Chapter \ref{chapter:implementation}. Note that it is only a proof-of-concept implementation, unsuitable for deployment out of the box (just as the InLoc implementation). Chapter \ref{chapter:evaluation} evaluates the newly developed methods and compares them with some baseline methods. Sources of errors are also noted. Finally, the Chapter \ref{chapter:conclusion} is a summary of this work, whether it fulfilled the assignment and possible future work.
 
@@ -371,7 +377,7 @@ For every query we need to know its reference pose, in order to evaluate how acc
 \begin{figure}
 	\begin{subfigure}{0.45\textwidth}
 		\includegraphics[width=\textwidth]{s10e_marker}
-		\caption{s10e sequence.}
+		\caption{s10e query set.}
 		\label{fig:s10e-marker}
 	\end{subfigure}
 	\hspace*{\fill}	% maximize separation between the subfigures
