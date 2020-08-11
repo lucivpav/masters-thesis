@@ -86,6 +86,9 @@
 \ifthenelse{\isempty{#1}}{\textbf{TODO}}{\textbf{TODO: #1}}%
 }
 
+\newcommand{\code}[1]{{\ttfamily #1%
+}}
+
 \newcommand{\topRetrieval}{100} % ht_retrieval output
 \newcommand{\topGV}{10} % number of cutout candidates for each query
 \newcommand{\topPE}{10} % PE output (number of candidate poses for each query)
@@ -140,7 +143,6 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 
 \begin{itemize}
 	\item \todo[Use more of "Our", "We" than "My" and "I"]
-	\item \todo[consider some special font, other than bold, for those source code paths, variable names etc.]
 \end{itemize}
 
 %\part{Your Party}
@@ -168,7 +170,7 @@ InLoc operates on top of an InLoc dataset. The dataset contains:
 	\item $10\,000$ cutout RGBD images,
 	\item 277 reference panorama poses (determined using \cite{wijmans17rgbd}),
 	\item reference query poses,
-	\item query-cutout similarity matrix (known as score).
+	\item query-cutout similarity matrix (known as \code{score}).
 \end{itemize}
 
 The dataset has been acquired at the Washington University in St. Louis. Five floors (at two buildings) were used to build the dataset. The InLoc method assumes existence of a 3D map - which is represented by the RGBD cutouts. The cutout RGBD images are a result of perspective view extraction from RGBD panorama images. The panorama images were captured across all five floors using a high-end Faro 3D scanner. The query RGB images represent the images for which we aim to determine camera pose. These were taken using a smartphone camera with no depth information. Queries were taken only at two floors; the other floors serve as a confusion for InLoc.
@@ -193,11 +195,11 @@ Understanding the details of reference pose generation is not necessary for unde
 Let's take a look at a high-level overview of how the InLoc method operates. The following is a simplified and paraphrased (from the InLoc paper \cite{taira2018inloc}) description:
 
 \begin{enumerate}
-	\item For every query image: find top N similar cutout images using the score similarity matrix.
+	\item For every query image: find top N similar cutout images using the \code{score} similarity matrix.
 	\item For every query-cutout pair: find tentative pixel-to-pixel correspondences using matching of NetVLAD \ref{section:NetVLAD} features.
 	\item Re-rank the top N cutout lists according to the highest number of tentatives found (if there is a draw, the original query-cutout score decides the order).
 	\item Choose top $M \le N$ cutouts in the lists.
-	\item For all query-cutout pairs, construct a pose estimate using P3P-RANSAC \footnote{P3P is covered in section \ref{section:P3P}; refer to \cite{RANSAC} for RANSAC description.}. This is possible since the pixel-to-pixel correspondences can be converted into 2D-3D correspondences (cutouts are RGBD).
+	\item For all query-cutout pairs, construct a pose estimate using P3P-RANSAC\footnote{P3P is covered in section \ref{section:P3P}; refer to \cite{RANSAC} for RANSAC description.}. This is possible since the pixel-to-pixel correspondences can be converted into 2D-3D correspondences (cutouts are RGBD).
 	\item Project the estimated poses and evaluate their similarities to the query images.
 	\item For every query: choose the cutout for which we have a synthesized query image with highest similarity to the query image (using DenseRootSIFT \cite{RootSIFT} \cite{DenseSIFT}).
 \end{enumerate}
@@ -206,7 +208,7 @@ The computational requirements are missing from the InLoc paper. However, the au
 
 \section{NetVLAD}
 \label{section:NetVLAD}
-NetVLAD \cite{Arandjelovic16} is a convolutional neural network \footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
+NetVLAD \cite{Arandjelovic16} is a convolutional neural network\footnote{See the original paper \cite{CNN} or a Deep learning survey \cite{DeepLearning}.} (CNN) architecture for visual place recognition. The input to this network is an RGB image and the output is a feature representation of that image. Given two images and their corresponding features, we can compute to what extent they represent the same place. In this work, as well as in InLoc \cite{taira2018inloc}, we use a VGG-16 \cite{VGG} + NetVLAD model that is pre-trained on Pitts30k \cite{Arandjelovic16} dataset.
 
 \section{P3P}
 \label{section:P3P}
@@ -251,10 +253,11 @@ where $w$ and $h$ are width and height of the camera sensor in pixels. Focal len
 
 \section{Multi-camera pose estimation}
 
-Throughout this work, we often operate on query images that were taken in a sequence: imagine a person walking around a room and taking a picture every once in a while. Considering the sequential nature of the queries can help us improve localization performance. To achieve this, we need to be able to estimate poses of multiple cameras in the sequence. In general, these cameras are referred to as a rig of cameras. The generalized pose-and-scale problem (GP4Ps/gsP4P), defined in \cite{Kukelova2016CVPR} describes such a problem in general and provides an efficient solution. A particular implementation of the solver, called MultiCameraPose, is provided as an open source software. The project is a result of a recent work \cite{MultiCameraPosePaper}; for my use-case, I modified the implementation slightly and it is available at \cite{MultiCameraPose}. The implementation is very fast, computing the pose estimates of a rig with 5 cameras in about 60 milliseconds. A concrete usage of the MultiCameraPose program and the changes I have made are described in the Implementation chapter \ref{chapter:implementation}.
+Throughout this work, we often operate on query images that were taken in a sequence: imagine a person walking around a room and taking a picture every once in a while. Considering the sequential nature of the queries can help us improve localization performance. To achieve this, we need to be able to estimate poses of multiple cameras in the sequence. In general, these cameras are referred to as a rig of cameras. The generalized pose-and-scale problem (GP4Ps/gsP4P), defined in \cite{Kukelova2016CVPR} describes such a problem in general and provides an efficient solution. A particular implementation of the solver, called \code{MultiCameraPose}, is provided as an open source software. The project is a result of a recent work \cite{MultiCameraPosePaper}; for my use-case, I modified the implementation slightly and it is available at \cite{MultiCameraPose}. The implementation is very fast, computing the pose estimates of a rig with 5 cameras in about 60 milliseconds. A concrete usage of the \code{MultiCameraPose} program and the changes I have made are described in the Implementation chapter \ref{chapter:implementation}.
 
 \section{Procrustes analysis}
-Give two sets of points in $n$-dimensional space, we wish to find an (approximate) transformation between them. Assuming the two points represent the same or similar points, but are with respect to (wrt) a different coordinate system; procrustes analysis \cite{procrustes} finds the linear transformation. Procrustes minimizes the sum of squared errors of points, after both sets of points are represented in the same coordinate system using a transformation being considered. We will be using an implementation in MATLAB. The function is called \emph{procrustes} and is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
+\label{section:procrustes}
+Give two sets of points in $n$-dimensional space, we wish to find an (approximate) transformation between them. Assuming the two points represent the same or similar points, but are with respect to (wrt) a different coordinate system; procrustes analysis \cite{procrustes} finds the linear transformation. Procrustes minimizes the sum of squared errors of points, after both sets of points are represented in the same coordinate system using a transformation being considered. We will be using an implementation in MATLAB. The function is called \code{procrustes} and is available as part of the Statistics and Machine Learning Toolbox \cite{MatlabStats}.
 
 \section{Devices used}
 \paragraph{Matterport}
@@ -276,7 +279,7 @@ HoloLens contains the following sensors \cite{HoloLensEvaluation} \cite{HoloLens
 	\item other sensors.
 \end{itemize}
 
-The environment mapping and localization are done directly on the device in real-time in a SLAM \footnote{See \cite{SLAM1}, \cite{SLAM2}, \cite{SLAM3}.} -like manner \cite{HoloLensEvaluation}. In an experiment conducted in \cite{HoloLensEvaluation}, the poses estimated by HoloLens had the following mean accuracy with respect to the ground truth poses:
+The environment mapping and localization are done directly on the device in real-time in a SLAM\footnote{See \cite{SLAM1}, \cite{SLAM2}, \cite{SLAM3}.} -like manner \cite{HoloLensEvaluation}. In an experiment conducted in \cite{HoloLensEvaluation}, the poses estimated by HoloLens had the following mean accuracy with respect to the ground truth poses:
 
 \begin{itemize}
 	\item 1.6 $\pm$ 0.2 cm translation error,
@@ -313,7 +316,7 @@ The original InLoc implementation is using the InLoc dataset \cite{taira2018inlo
 
 The dataset is a result of scanning two rooms at CIIRC: the B-670 lecture hall and a room B-315. For scanning the environments, a Matterport 3D scanner is used. Let's call the environments \emph{spaces}. This scanner is much faster to operate and cheaper than the Faro 3D scanner used in InLoc (WUSTL dataset). The disadvantage is that the resulting point cloud model tends to be of lower quality. Matterport creates a point cloud and a mesh model of each space. This is made possible by scanning the area at various locations. Let's call each such scan a \emph{sweep}, to match the Matterport API terminology. To construct the models, RGBD panoramas are taken around the rooms. In B-670, I have taken 31 such panoramas. In B-315, I have taken 27 panoramas. Overall, there are 58 RGBD panoramas taken by Matterport 3D scanner. The scanner was mounted on a tripod at height of approximately 1.52cm and I tried to avoid walls and objects in 60cm radius.
 
-When creating an RGBD panorama, the Matterport scanner has to revolve around yaw axis in order to capture the scene in 360\degree. For each RGBD panorama, we are given the pose of the Matterport scanner at the moment right before the rotation started. These poses are provided by Matterport, so we don't have to bother to estimate them ourselves as in \cite{wijmans17rgbd}.
+When creating an RGBD panorama, the Matterport scanner has to revolve around yaw axis in order to capture the scene in $360\degree$. For each RGBD panorama, we are given the pose of the Matterport scanner at the moment right before the rotation started. These poses are provided by Matterport, so we don't have to bother to estimate them ourselves as in \cite{wijmans17rgbd}.
 
 Another outcome of the sweeps are RGB panoramas. Matterport does not support automatic gathering of these panoramas, so they have to be downloaded manually for every sweep. Another problem is that these downloaded RGB panoramas are not pointing the same direction as is the initial orientation of the Matterport camera. Therefore, I have created a tool to semi-automatically find the proper orientations. This is done by
 
@@ -332,10 +335,10 @@ All of the query images were taken in this area, so that their reference pose is
 
 The queries in the s10e set have a pixel resolution $4032 \times 3024$. InLoc implementation requires the knowledge of focal length of the camera that was used when taking the query images. I found conflicting information about the S10e's field of view (FoV) online, and the focal length didn't add up. I ended up computing the focal length manually with the help of a tripod and a ruler. The focal length turned out to be 3172 pixels. The IDs of query images are sorted in a non-decreasing difficulty, e.g. queries with IDs 1 to 10 were taken such that the camera's direction vector is roughly parallel with the floor. Queries with higher IDs have the camera rotated on a tripod under any direction.
 
-The HoloLens queries have a pixel resolution of $1344 \times 756$ pixels and according to the official documentation, the horizontal FoV is 67\degree. Because the results were not very precise at some point, I began to question whether the documented FoV of 67\degree is indeed true. Looking at the data generated while capturing the sequences, HoloLens provides a cameraProjectionTransform matrix. According to an article \cite{HoloLensFoV}, the effective hFoV can be computed as
+The HoloLens queries have a pixel resolution of $1344 \times 756$ pixels and according to the official documentation, the horizontal FoV is $67\degree$. Because the results were not very precise at some point, I began to question whether the documented FoV of $67\degree$ is indeed true. Looking at the data generated while capturing the sequences, HoloLens provides a cameraProjectionTransform matrix. According to an article \cite{HoloLensFoV}, the effective hFoV can be computed as
 
 \begin{equation}
-	\text{hFoV} = 2*\arctan \left(\frac{1}{\text{cameraProjectionTransform.m11}}\right),
+	\text{\code{hFoV}} = 2 \cdot \arctan \left(\frac{1}{\text{\code{cameraProjectionTransform.m11}}}\right),
 \end{equation}
 
 which gives the value of 65.83 degrees. This is the more accurate result, as a reprojection error was lower with this redefined constant.
@@ -398,9 +401,9 @@ The transformation from Marker to camera is considered to be a constant (for all
 
 For a particular query set, we need to manually set up the reference pose for a small number of queries. I used 6 of them in HoloLens1. Let these queries be called \emph{interesting} queries. For such a query, we manually find 9 2D-3D correspondences. The 2D correspondences are carefully chosen, such that they actually represent the same 3D point -- because the 3D points were captured up to three weeks earlier than the query images and the environment has changed. For each query with the correspondences, we compute its initial reference pose using P3P. The pose returned by P3P may not be completely accurate, however.
 
-Given reference poses for 6 queries and corresponding poses from Vicon, we can almost compute individual Marker to camera transformations. The last piece missing is a synchronization constant, to match the correct Vicon pose taken at Vicon tie with a particular query taken at HoloLens time. I created a script, findOptimalParamsForInterestingQueries.m, which computes the Marker to camera transformations and evaluates the reference poses quality both quantitatively (reprojection error) and visually (manually investigated by the user). Currently, user must guess a synchronization constant. Finding a reasonable synchronization constant does not take long. Alternatively, one could implement a brute-force search, where various synchronization constants are guessed and the one with lowest quantitative error is chosen. In my case this was not necessary. At the end of the script, a generic transformation is suggested, which is an average of the individual transformations. The quality of the generic transformation is again evaluated on all the 6 queries. This generic transformation and the synchronization constant are used as a baseline and are further optimized, described next.
+Given reference poses for 6 queries and corresponding poses from Vicon, we can almost compute individual Marker to camera transformations. The last piece missing is a synchronization constant, to match the correct Vicon pose taken at Vicon tie with a particular query taken at HoloLens time. I created a script, \code{findOptimalParamsForInterestingQueries.m}, which computes the Marker to camera transformations and evaluates the reference poses quality both quantitatively (reprojection error) and visually (manually investigated by the user). Currently, user must guess a synchronization constant. Finding a reasonable synchronization constant does not take long. Alternatively, one could implement a brute-force search, where various synchronization constants are guessed and the one with lowest quantitative error is chosen. In my case this was not necessary. At the end of the script, a generic transformation is suggested, which is an average of the individual transformations. The quality of the generic transformation is again evaluated on all the 6 queries. This generic transformation and the synchronization constant are used as a baseline and are further optimized, described next.
 
-A brute-force search is employed to find an improved version of the baseline transformation and synchronization constant in nearby space. First, an improved synchronization constant is estimated, by simply evaluating the interesting queries on the same transformation but for different synchronization constants, that are close to the baseline constant. Then, different transformations are being tried. An Marker to camera transformation is described by a 3D translation vector and a 3x3 rotation matrix. Note that this rotation matrix can be represented by three parameters (yaw, roll and pitch). Thus, the code iterates over predefined values of the 6 parameters, such that every combination is tried. For each combination, the reprojection error is computed and stored for later. The parameters are continuous, but I try a sequence of values nearby the baseline value, where the offset is a constant. When it comes to the translation parameters, I have had good experience with trying 17 values, where the middle value is the baseline. The offset was 0.023 Matterport meters. Each orientation parameter was evaluated on 11 values with even offsets, where the middle value was the baseline. The offset was 0.5\degree. Additionally, the brute-force search is very time consuming, taking about 20 hours on a machine capable of processing 45 threads at once. Optionally, one can iterate over 5 synchronization constant values, for even more optimal parameters to be found. Of course, by doing that, the search will take asymptotically 5 times as much time and memory resources.
+A brute-force search is employed to find an improved version of the baseline transformation and synchronization constant in nearby space. First, an improved synchronization constant is estimated, by simply evaluating the interesting queries on the same transformation but for different synchronization constants, that are close to the baseline constant. Then, different transformations are being tried. An Marker to camera transformation is described by a 3D translation vector and a 3x3 rotation matrix. Note that this rotation matrix can be represented by three parameters (yaw, roll and pitch). Thus, the code iterates over predefined values of the 6 parameters, such that every combination is tried. For each combination, the reprojection error is computed and stored for later. The parameters are continuous, but I try a sequence of values nearby the baseline value, where the offset is a constant. When it comes to the translation parameters, I have had good experience with trying 17 values, where the middle value is the baseline. The offset was 0.023 Matterport meters. Each orientation parameter was evaluated on 11 values with even offsets, where the middle value was the baseline. The offset was $0.5\degree$. Additionally, the brute-force search is very time consuming, taking about 20 hours on a machine capable of processing 45 threads at once. Optionally, one can iterate over 5 synchronization constant values, for even more optimal parameters to be found. Of course, by doing that, the search will take asymptotically 5 times as much time and memory resources.
 
 Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the quality of reference poses, after the brute-force optimization. Table \ref{tab:HL1-ref-non-optimized-poses-errors} shows the same statistics for parameters prior to the optimization (baseline transformation). The improvement is not significant: 1 cm lower translation error and $0.14\degree$ lower orientation error. Figure \ref{fig:interesting-reprojection-s10e-query-2} shows an example of the 9 manually defined correspondences and their reprojection errors.
 
@@ -528,7 +531,7 @@ Unfortunately, there was another hidden problem that had to be dealt with, prior
 
 A consequence of the data being delayed is that, for some of the queries at end of the sequence, we do not have the poses from HoloLens available. Recall also that some reference poses are blacklisted, because Vicon got lost.
 
-Using these delays and the procrustes method \ref{section:procrustes}, we can compute the mean reference vs ground truth pose errors, which is:
+Using these delays and the \code{procrustes} method\footnote{See section \ref{section:procrustes}.}, we can compute the mean reference vs ground truth pose errors, which is:
 
 \begin{itemize}
 	\item 15 cm translation error,
@@ -615,14 +618,14 @@ We provide an (incomplete) tool for generating synthetic datasets in InLoc datas
 
 \subsection{Usage}
 \begin{enumerate}
-	\item Navigate to \textbf{habitat-api/examples/capture\_sequence.py}.
-	\item Choose an environment in the \textbf{habitat-api/configs/datasets/pointnav/} folder.
-	\item Adjust the \textbf{environmentConfigPath} variable to the selected environment.
-	\item Adjust the \textbf{outputPath} variable.
+	\item Navigate to \code{habitat-api/examples/capture\_sequence.py}.
+	\item Choose an environment in the \code{habitat-api/configs/datasets/pointnav/} folder.
+	\item Adjust the \code{environmentConfigPath} variable to the selected environment.
+	\item Adjust the \code{outputPath} variable.
 	\item Run the script.
-	\item Navigate around the environment using \textbf{WASD} and arrow keys.
+	\item Navigate around the environment using \code{WASD} and arrow keys.
 	\item After each movement, a query image is saved and its pose within that environment stored.
-	\item Press \textbf{F} to exit.
+	\item Press \code{F} to exit.
 \end{enumerate}
 
 A future work could add support for the creation of the panorama/cutout images.
@@ -630,13 +633,13 @@ A future work could add support for the creation of the panorama/cutout images.
 \chapter{Implementation}
 \label{chapter:implementation}
 
-InLoc \cite{taira2018inloc} authors provide a demonstration in MATLAB that operates on the InLoc dataset. I have taken this demonstration and adjusted it, so that it works on the InLocCIIRC dataset instead. I have added an evaluation script, that was missing from the original code. Although the evaluation of InLoc is handled by \url{visuallocalization.net}, this tool of course doesn't handle the newly created InLocCIIRC dataset yet.
+InLoc \cite{taira2018inloc} authors provide a demonstration in MATLAB that operates on the InLoc dataset. I have taken this demonstration and adjusted it, so that it works on the InLocCIIRC dataset instead. I have added an evaluation script, that was missing from the original code. Although the evaluation of InLoc is handled by \url{http://www.visuallocalization.net}, this tool of course doesn't handle the newly created InLocCIIRC dataset yet.
 
 The entire InLocCIIRC implementation should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP server. However, the GPU node prohibited the use of more than 8 CPU threads per user. So I had to split the implementation into 2 parts: in the first run, the GPU is used. In the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc implementation as well.
 
-The original InLoc implementation uses point cloud projection in the pose verification step. The code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering. I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (pyrender, trimesh, open3D). My projectMesh method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and call the render functions. However, this would require non-trivial implementation changes, at least in the demo, because the implementation is in MATLAB and the projectMesh routine is in Python.
+The original InLoc implementation uses point cloud projection in the pose verification step. The code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering. I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (\code{pyrender}, \code{trimesh}, \code{open3D}). My \code{projectMesh} method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and call the render functions. However, this would require non-trivial implementation changes, at least in the demo, because the implementation is in MATLAB and the \code{projectMesh} routine is in Python.
 
-A major change to the implementation was adding support for sequential queries. Currently the code \footnote{The repository implementing the new pipeline is called InLocCIIRC\_demo, but it is in fact not very accurate, because the name is not really an implementation of the InLoc paper \cite{taira2018inloc}. However, the pose estimation algorithms are indeed based on InLoc.} supports specifically sequential queries from HoloLens. To estimate poses of sequential queries from HoloLens, poses from HoloLens must be provided. These poses are estimates of the ground-truth camera poses, and are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
+A major change to the implementation was adding support for sequential queries. Currently the code\footnote{The repository implementing the new pipeline is called InLocCIIRC\_demo, but the name is in fact not very accurate, because it is not really an implementation of the InLoc paper \cite{taira2018inloc}. However, the pose estimation algorithms are indeed based on InLoc.} supports specifically sequential queries from HoloLens. To estimate poses of sequential queries from HoloLens, poses from HoloLens must be provided. These poses are estimates of the ground-truth camera poses, and are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
 
 The first approach is called SequentialPV. It only leverages the other queries (in the segment) in the pose verification step. This approach aims to be more robust than the non-sequential one, by providing more evidence: the projection quality for all queries in the segment is considered and compared to the input query images. How is this done? We have top \topPE{} camera poses (given by P3P in the pose estimation step). These poses are the estimated poses of the current query. Next, we have camera pose estimates for every query in the segment, provided by HoloLens. Those poses are wrt Omega. Therefore, I convert the poses from HoloLens from Omega to World, by aligning the two poses of the last query in the segment. The two poses are:
 
@@ -647,15 +650,15 @@ The first approach is called SequentialPV. It only leverages the other queries (
 
 To match the two poses, we just need to compute a linear transformation (rotation, translation). With this transformation, the other poses from HoloLens are converted from Omega to World. With all camera pose estimates being with respect to World coordinate system, I run the pose verification step. The pose verification step returns a score, symbolizing the quality of the input query image and the reconstructed query image. I sum all the scores in the segment. Note that there are other ways of integrating the scores together: e.g. mean, maximum; I haven't tested them yet. This is done for those top \topPE{} poses from the pose estimation step. At the end, I choose the candidate with highest score to represent the final camera pose estimate. This approach is a basic way to leverage the fact that the queries were taken in a sequence (and captured with HoloLens).
 
-Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-2D correspondences are computed using the geometric verification step and are subsequently converted into 2D-3D correspondences. Given these data, an external program called \emph{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the MultiCameraPose program and gsP4P, please see Chapter \ref{chapter:literature-review}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
+Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-2D correspondences are computed using the geometric verification step and are subsequently converted into 2D-3D correspondences. Given these data, an external program called \code{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the \code{MultiCameraPose} program and gsP4P, please see Chapter \ref{chapter:literature-review}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
 
 There is an important change when MultiCameraPose is used, compared to processing non-sequential queries. To understand that, let me first describe how the pose estimation step works in the non-sequential case:
 
 \begin{enumerate}
-	\item We are given top \topRetrieval{} candidate cutouts for each query. These cutouts aim to be visually similar to the query. They were constructed using the input score matrix.
+	\item We are given top \topRetrieval{} candidate cutouts for each query. These cutouts aim to be visually similar to the query. They were constructed using the input \code{score} matrix.
 	\item Query and cutout features are extracted.
 	\item Geometric verification is executed for all query-cutout pairs. This gives us 2D-2D correspondences aka ``inliers'' (some of which are inaccurate).
-	\item \label{item:GV-reranking} The top \topRetrieval{} candidates are re-ranked and sorted, so that query-cutout pairs with the highest number of inliers are preferred. If the number of inliers is the same, the original input score is used on top of it (floating point value between zero and 1).
+	\item \label{item:GV-reranking} The top \topRetrieval{} candidates are re-ranked and sorted, so that query-cutout pairs with the highest number of inliers are preferred. If the number of inliers is the same, the original input \code{score} is used on top of it (floating point value between zero and 1).
 	\item \label{item:topGV} Top \topGV{} candidate cutouts for each query are chosen.
 	\item Each query-cutout pair and its 2D-2D correspondences are processed. Because one of 2D corresponding point sets lies in the cutout image, we can extract its corresponding 3D points (the dataset provides depth and 3D point of every cutout pixel). The query-cutout 2D-3D correspondences are ``fed'' into P3P. The camera pose is estimated.
 	\item We now have \topPE{} candidate pose estimates for every query.
@@ -672,7 +675,7 @@ In the MultiCameraPose approach, the segments have length k>1. We need to decide
 
 The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. The second issue is described in more detail in subsection \ref{subsection:hard-top-pick-top-combinations}.
 
-Another problem not considered in the reference InLoc implementation is related to the different aspect ratios of HoloLens queries and cutouts. Recall that HoloLens query images have a $1344 \times 758$ pixel resolution, whereas the cutouts have resolution of $1600 \times 1200$. This makes the HoloLens queries have $16:9$ aspect ratio and the cutouts have a $4:3$ aspect ratio. Why is that a problem? The methods used in geometric verification (GV) would break - the tentative correspondences would not be computed properly. Therefore, we need to provide the GV step with the same aspect ratio (and also the same resolution by scaling). Of course, if we rescale the query image to match the cutout image dimensions, we will deform the query view. Therefore my solution is to add padding \footnote{another approach would be to crop the query image to achieve the same aspect ratio; then rescale without deformation. Of course, the problem with this approach is that we would lower the horizontal field of view, which would mean less RGB data to work with in the transformed query image.} on top and bottom of the same image; where the added pixels share the same constant value. The padding is added so that the aspect ratio matches the cutout aspect ratio. Then we can also rescale without deformation. In the pose estimation step, we have to undo the process on the query inliers, so that they correspond with the properties of the camera that took those images.
+Another problem not considered in the reference InLoc implementation is related to the different aspect ratios of HoloLens queries and cutouts. Recall that HoloLens query images have a $1344 \times 758$ pixel resolution, whereas the cutouts have resolution of $1600 \times 1200$. This makes the HoloLens queries have $16:9$ aspect ratio and the cutouts have a $4:3$ aspect ratio. Why is that a problem? The methods used in geometric verification (GV) would break - the tentative correspondences would not be computed properly. Therefore, we need to provide the GV step with the same aspect ratio (and also the same resolution by scaling). Of course, if we rescale the query image to match the cutout image dimensions, we will deform the query view. Therefore my solution is to add padding\footnote{another approach would be to crop the query image to achieve the same aspect ratio; then rescale without deformation. Of course, the problem with this approach is that we would lower the horizontal field of view, which would mean less RGB data to work with in the transformed query image.} on top and bottom of the same image; where the added pixels share the same constant value. The padding is added so that the aspect ratio matches the cutout aspect ratio. Then we can also rescale without deformation. In the pose estimation step, we have to undo the process on the query inliers, so that they correspond with the properties of the camera that took those images.
 
 \section{Source code and dataset structure}
 
@@ -803,7 +806,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:MCP-structure}
-	\caption{The structure of the modified MultiCameraPose repository. Only notable items shown.}
+	\caption{The structure of the modified \code{MultiCameraPose} repository. Only notable items shown.}
 \end{figure}
 
 \section{Pseudocode}
@@ -1042,15 +1045,15 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 
 Note that in the current actual source code, I do not have the 'non-sequential' mode. Instead, it is determined by choosing 'MultiCameraPose' mode and setting segmentLength to 1.
 
-\section{MultiCameraPose}
-The MultiCameraPose project has been slightly modified and used as an external dependency. The modified source code is available at \cite{MultiCameraPose}.
+\section{\code{MultiCameraPose}}
+The \code{MultiCameraPose} project has been slightly modified and used as an external dependency. The modified source code is available at \cite{MultiCameraPose}.
 
-MultiCameraPose estimates the poses of the cameras in the rig. It is given a set of poses of those cameras wrt to some (unknown) coordinate system. For each camera, 2D-3D correspondences are provided. The resulting pose estimates will be wrt the coordinate system in which the 3D correspondences were provided.
+\code{MultiCameraPose} estimates the poses of the cameras in the rig. It is given a set of poses of those cameras wrt to some (unknown) coordinate system. For each camera, 2D-3D correspondences are provided. The resulting pose estimates will be wrt the coordinate system in which the 3D correspondences were provided.
 
 \subsection{Introduced changes}
 \begin{itemize}
 	\item Comments for easier code understanding.
-	\item The core multi-pose estimation procedure runs \textbf{num\_global\_iterations}-times.
+	\item The core multi-pose estimation procedure runs \code{num\_global\_iterations}-times.
 	\item At the end of each global iteration, the new estimate is considered the best so far, if it matches the following criteria:
 	\item Criteria 1: The median translation error is no higher than the median translation error associated with the previous best estimate,
 	\item Criteria 2: The median orientation error is no higher than the median orientation error associated to the previous best estimate.
@@ -1060,7 +1063,7 @@ MultiCameraPose estimates the poses of the cameras in the rig. It is given a set
 \end{itemize}
 
 \subsection{Usage}
-The MultiCameraPose project is written in C++. It must first be compiled so that executable programs are created. An example procedure on how to build the project is in \textbf{make\_cmp.sh} file. The project contains several executables, of which we are only interested in the \textbf{multi\_camera\_pose} one. It reqires a set of command line arguments and input files, which will not be described here. However, I have created a function in MATLAB, that:
+The \code{MultiCameraPose} project is written in C++. It must first be compiled so that executable programs are created. An example procedure on how to build the project is in \code{make\_cmp.sh} file. The project contains several executables, of which we are only interested in the \code{multi\_camera\_pose} one. It reqires a set of command line arguments and input files, which will not be described here. However, I have created a function in MATLAB, that:
 
 \begin{enumerate}
 	\item Sets-up the necessary command line arguments.
@@ -1070,7 +1073,7 @@ The MultiCameraPose project is written in C++. It must first be compiled so that
 	\item Gives the user relevant results.
 \end{enumerate}
 
-The MATLAB function is present at \textbf{InLocCIIRC\_utils/multiCameraPose/ \allowbreak multiCameraPose.m}. Its usage is described in table \ref{tab:MCP_frontend_input}.
+The MATLAB function is present at \code{InLocCIIRC\_utils/multiCameraPose/ \allowbreak multiCameraPose.m}. Its usage is described in table \ref{tab:MCP_frontend_input}.
 
 \begin{table}[htb!]
 	\centering
@@ -1080,38 +1083,38 @@ The MATLAB function is present at \textbf{InLocCIIRC\_utils/multiCameraPose/ \al
 		Parameter & Data type & Description \\
 		\hline
 		\hline
-		workingDir & string & Path to a directory where to create auxiliary files. \\
+		\code{workingDir} & string & Path to a directory where to create auxiliary files. \\
 		\hline
-		queryInd & $n \times 1$ integer & The IDs of the queries we are processing. \\
+		\code{queryInd} & $n \times 1$ integer & The IDs of the queries we are processing. \\
 		\hline
-		allCorrespondences2D & $n \times 1$ cell array & \makecell{Each element contains the \\ 2D query correspondences. \\ Each element is a $2 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
+		\code{allCorrespondences2D} & $n \times 1$ cell array & \makecell{Each element contains the \\ 2D query correspondences. \\ Each element is a $2 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
 		\hline
-		allCorrespondences3D & $n \times 1$ cell array & \makecell{Each element contains the \\ 3D cutout correspondences. \\ Each element is a $3 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
+		\code{allCorrespondences3D} & $n \times 1$ cell array & \makecell{Each element contains the \\ 3D cutout correspondences. \\ Each element is a $3 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
 		\hline
-		inlierThreshold & double & Unused; not implemented. \\
+		\code{inlierThreshold} & double & Unused; not implemented. \\
 		\hline
-		numLoSteps & integer & \makecell{Number of steps in internally used \\ Locally Optimized RANSAC.} \\
+		\code{numLoSteps} & integer & \makecell{Number of steps in internally used \\ Locally Optimized RANSAC.} \\
 		\hline
-		invertYZ & boolean & \makecell{Multiplies the YZ coordinates of the \\ 3D correspondences by $-1$.} \\
+		\code{invertYZ} & boolean & \makecell{Multiplies the YZ coordinates of the \\ 3D correspondences by $-1$.} \\
 		\hline
-		pointsCentered & boolean & \makecell{If not, the 2D correspondences are transformed, \\ so that their origin is \\ at $(\text{imageWidth}/2, \text{imageHeight}/2)$.} \\
+		\code{pointsCentered} & boolean & \makecell{If not, the 2D correspondences are transformed, \\ so that their origin is \\ at $(\text{\code{imageWidth}}/2, \text{\code{imageHeight}}/2)$.} \\
 		\hline
-		undistortionNeeded & boolean & \makecell{Undistorts the 2D correspondences. \\ \todo[cite some distortion publication?]} \\
+		\code{undistortionNeeded} & boolean & \makecell{Undistorts the 2D correspondences. \\ \todo[cite some distortion publication?]} \\
 		\hline
-		imageWidth & integer & How wide the camera sensors are [px]. \\
+		\code{imageWidth} & integer & How wide the camera sensors are [px]. \\
 		\hline
-		imageHeight & integer & The height of the camera sensors [px]. \\
+		\code{imageHeight} & integer & The height of the camera sensors [px]. \\
 		\hline
-		K & $3 \times 3$ double & \makecell{The camera calibration matrix \\ (See section \ref{section:cameraCS})}. \\
+		\code{K} & $3 \times 3$ double & \makecell{The camera calibration matrix \\ (See section \ref{section:cameraCS})}. \\
 		\hline
-		params & struct & \makecell{Contains experiment-specific parameters. See \\ \textbf{InLocCIIRC\_utils/params/setupParams.m}} \\
+		\code{params} & struct & \makecell{Contains experiment-specific parameters. See \\ \code{InLocCIIRC\_utils/params/setupParams.m}} \\
 		\hline
 	\end{tabular}
-	\caption{The input parameters of the \textbf{multiCameraPose.m} MATLAB function. The function acts as an interface to the MultiCameraPose executable program.}
+	\caption{The input parameters of the \code{multiCameraPose.m} MATLAB function. The function acts as an interface to the \code{MultiCameraPose} executable program.}
 	\label{tab:MCP_frontend_input}
 \end{table}
 
-The function has a single output - posesWrtModel. It is a $1 \times n$ cell array. Each element is a $3 \times 4$ double. The $3 \times 3$ sub-matrix on the left is a rotation matrix R; it converts World bases into camera bases. The remaining $3 \times 1$ vector on the right is World origin wrt camera coordinate system.
+The function has a single output - \code{posesWrtModel}. It is a $1 \times n$ cell array. Each element is a $3 \times 4$ double. The $3 \times 3$ sub-matrix on the left is a rotation matrix R; it converts World bases into camera bases. The remaining $3 \times 1$ vector on the right is World origin wrt camera coordinate system.
 
 \chapter{Evaluation}
 \label{chapter:evaluation}
@@ -1119,14 +1122,14 @@ The function has a single output - posesWrtModel. It is a $1 \times n$ cell arra
 \section{Experiment design}
 Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by constant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The visualizations are used to better understand the sources of errors, which are described in section \ref{section:sources-of-errors}.
 
-In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to 10\degree. Another metric is to compute statistics on the translation and orientation errors. For this, the mean, median, and standard deviation (std) were chosen.
+In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to $10\degree$. Another metric is to compute statistics on the translation and orientation errors. For this, the mean, median, and standard deviation (std) were chosen.
 
 A descriptive way to compare multiple methods is to compare percent of correctly localized queries, as the translation threshold increases (the orientation threshold is fixed).
 
 I provide two kinds of visualization. The first one shows, for a subset of queries, how they are processed - the closest cutout found, the inliers used to reconstruct the camera pose, and an error map. This is also useful when determining why InLocCIIRC performs poorly on certain queries. The second visualization shows a top level view of the physical environment. The queries, estimated query poses and sweeps are drawn.
 
 \section{s10e query set}
-Evaluation results of the non-sequential s10e query set are shown in this section. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a NaN entry mean that densePE returned a NaN P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Error statistics are shown in table \ref{tab:s10e-other-statistics}. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
+Evaluation results of the non-sequential s10e query set are shown in this section. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a \code{NaN} entry mean that \code{parfor\_densePE} returned a \code{NaN} P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Error statistics are shown in table \ref{tab:s10e-other-statistics}. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
 
 \begin{table}[htb!]
 	\centering
@@ -1390,10 +1393,10 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 \label{section:sources-of-errors}
 
 \subsection{Previous queries have meaningful correspondences but current query does not have any correspondences}
-\emph{This was observed on MultiCameraPose, k=2 experiment}. This results in InLocCIIRC completely being lost (returning NaN estimated pose), thus limiting the number of correctly localized queries given translation/orientation thresholds. In this scenario, the queries in the segment prior to the current query being processed have 2D-3D correspondences (found using geometric verification). Furthermore, those queries look meaningful upon manual inspection. However, we are interested in the current query, which does not have any correspondences. MultiCameraPose does not support a rig containing a camera for which there are no correspondences. Of course, we cannot use P3P on the current query, without knowing the query-cutout correspondences. Potential solution to this problem is: use the last estimated non-NaN pose in a sequence of queries ending with the current query. Limit the number as to how far into history to go. I did not have time to implement it. Known affected queries in HoloLens1 query set: 88, 122, 148, 231, 233, 236, 315, 319, 341. Why did we find no correspondences at those affected queries? For query 122 it is understandable - there was a very fast movement. For query 174 - it is somehow difficult, even the preceding queries 170-173 were hard to estimate (resulting poses were not NaN, but the errors from reference poses were high). However, for some affected queries, namely query 88, 148 and 231, a problem was discovered. The next subsection describes the problem.
+\emph{This was observed on MultiCameraPose, k=2 experiment}. This results in InLocCIIRC completely being lost (returning \code{NaN} estimated pose), thus limiting the number of correctly localized queries given translation/orientation thresholds. In this scenario, the queries in the segment prior to the current query being processed have 2D-3D correspondences (found using geometric verification). Furthermore, those queries look meaningful upon manual inspection. However, we are interested in the current query, which does not have any correspondences. \code{MultiCameraPose} does not support a rig containing a camera for which there are no correspondences. Of course, we cannot use P3P on the current query, without knowing the query-cutout correspondences. Potential solution to this problem is: use the last estimated non-\code{NaN} pose in a sequence of queries ending with the current query. Limit the number as to how far into history to go. I did not have time to implement it. Known affected queries in HoloLens1 query set: 88, 122, 148, 231, 233, 236, 315, 319, 341. Why did we find no correspondences at those affected queries? For query 122 it is understandable - there was a very fast movement. For query 174 - it is somehow difficult, even the preceding queries 170-173 were hard to estimate (resulting poses were not \code{NaN}, but the errors from reference poses were high). However, for some affected queries, namely query 88, 148 and 231, a problem was discovered. The next subsection describes the problem.
 
-\subsection{Bad input score matrix}
-\emph{This was observed on non-sequential (k=1) and MultiCameraPose, k=2 experiments}. Known affected queries: 88, 148, 231\footnote{This query is somewhat blurry, which may also have an impact.}. This issue probably affects more queries than is currently known by me. It causes no 2D-3D correspondences to be found. It is a problem, that currently causes NaN pose estimate for the affected queries. But it can also lower estimation accuracy for the successor queries, if the affected query is considered within its segment. This is because currently, P3P is used (non-sequential pose estimation), if some of the queries in a segment have no correspondences. For those 3 known affected queries, investigation revealed that the chosen cutout (i.e. the top one in pose verification output) from the previous query was not even considered in the top \topRetrieval{} cutouts in the pose estimation step. The reason the previous query's chosen cutout was picked is that the queries have not changed much during the two frames. The score for those cutouts was:
+\subsection{Bad input \code{score} matrix}
+\emph{This was observed on non-sequential (k=1) and MultiCameraPose, k=2 experiments}. Known affected queries: 88, 148, 231\footnote{This query is somewhat blurry, which may also have an impact.}. This issue probably affects more queries than is currently known by me. It causes no 2D-3D correspondences to be found. It is a problem, that currently causes \code{NaN} pose estimate for the affected queries. But it can also lower estimation accuracy for the successor queries, if the affected query is considered within its segment. This is because currently, P3P is used (non-sequential pose estimation), if some of the queries in a segment have no correspondences. For those 3 known affected queries, investigation revealed that the chosen cutout (i.e. the top one in pose verification output) from the previous query was not even considered in the top \topRetrieval{} cutouts in the pose estimation step. The reason the previous query's chosen cutout was picked is that the queries have not changed much during the two frames. The score for those cutouts was:
 
 \begin{table}[htb!]
 	\centering
@@ -1414,7 +1417,7 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 
 \subsection{Hard to pick top \topPE{} combinations for non-trivial segments}
 \label{subsection:hard-top-pick-top-combinations}
-Geometric verification step chooses top \topGV{} cutouts for each query based on the highest number of inliers. The wrong ones would normally be filtered out by pose verification. However, if segments of length k>1 are used, the top \topPE{} combinations (representing the current segment) don't necessarily contain only the reasonable query-cutout pairs. This is because we are only choosing top \topPE{} combinations from $\topGV^k$ possible combinations \footnote{we are not talking about combinations in a mathematical sense, but rather as a way of expressing a number of possibilities.}. There is no easy solution to this problem. Making pose estimation return significantly more than top \topPE{} candidates for each query will have a performance impact, because the pose verification step is already time consuming.
+Geometric verification step chooses top \topGV{} cutouts for each query based on the highest number of inliers. The wrong ones would normally be filtered out by pose verification. However, if segments of length k>1 are used, the top \topPE{} combinations (representing the current segment) don't necessarily contain only the reasonable query-cutout pairs. This is because we are only choosing top \topPE{} combinations from $\topGV^k$ possible combinations\footnote{we are not talking about combinations in a mathematical sense, but rather as a way of expressing a number of possibilities.}. There is no easy solution to this problem. Making pose estimation return significantly more than top \topPE{} candidates for each query will have a performance impact, because the pose verification step is already time consuming.
 
 \subsection{No HoloLens poses}
 Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by the end of the HoloLens1 and HoloLens2 sequences do not have a pose estimated from HoloLens. In such a case we have to resort to using standard P3P, which performs (on average) worse than MultiCameraPose. Hopefully the delay was only caused by the software extracting the data from HoloLens and the delay is not actually present in real use. If it is present, it is a problem as the techniques based on InLoc described in this paper would not work in real-time.
@@ -1451,21 +1454,21 @@ Table \ref{tab:emperical-complexity} shows the following processing times I have
 	\label{tab:emperical-complexity}
 \end{table}
 
-The preprocessing step shall also be taken into account. It takes about 20 minutes to create the score matrix for an s10e query set. It is done by executing \textbf{buildFeatures.m} followed by \textbf{buildScores.m}. The same task takes 22 minutes on the HoloLens1 query set. Note that both tasks share the same number of cutouts that require processing in \textbf{buildFeatures.m}.
+The preprocessing step shall also be taken into account. It takes about 20 minutes to create the \code{score} matrix for an s10e query set. It is done by executing \code{buildFeatures.m} followed by \code{buildScores.m}. The same task takes 22 minutes on the HoloLens1 query set. Note that both tasks share the same number of cutouts that require processing in \code{buildFeatures.m}.
 
 The recommended amount of RAM for re-running the experiments is 90 GB.
 
 \chapter{Conclusion}
 \label{chapter:conclusion}
 
-I have created a new dataset suitable for indoor visual localization either on single RGB images or on a sequence of query images and localization data from HoloLens. I have adjusted the original \footnote{Original InLoc implementation available at \cite{InLocImplementation}.} InLoc implementation and made it work on the newly acquired dataset. The performance on the non-sequential s10e query set is very good (compared to results in InLoc paper). This is likely caused by the fact that my dataset is much smaller than the InLoc dataset. I have also implemented two novel methods that are based on InLoc \cite{taira2018inloc} - the sequentialPV method and the MultiCameraPose method. It was expected that the sequentialPV method would not to perform very well compared to HoloLens tracking. The MultiCameraPose method is more accurate than both the baseline InLoc method and the sequentialPV method. The resulting estimated poses are usable. However its performance is still significantly below the precision of HoloLens tracking itself. It is not clear why the new MultiCameraPose method is not performing that well. In the previous chapter, I have described known sources of errors, a lot of which can be targeted in a future work. This will certainly improve the evaluation performance.
+I have created a new dataset suitable for indoor visual localization either on single RGB images or on a sequence of query images and localization data from HoloLens. I have adjusted the original\footnote{Original InLoc implementation available at \cite{InLocImplementation}.} InLoc implementation and made it work on the newly acquired dataset. The performance on the non-sequential s10e query set is very good (compared to results in InLoc paper). This is likely caused by the fact that my dataset is much smaller than the InLoc dataset. I have also implemented two novel methods that are based on InLoc \cite{taira2018inloc} - the sequentialPV method and the MultiCameraPose method. It was expected that the sequentialPV method would not to perform very well compared to HoloLens tracking. The MultiCameraPose method is more accurate than both the baseline InLoc method and the sequentialPV method. The resulting estimated poses are usable. However its performance is still significantly below the precision of HoloLens tracking itself. It is not clear why the new MultiCameraPose method is not performing that well. In the previous chapter, I have described known sources of errors, a lot of which can be targeted in a future work. This will certainly improve the evaluation performance.
 
 \section{Future work}
-Improve the accuracy of the MultiCameraPose method by fixing known sources of errors. Spend extra time to analyze why there are inaccurate poses for certain queries and suggest an enhancement. The work on the HoloLens2 sequence should be continued - we need to compute reference poses. The code is there, but currently we are missing more manually set-up 2D-3D correspondences. Also, the work on synthetic dataset generation using Habitat AI shall be continued. Although it cannot give us data from HoloLens tracking, it can be used to generate new indoor localization datasets, without the need for expensive equipment (such as a Matterport scanner). There are extra parameters such as setting up the cutout horizontal field of view, dslevel \footnote{Determines how much to downsample images in the pose verification step.} MultiCameraPose software \cite{MultiCameraPose} parameters and more. The accuracy of the reference poses wrt ground truth poses shall be also improved.
+Improve the accuracy of the MultiCameraPose method by fixing known sources of errors. Spend extra time to analyze why there are inaccurate poses for certain queries and suggest an enhancement. The work on the HoloLens2 sequence should be continued - we need to compute reference poses. The code is there, but currently we are missing more manually set-up 2D-3D correspondences. Also, the work on synthetic dataset generation using Habitat AI shall be continued. Although it cannot give us data from HoloLens tracking, it can be used to generate new indoor localization datasets, without the need for expensive equipment (such as a Matterport scanner). There are extra parameters such as setting up the cutout horizontal field of view, dslevel\footnote{Determines how much to downsample images in the pose verification step.} \code{MultiCameraPose} software \cite{MultiCameraPose} parameters and more. The accuracy of the reference poses wrt ground truth poses shall be also improved.
 
 The paper \cite{IsThisTheRightPlace} provides an improvement of the InLoc pose verification step. Once a reference implementation is available, I recommend incorporating the changes into our implementation.
 
-The cutouts shall be regenerated with horizontal field of view equal to 60\degree, to see if it improves performance. This hFoV would also match the InLoc cutouts' hFoV.
+The cutouts shall be regenerated with horizontal field of view equal to $60\degree$, to see if it improves performance. This hFoV would also match the InLoc cutouts' hFoV.
 
 \appendix
 
