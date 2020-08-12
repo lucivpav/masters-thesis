@@ -147,10 +147,9 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 \chapter{TODO}
 
 \begin{itemize}
-	\item \todo[fix list figures, tables (use the optional argument for a short name)]
-	\item \todo[make sure the dependencies are properly cited as noted in their README]
 	\item \todo[unify table styles]
-	\item \todo[add easy to see reference for the umbrella repository URL]
+	\item \todo[make sure the dependencies are properly cited as noted in their README]
+	\item \todo[add easy to see reference to the umbrella repository URL]
 \end{itemize}
 
 %\part{Your Party}
@@ -238,7 +237,7 @@ Figure \ref{fig:cameraCoordinateSystem} shows a camera coordinate system $\gamma
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=1.0\textwidth,viewport=2.93cm 7.54cm 19.49cm 25.3cm,clip]{GVG_page_cameraCS.pdf}
-	\caption{Camera coordinate system $\gamma$ with bases $\vec c_1, \vec c_2, \vec c_3$; and with origin at $\vec C$ with respect to some World coordinate system $\gamma$. Camera points the $\vec c_3$ direction, having $\vec c_1$ on its right. $\vec b_3$ defines the origin of image coordinate system (pixel at 0,0). Vectors $\vec b_1, \vec b_2$ are considered to be orthogonal, as we are dealing with a rectangular sensor in this thesis. Point $X$ with 3D coordinates $\vec X$ projects onto the image plane to a point $x$ with image coordinates $\vec u$. The two points form a 2D-3D correspondence. Figure is from \cite{GVG}.}
+	\caption[Camera coordinate system]{Camera coordinate system $\gamma$ with bases $\vec c_1, \vec c_2, \vec c_3$; and with origin at $\vec C$ with respect to some World coordinate system $\gamma$. Camera points the $\vec c_3$ direction, having $\vec c_1$ on its right. $\vec b_3$ defines the origin of image coordinate system (pixel at 0,0). Vectors $\vec b_1, \vec b_2$ are considered to be orthogonal, as we are dealing with a rectangular sensor in this thesis. Point $X$ with 3D coordinates $\vec X$ projects onto the image plane to a point $x$ with image coordinates $\vec u$. The two points form a 2D-3D correspondence. Figure is from \cite{GVG}.}
 	\label{fig:cameraCoordinateSystem}
 \end{figure}
 
@@ -407,7 +406,7 @@ We need to know the reference pose of each query, in order to evaluate how accur
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{coordinateSystems.pdf}
-	\caption[Coordinate systems.]{Visualization of the coordinate systems we are dealing with. Omega is the initial unknown HoloLens CS (see section \ref{section:cameraCS} for a an example of a coordinate system). Notice that Omega has a scaling independent of the World CS scaling. Linear transformations are shown by the arrows. There are in fact two slightly different Camera coordinate systems -- one that is estimated from HoloLens and another one (reference pose) that is estimated using Vicon. OmegaToCamera is known for most\protect\footnotemark of the HoloLens queries, because the data comes from HoloLens. ViconToMarker is provided from Vicon tracking. WorldToVicon has been manually determined. MarkerToCamera has been approximated by an algorithm described in the Reference poses section \ref{section:reference-poses}.}
+	\caption[Coordinate systems in use]{Visualization of the coordinate systems we are dealing with. Omega is the initial unknown HoloLens CS (see section \ref{section:cameraCS} for a an example of a coordinate system). Notice that Omega has a scaling independent of the World CS scaling. Linear transformations are shown by the arrows. There are in fact two slightly different Camera coordinate systems -- one that is estimated from HoloLens and another one (reference pose) that is estimated using Vicon. OmegaToCamera is known for most\protect\footnotemark of the HoloLens queries, because the data comes from HoloLens. ViconToMarker is provided from Vicon tracking. WorldToVicon has been manually determined. MarkerToCamera has been approximated by an algorithm described in the Reference poses section \ref{section:reference-poses}.}
 	\label{fig:coordinate-systems}
 \end{figure}
 \footnotetext{For exceptions caused by delays take a look at table \ref{tab:HL-pose-delays}.}
@@ -424,7 +423,7 @@ We need to know the reference pose of each query, in order to evaluate how accur
 		\caption{HoloLens2 sequence.}
 		\label{fig:holoLens-marker}
 	\end{subfigure}
-	\caption{The camera and marker (the object tracked by Vicon). Marker coordinate system is visualized in subfigure \ref{fig:s10e-marker} by the xyz arrows.}
+	\caption[Camera and Marker]{The camera and marker (the object tracked by Vicon). Marker coordinate system is visualized in subfigure \ref{fig:s10e-marker} by the xyz arrows.}
 	\label{fig:camera-markers}
 \end{figure}
 
@@ -439,7 +438,7 @@ Let's now focus on a more difficult scenario, which is the reference pose determ
 \begin{figure}
 	\centering
  	\includegraphics[width=1.0\textwidth]{HL_and_vicon_time}
- 	\caption{Visualization of the HoloLens and Vicon timelines. The synchronization constant must be found. Note that the sampling frequencies are vastly different. However, given a query image from HoloLens taken at some point in time (HoloLens sampling frequency), we find the corresponding reference pose that has the nearest timestamp (after taking the synchronization constant into account; Vicon sampling frequency).}
+ 	\caption[HoloLens and Vicon timelines]{Visualization of the HoloLens and Vicon timelines. The synchronization constant must be found. Note that the sampling frequencies are vastly different. However, given a query image from HoloLens taken at some point in time (HoloLens sampling frequency), we find the corresponding reference pose that has the nearest timestamp (after taking the synchronization constant into account; Vicon sampling frequency).}
  	\label{fig:HL_and_vicon_time}
 \end{figure} 
 
@@ -494,14 +493,14 @@ Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the qualit
 		\caption{\HLvsRefPosesErrorsCaption{}}
 		\label{tab:HL1-ref-vs-HL-errors}	
 	\end{subtable}
-	\caption{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Parameters describing the Marker to camera transformation were \textbf{optimized} using brute-force search.}
+	\caption[Evaluatio of optimized HoloLens1 reference poses]{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Parameters describing the Marker to camera transformation were \textbf{optimized} using brute-force search.}
 	\label{tab:HL1-ref-poses-errors}
 \end{table}
 
 \begin{figure}
 	\centering
  	\includegraphics[width=0.80\textwidth]{HL1-query2-reprojection}
- 	\caption{Query 94 of HoloLens1 and its reprojections errors. The optimized transformation params were used. The same image on non-optimized parameters is not shown, because the average improvement of reprojection error of a the correspondences is about 2 pixels. Therefore a naked eye can barely tell which image has lower reprojection error. Green points: optimal location of 2D correspondences. Red dots: location of the 3D correspondences (projected onto 2D image plane), under the generic parameters (that aim to work across all queries in the sequence).}
+ 	\caption[Reprojection error on optimized s10e parameters]{Query 94 of HoloLens1 and its reprojections errors. The optimized transformation params were used. The same image on non-optimized parameters is not shown, because the average improvement of reprojection error of a the correspondences is about 2 pixels. Therefore a naked eye can barely tell which image has lower reprojection error. Green points: optimal location of 2D correspondences. Red dots: location of the 3D correspondences (projected onto 2D image plane), under the generic parameters (that aim to work across all queries in the sequence).}
  	\label{fig:interesting-reprojection-s10e-query-2}
 \end{figure} 
 
@@ -544,7 +543,7 @@ Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the qualit
 		\caption{\HLvsRefPosesErrorsCaption{}}
 		\label{tab:HL1-ref-non-optimized-vs-HL-errors}
 	\end{subtable}
-	\caption{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Tables show performance on the parameters, describing the Marker to camera transformation, \textbf{prior} using brute-force search optimization.}
+	\caption[Evaluation of non-optimized HoloLens1 reference poses]{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Tables show performance on the parameters, describing the Marker to camera transformation, \textbf{prior} using brute-force search optimization.}
 	\label{tab:HL1-ref-non-optimized-poses-errors}
 \end{table}
 
@@ -572,7 +571,7 @@ Unfortunately, there was another hidden problem that had to be dealt with, prior
 	Orientation delay & 4 \\[1pt]
 	\hline
     \end{tabular}
-	\caption{We are using a program \cite{HoloLensDataAcquisition} for fetching data from HoloLens. It provides a CSV file containing information on the query images it took, when they were taken (timestamp), estimated poses and more. The camera pose estimates are represented by translation and orientation parameters, which are in Omega coordinate system. However, these parameters are wrongly assigned, as they are in fact delayed by a number of frames. The time difference between two consecutive frames is about 333 milliseconds. Optimal delays for HoloLens1 sequence are shown.}
+	\caption[Optimal HoloLens delay parameters]{We are using a program \cite{HoloLensDataAcquisition} for fetching data from HoloLens. It provides a CSV file containing information on the query images it took, when they were taken (timestamp), estimated poses and more. The camera pose estimates are represented by translation and orientation parameters, which are in Omega coordinate system. However, these parameters are wrongly assigned, as they are in fact delayed by a number of frames. The time difference between two consecutive frames is about 333 milliseconds. Optimal delays for HoloLens1 sequence are shown.}
 	\label{tab:HL-pose-delays}
     }
 \end{table}
@@ -621,7 +620,7 @@ The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notic
 	Cutout & 2,088 & 0 & 1,600$\times$1,200 & 106.26 \\[3pt]
 	\hline
     \end{tabular}
-	\caption{Statistics of the {\bf InLocCIIRC dataset}. Note that some queries are without a reference pose assigned to them. This occurs when Vicon gets lost (returns a non-sense pose for a certain period of time). Such queries are ignored in performance evaluation. Note that the HoloLens2 sequence contains a lot of queries, for which Vicon failed. This may be related to the fact that I moved slighly faster around the room in that sequence, making it harder for Vicon to keep track of the marker. Cutout poses are provided from Matterport and because of their quantity, not all of them were manually verified. For I never discovered a problem with the cutout poses, I consider their poses to be flawless. HFoV stands for the horizontal field of view.}
+	\caption[Statistics of the InLocCIIRC dataset]{Statistics of the {\bf InLocCIIRC dataset}. Note that some queries are without a reference pose assigned to them. This occurs when Vicon gets lost (returns a non-sense pose for a certain period of time). Such queries are ignored in performance evaluation. Note that the HoloLens2 sequence contains a lot of queries, for which Vicon failed. This may be related to the fact that I moved slighly faster around the room in that sequence, making it harder for Vicon to keep track of the marker. Cutout poses are provided from Matterport and because of their quantity, not all of them were manually verified. For I never discovered a problem with the cutout poses, I consider their poses to be flawless. HFoV stands for the horizontal field of view.}
 	\label{tab:dataset-statistics}
     }
 \end{table}
@@ -633,7 +632,7 @@ The dataset statistics are depicted in table \ref{tab:dataset-statistics}. Notic
     \includegraphics[width=0.8\textwidth]{cutout_19_-90_0_FoV106} \\
     \includegraphics[width=0.8\textwidth]{cutout_19_-90_0_FoV60}
     \end{tabular}
-	\caption{{\bf Visual quality comparision of the same cutout under different FoV.} Top: horizontal FoV: $106.26\degree$. Bottom: horizontal FoV: $60.00\degree$. The image with a lower FoV contains a lot of artifacts and is of lower visual quality.}
+	\caption[FOV quality comparison]{{\bf Visual quality comparision of the same cutout under different FoV.} Top: horizontal FoV: $106.26\degree$. Bottom: horizontal FoV: $60.00\degree$. The image with a lower FoV contains a lot of artifacts and is of lower visual quality.}
 	\label{fig:fov-quality}
     }
 \end{figure*}
@@ -657,7 +656,7 @@ The scanned rooms contain a couple of types of objects that can confuse the Matt
 		Door with glass elements & Window \\
 		\hline
 	\end{tabular}
-	\caption{Handling of reflective surfaces in the Matterport Capture app. The options are: Default, Window, Mirror. Best results were obtained using the values in this table.}
+	\caption[Handling of reflective surfaces]{Handling of reflective surfaces in the Matterport Capture app. The options are: Default, Window, Mirror. Best results were obtained using the values in this table.}
 	\label{tab:matterport-reflective-surfaces}
 \end{table}
 
@@ -750,7 +749,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:all-subprojects-listed}
-	\caption{Sub-projects listed. Only those I have been working on are listed.}
+	\caption[Organization of sub-projects]{Sub-projects listed. Only those I have been working on are listed.}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -777,7 +776,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:demo-structure}
-	\caption{The organization of the source code of the core project. Only notable items shown.}
+	\caption[Core project structure]{The organization of the source code of the core project. Only notable items shown.}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -801,7 +800,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:dataset-repo-structure}
-	\caption{The structure of the repository containing the dataset construction tool. It also contains other useful scripts. Only notable items shown.}
+	\caption[Dataset construction tool structure]{The structure of the repository containing the dataset construction tool. It also contains other useful scripts. Only notable items shown.}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -839,7 +838,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:dataset-structure}
-	\caption{The structure of the InLocCIIRC dataset. Only notable items shown. \todo[Habitat data should not be in \code{InLocCIIRC\_dataset}!]}
+	\caption[Dataset structure]{The structure of the InLocCIIRC dataset. Only notable items shown. \todo[Habitat data should not be in \code{InLocCIIRC\_dataset}!]}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -855,7 +854,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:MCP-structure}
-	\caption{The structure of the modified \code{MultiCameraPose} repository. Only notable items shown.}
+	\caption[\code{MultiCameraPose} structure]{The structure of the modified \code{MultiCameraPose} repository. Only notable items shown.}
 \end{figure}
 
 \section{Pseudocode}
@@ -1162,7 +1161,7 @@ The MATLAB function is present at \code{InLocCIIRC\_utils/multiCameraPose/ \allo
 		\code{params} & struct & \makecell{Contains experiment-specific parameters. See \\ \code{InLocCIIRC\_utils/params/setupParams.m}.} \\
 		\hline
 	\end{tabular}
-	\caption{The input parameters of the \code{multiCameraPose.m} MATLAB function. The function acts as an interface to the \code{multi\_camera\_pose} executable program.}
+	\caption[Input parameters of \code{multiCameraPose} MATLAB function]{The input parameters of the \code{multiCameraPose} MATLAB function. The function acts as an interface to the \code{multi\_camera\_pose} executable program.}
 	\label{tab:MCP_frontend_input}
 \end{table}
 
@@ -1209,7 +1208,7 @@ Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various th
 		{\\ \hline \id & \inMap & \translation & \orientation}
 		\\\hline
 	\end{tabular}
-	\caption{Pose estimation errors on s10e query images.}
+	\caption[s10e pose estimatation errors]{Pose estimation errors on s10e query images.}
 	\label{tab:estimation-errors}
 \end{table}
 
@@ -1263,7 +1262,7 @@ Figure \ref{fig:s10e-queryPipeline} shows example queries, how they are being pr
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of s10e queries localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see subsection \ref{subsection:GV-fails} for an investigation.}
+    \caption[s10e query pipeline]{{\bf Qualitative comparison of s10e queries localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see subsection \ref{subsection:GV-fails} for an investigation.}
     \label{fig:s10e-queryPipeline}
     }
 \end{figure*}
@@ -1280,7 +1279,7 @@ Figure \ref{fig:s10e-queryPipeline} shows example queries, how they are being pr
 		1.00m & 69.9\% & \bfseries 92.50\% & 100.00\% & 91.43\% \\
 		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on the s10e query set of the InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
+	\caption[InLoc and InLocCIIRC performance on non-sequential queries]{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on the s10e query set of the InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
 	\label{tab:s10e-InLoc-statistics}
 \end{table}
 
@@ -1299,14 +1298,14 @@ We say that InLocCIIRC \emph{got completely lost} when the pose estimate of a qu
 		Standard deviation & 1.26 & 24.00 \\
 		\hline
 	\end{tabular}
-	\caption{Statistics of the s10e pose estimation errors. InLocCIIRC got completely lost 0 out of 40 times. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. Notice that the deviations are high. This is caused by the query 40 performing extraordinarily poorly.}
+	\caption[s10e pose estimation error statistics]{Statistics of the s10e pose estimation errors. InLocCIIRC got completely lost 0 out of 40 times. Not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates with reference poses. Notice that the deviations are high. This is caused by the query 40 performing extraordinarily poorly.}
 	\label{tab:s10e-other-statistics}
 \end{table}
 
 \begin{figure}[htb!]
 	\centering
 	\input{distThreshVsAccuracy-s10e/distThreshVsAccuracy-s10e.tex}
-	\caption{Comparison between InLoc and InLocCIIRC on their respective datasets. The s10e query set was used for InLocCIIRC. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
+	\caption[Translation error threshold vs accuracy on s10e query set]{Comparison between InLoc and InLocCIIRC on their respective datasets. The s10e query set was used for InLocCIIRC. The independent variable describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
 	\label{fig:dist-thresh-vs-accuracy}
 \end{figure}
 
@@ -1315,14 +1314,14 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 \begin{figure}[htb!]
 	\centering
  	\includegraphics[width=0.79\textwidth]{evaluation-s10e/topView-B-315}
- 	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. The s10e query set was used.}
+ 	\caption[s10e B-315 top-view]{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. The s10e query set was used.}
  	\label{fig:topView-B-315}
 \end{figure} 
 
 \begin{figure}[htb!]
 	\centering
  	\includegraphics[width=0.69\textwidth]{evaluation-s10e/topView-B-670}
- 	\caption{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. No s10e queries were incorrectly localized to this room.}
+ 	\caption[s10e B-670 top-view]{View on the floor plan of room B-670. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. No s10e queries were incorrectly localized to this room.}
  	\label{fig:topView-B-670}
 \end{figure} 
 
@@ -1354,7 +1353,7 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\bfseries HoloLens & \bfseries 84.36\% & \bfseries 97.55\% & \bfseries 97.55\% \\
 		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods on HoloLens1 query set (part of the InLocCIIRC dataset). Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The HoloLens method are the poses provided by HoloLens tracking itself, after being converted to be wrt World coordinate system. As it can be seen, it is superior to all the custom methods I have tried.}
+	\caption[InLocCIIRC performance on HoloLens1 query set]{Evaluation of performance of localization methods on HoloLens1 query set (part of the InLocCIIRC dataset). Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The HoloLens method are the poses provided by HoloLens tracking itself, after being converted to be wrt World coordinate system. As it can be seen, it is superior to all the custom methods I have tried.}
 	\label{tab:HL1-InLoc-statistics}
 \end{table}
 
@@ -1382,7 +1381,7 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\bfseries HoloLens & \bfseries 0.15m & \bfseries 2.09$\degree$ & \bfseries 0.14m & \bfseries 1.51$\degree$ & \bfseries 0.08m & \bfseries 1.69$\degree$ \\
 		\hline
 	\end{tabular}
-	\caption{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods (except the HoloLens method). The HoloLens method got completely lost 6 out of 350 times, which is caused by the HoloLens delay (see table \ref{tab:HL-pose-delays}). The \emph{completely lost} cases are not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates (or the pose estimates from HoloLens converted to be wrt World CS) with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold. MCP stands for MultiCameraPose. The original HoloLens method is superior to all the custom methods I have tried. Note that if the estimated poses were compared to the (unknown) ground-truth poses, the errors would likely be even lower, as discussed in the Reference poses section \ref{paragraph:gt-vs-ref-poses}.}
+	\caption[HoloLens1 pose estimation error statistics]{Statistics of the HoloLens1 pose estimation errors. InLocCIIRC got completely lost 29 out of 350 times for all methods (except the HoloLens method). The HoloLens method got completely lost 6 out of 350 times, which is caused by the HoloLens delay (see table \ref{tab:HL-pose-delays}). The \emph{completely lost} cases are not included in the mean/median/std errors. Errors are computed by comparing InLocCIIRC pose estimates (or the pose estimates from HoloLens converted to be wrt World CS) with reference poses. The errors in [m] units are translation errors and the errors in [$\degree$] units are orientation errors. Lowest errors are highlighted in bold. MCP stands for MultiCameraPose. The original HoloLens method is superior to all the custom methods I have tried. Note that if the estimated poses were compared to the (unknown) ground-truth poses, the errors would likely be even lower, as discussed in the Reference poses section \ref{paragraph:gt-vs-ref-poses}.}
 	\label{tab:HL1-other-statistics}
 \end{table}
 
@@ -1393,7 +1392,7 @@ Judging from the results above, the best performing custom method is MultiCamera
 \begin{figure}[htb!]
 	\centering
 	\input{distThreshVsAccuracy-HL1/distThreshVsAccuracy-HL1.tex}
-	\caption{Evaluation of methods on the HoloLens1 query set. Comparison between the baseline method ($k=1$, i.e. non-sequential) with the best performing custom method ($k=2$, MultiCameraPose). The original HoloLens method, that we are aiming to surpass is also shown. The independent variable describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
+	\caption[Translation error threshold vs accuracy on HoloLens1 query set]{Evaluation of methods on the HoloLens1 query set. Comparison between the baseline method ($k=1$, i.e. non-sequential) with the best performing custom method ($k=2$, MultiCameraPose). The original HoloLens method, that we are aiming to surpass is also shown. The independent variable describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
 	\label{fig:HL1-dist-thresh-vs-accuracy}
 \end{figure}
 
@@ -1445,7 +1444,7 @@ Judging from the results above, the best performing custom method is MultiCamera
 	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/322.jpg/322.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of HoloLens1 queries localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by geometric verification. The pose estimation of query 84 is not completely wrong by human standards. InLocCIIRC matched the query image with a very similar cutout image, that is, however, at another location. Although this query is InMap, the chosen cutout is not the one that forms the InMap propery. Note that the query images have a different aspect ratio than the cutout images. The error maps not shown to save space.}
+    \caption[HoloLens1 query pipeline]{{\bf Qualitative comparison of HoloLens1 queries localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by geometric verification. The pose estimation of query 84 is not completely wrong by human standards. InLocCIIRC matched the query image with a very similar cutout image, that is, however, at another location. Although this query is InMap, the chosen cutout is not the one that forms the InMap propery. Note that the query images have a different aspect ratio than the cutout images. The error maps not shown to save space.}
     \label{fig:HL1-queryPipeline}
     }
 \end{figure*}
@@ -1456,7 +1455,7 @@ Figure \ref{fig:HL1-topView-B-315} depicts the top-view of B-315 including a sub
 \begin{figure}[htb!]
 	\centering
  	\includegraphics[width=0.80\textwidth]{evaluation-HL1-v4.2-k2/topView-B-315}
- 	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. Every 20th HoloLens1 query rendered.}
+ 	\caption[HoloLens1 B-315 top-view]{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. Every 20th HoloLens1 query rendered.}
  	\label{fig:HL1-topView-B-315}
 \end{figure} 
 
@@ -1482,7 +1481,7 @@ Figure \ref{fig:HL1-topView-B-315} depicts the top-view of B-315 including a sub
 		231 & 518 \\
 		\hline
 	\end{tabular}
-	\caption{The ranking after sorting all cutouts for a given query by highest score. Only top \topRetrieval{} make it to the pose estimation step, others are not considered. This suggests that the scores are not completely correct.}
+	\caption[Queries affected by inaccurate \code{score}]{The ranking after sorting all cutouts for a given query by highest score. Only top \topRetrieval{} make it to the pose estimation step, others are not considered. This suggests that the scores are not completely correct.}
 	\label{tab:bad-scores-wrong-candidates}
 \end{table}
 
@@ -1522,7 +1521,7 @@ Table \ref{tab:emperical-complexity} shows the processing times I have measured.
 		HoloLens1-k4-sequentialPV & CPU & about 40 hours \\
 		\hline
 	\end{tabular}
-	\caption{The experiment is split into two parts; the first part runs on a GPU (feature extraction) and the rest runs on a CPU. For the CPU instance, a machine with 45 threads and K8 2000 CPUs (or similar) was used. GPU instance used a single NVIDIA 1080Ti GPU with 8 threads. The processing time is a rough estimate.}
+	\caption[Processing times of the experiments]{The experiment is split into two parts; the first part runs on a GPU (feature extraction) and the rest runs on a CPU. For the CPU instance, a machine with 45 threads and K8 2000 CPUs (or similar) was used. GPU instance used a single NVIDIA 1080Ti GPU with 8 threads. The processing time is a rough estimate.}
 	\label{tab:emperical-complexity}
 \end{table}
 
