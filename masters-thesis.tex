@@ -91,6 +91,7 @@
 \newcommand{\TP}[1]{{\color{blue}#1}}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
+\hyphenation{Multi-Camera-Pose}
 
 \newcommand{\topRetrieval}{100} % ht_retrieval output
 \newcommand{\topGV}{10} % number of cutout candidates for each query
@@ -137,6 +138,7 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 \usepackage[section]{placeins} % to help keep floats within their section
 \usepackage{listings}
 \usepackage{dirtree} % directory tree visualization
+\usepackage{enumitem} % ability to create a. b. c. enumerations
 
 \begin{document}
 
@@ -1171,16 +1173,33 @@ The function has a single output - \code{posesWrtModel}. It is a $1 \times n$ ce
 \label{chapter:evaluation}
 
 \section{Experiment design}
-Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by constant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The visualizations are used to better understand the sources of errors, which are described in section \ref{section:sources-of-errors}.
+Performance of the implemented solution had to be evaluated quantitatively for all the three main methods: Non-sequential method, sequentialPV method and the MultiCameraPose method. The two latter methods are designed to work with segments of queries, therefore different segment lengths, denoted by constant $k>1$ were evaluated. Some of the promising methods were also visualized for human-friendly qualitative evaluation. The main point of the visualizations is to better understand the sources of errors (if any), which are described in section \ref{section:sources-of-errors}.
 
-In order to measure how the InLocCIIRC algorithm is performing, I have measured the percentage of correctly localized poses within a threshold from a reference pose. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to $10\degree$. Another metric is to compute statistics on the translation and orientation errors. For this, the mean, median, and standard deviation (std) were chosen.
+In order to measure how the InLocCIIRC algorithm is performing, the percentage of correctly localized poses within a threshold from a reference pose has been measured. Absolute position difference threshold is one of the following values, with decreasing difficulty: 0.25m, 0.50m, 1.00m. Angular threshold is set to $10\degree$.
+
+However, we first need to compute the translation and orientation errors for individual queries. An example of such data can is in table \ref{tab:estimation-errors}. This table shows the content of \code{evaluation-s10e/errors.csv} file. In general, if a row with \code{NaN} entries is present in an \code{evaluation/errors.csv} file, it is the consequence of one of the following:
+
+\begin{enumerate}[label=\normalfont\itembox{\alph*)}]
+	\item \code{parfor\_densePE} returned the cell array \code{Ps} with a \code{NaN} P matrix.
+	\begin{enumerate}
+		\item Data from HoloLens are missing or their poses contain \code{NaN}; (if applicable).
+		\item The last query-cutout in a current segment ($k>0$) has an insufficient amount of correspondences.
+		\item The result of P3P or \code{multiCameraPose} contains \code{NaN}.
+	\end{enumerate}
+	\item We do not have a reference pose for the query.
+	\item The estimated pose was in a different space than the reference query pose.
+\end{enumerate}
+
+Another quantitative evaluation to consider is computing the statistics on the translation and orientation errors. For this, the mean, median, and standard deviation (std) were chosen.
 
 A descriptive way to compare multiple methods is to compare percent of correctly localized queries, as the translation threshold increases (the orientation threshold is fixed).
 
-I provide two kinds of visualization. The first one shows, for a subset of queries, how they are processed - the closest cutout found, the inliers used to reconstruct the camera pose, and an error map. This is also useful when determining why InLocCIIRC performs poorly on certain queries. The second visualization shows a top level view of the physical environment. The queries, estimated query poses and sweeps are drawn.
+I provide two kinds of visualization. The first one shows, for a subset of queries, how they are processed - the closest cutout found, the inliers used to reconstruct the camera pose, and an error map. This is also useful when determining why InLocCIIRC performs poorly on certain queries. The second kind of visualization shows a top level view of a scanned environment, including some localization data: the queries, estimated query poses and sweeps are drawn.
 
 \section{s10e query set}
-Evaluation results of the non-sequential s10e query set are shown in this section. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. Rows with a \code{NaN} entry mean that \code{parfor\_densePE} returned a \code{NaN} P matrix, we do not have a reference pose for the query, or the estimated pose was in a different space than the reference query pose. Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Error statistics are shown in table \ref{tab:s10e-other-statistics}. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
+Evaluation results of the non-sequential s10e query set are shown in this section. Table \ref{tab:estimation-errors} shows the errors in pose estimation for individual queries. 
+
+Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various thresholds. The InMap/OffMap performance is also shown. Error statistics are shown in table \ref{tab:s10e-other-statistics}. Figure \ref{fig:dist-thresh-vs-accuracy} shows how the localization accuracy changes given increasing translation error threshold.
 
 \begin{table}[htb!]
 	\centering
@@ -1191,7 +1210,7 @@ Evaluation results of the non-sequential s10e query set are shown in this sectio
 		{\\ \hline \id & \inMap & \translation & \orientation}
 		\\\hline
 	\end{tabular}
-	\caption{Pose estimation errors on query images.}
+	\caption{Pose estimation errors on s10e query images.}
 	\label{tab:estimation-errors}
 \end{table}
 
@@ -1245,7 +1264,7 @@ Figure \ref{fig:s10e-queryPipeline} shows example queries, how they are being pr
 	\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-s10e/queryPipeline/PV/40.jpg/40.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see subsection \ref{subsection:GV-fails} for an investigation.}
+    \caption{{\bf Qualitative comparison of s10e queries localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by P3P-LO-RANSAC. The majority of query images shown here are well localized within 0.5 meters and 5.0 degrees. All of the shown queries are OffMap, to test challenging estimation scenarios. InLocCIIRC struggles to find correct inliers on query 40, see subsection \ref{subsection:GV-fails} for an investigation.}
     \label{fig:s10e-queryPipeline}
     }
 \end{figure*}
@@ -1262,9 +1281,11 @@ Figure \ref{fig:s10e-queryPipeline} shows example queries, how they are being pr
 		1.00m & 69.9\% & \bfseries 92.50\% & 100.00\% & 91.43\% \\
 		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
+	\caption{Evaluation of performance of localization methods. The method in the first column was run on InLoc dataset. The second column method was run on the s10e query set of the InLocCIIRC dataset. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The last two columns belong to InLocCIIRC method. InMap queries are queries for which we have a similar cutout in the dataset.}
 	\label{tab:s10e-InLoc-statistics}
 \end{table}
+
+We say that InLocCIIRC \emph{got completely lost} when the pose estimate of a query is \code{NaN} or a wrong space was estimated.
 
 \begin{table}[htb!]
 	\centering
@@ -1286,7 +1307,7 @@ Figure \ref{fig:s10e-queryPipeline} shows example queries, how they are being pr
 \begin{figure}[htb!]
 	\centering
 	\input{distThreshVsAccuracy-s10e/distThreshVsAccuracy-s10e.tex}
-	\caption{Comparison between InLoc and InLocCIIRC on their respective datasets. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
+	\caption{Comparison between InLoc and InLocCIIRC on their respective datasets. The s10e query set was used for InLocCIIRC. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
 	\label{fig:dist-thresh-vs-accuracy}
 \end{figure}
 
@@ -1295,7 +1316,7 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 \begin{figure}[htb!]
 	\centering
  	\includegraphics[width=0.79\textwidth]{evaluation-s10e/topView-B-315}
- 	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses.}
+ 	\caption{View on the floor plan of room B-315. Red dots: sweeps. Blue dots: queries. Yellow dots: estimated query poses. The s10e query set was used.}
  	\label{fig:topView-B-315}
 \end{figure} 
 
@@ -1334,7 +1355,7 @@ Figures \ref{fig:topView-B-315} and \ref{fig:topView-B-670} depict the dataset i
 		\bfseries HoloLens & \bfseries 84.36\% & \bfseries 97.55\% & \bfseries 97.55\% \\
 		\hline
 	\end{tabular}
-	\caption{Evaluation of performance of localization methods on HoloLens1 query set. Ran on the InLocCIIRC dataset obviously. Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The HoloLens method are the poses provided by HoloLens tracking itself, after being converted to be wrt World coordinate system. As can be seen, it is superior to all the custom methods I have tried.}
+	\caption{Evaluation of performance of localization methods on HoloLens1 query set (part of the InLocCIIRC dataset). Percentage rate of correctly localized queries within given threshold is shown. Angular threshold is equal to $10\degree$ in every row. The HoloLens method are the poses provided by HoloLens tracking itself, after being converted to be wrt World coordinate system. As it can be seen, it is superior to all the custom methods I have tried.}
 	\label{tab:HL1-InLoc-statistics}
 \end{table}
 
@@ -1373,7 +1394,7 @@ Judging from the results above, the best performing custom method is MultiCamera
 \begin{figure}[htb!]
 	\centering
 	\input{distThreshVsAccuracy-HL1/distThreshVsAccuracy-HL1.tex}
-	\caption{Evaluation of methods on the HoloLens1 query set. Comparison between the baseline method ($k=1$, i.e. non-sequential) with the best performing custom method ($k=2$, MultiCameraPose). The original HoloLens method, that we are aiming to surpass is also shown. The x-axis describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
+	\caption{Evaluation of methods on the HoloLens1 query set. Comparison between the baseline method ($k=1$, i.e. non-sequential) with the best performing custom method ($k=2$, MultiCameraPose). The original HoloLens method, that we are aiming to surpass is also shown. The independent variable describes the maximum allowed translation error. The angular threshold is set to $10\degree$.}
 	\label{fig:HL1-dist-thresh-vs-accuracy}
 \end{figure}
 
@@ -1425,13 +1446,13 @@ Judging from the results above, the best performing custom method is MultiCamera
 	%\adjincludegraphics[valign=M,width=\thiswidth]{evaluation-HL1-v4.2-k2/queryPipeline/PV/322.jpg/322.jpg/errmap} \\
 	\hline
     \end{tabular}
-    \caption{{\bf Qualitative comparison of query localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by geometric verification. The pose estimation of query 84 is not completely wrong by human standards. InLocCIIRC matched the query image with a very similar cutout image, that is, however, at another location. Although this query is InMap, the chosen cutout is not the one that forms the InMap propery. Note that the query images have a different aspect ratio than the cutout images. The error maps not shown to save space.}
+    \caption{{\bf Qualitative comparison of HoloLens1 queries localization.} From left to right: Query name and localization error (meters, degrees), query image, the best matching database image, synthesized view at the estimated pose, error map between the query image and the synthesized view. Green dots are the inlier matches obtained by geometric verification. The pose estimation of query 84 is not completely wrong by human standards. InLocCIIRC matched the query image with a very similar cutout image, that is, however, at another location. Although this query is InMap, the chosen cutout is not the one that forms the InMap propery. Note that the query images have a different aspect ratio than the cutout images. The error maps not shown to save space.}
     \label{fig:HL1-queryPipeline}
     }
 \end{figure*}
 }
 
-Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of localization results (every 20th HoloLens query is rendered). View of room B-670 is not shown, as for this subset of results, it looks the same as in case of s10e query set, see figure \ref{fig:topView-B-670}. This means that none of the queries in the subset were incorrectly localized in room B-670.
+Figure \ref{fig:HL1-topView-B-315} depicts the top-view of B-315 including a subset of localization results (every 20th HoloLens query is rendered). View of room B-670 is not shown, as for this subset of results, it looks the same as in case of s10e query set, see figure \ref{fig:topView-B-670}. This means that none of the queries in the subset were incorrectly localized in room B-670.
 
 \begin{figure}[htb!]
 	\centering
@@ -1462,13 +1483,13 @@ Figure \ref{fig:HL1-topView-B-315} depicts the dataset including a subset of loc
 		231 & 518 \\
 		\hline
 	\end{tabular}
-	\caption{The ranking after sorting all cutouts for a given query by highest score. Only \topRetrieval{} make it to the pose estimation step, others are not considered. This suggests that the scores are not completely correct.}
+	\caption{The ranking after sorting all cutouts for a given query by highest score. Only top \topRetrieval{} make it to the pose estimation step, others are not considered. This suggests that the scores are not completely correct.}
 	\label{tab:bad-scores-wrong-candidates}
 \end{table}
 
 \subsection{Hard to pick top \topPE{} combinations for non-trivial segments}
 \label{subsection:hard-top-pick-top-combinations}
-Geometric verification step chooses top \topGV{} cutouts for each query based on the highest number of inliers. The wrong ones would normally be filtered out by pose verification. However, if segments of length k>1 are used, the top \topPE{} combinations (representing the current segment) don't necessarily contain only the reasonable query-cutout pairs. This is because we are only choosing top \topPE{} combinations from $\topGV^k$ possible combinations\footnote{we are not talking about combinations in a mathematical sense, but rather as a way of expressing a number of possibilities.}. There is no easy solution to this problem. Making pose estimation return significantly more than top \topPE{} candidates for each query will have a performance impact, because the pose verification step is already time consuming.
+Geometric verification step chooses top \topGV{} cutouts for each query based on the highest number of inliers. The wrong ones would normally be filtered out by pose verification. However, if segments of length $k>1$ are used, the top \topPE{} combinations (representing the current segment) don't necessarily contain only the reasonable query-cutout pairs. This is because we are only choosing top \topPE{} combinations from $\topGV^k$ possible combinations\footnote{We are not talking about combinations in a mathematical sense, but rather as a way of expressing a number of possibilities.}. There is no easy solution to this problem. Making pose estimation return significantly more than top \topPE{} candidates for each query will have a performance impact, because the pose verification step is already time consuming.
 
 \subsection{No HoloLens poses}
 Due to the delay (see table \ref{tab:HL-pose-delays}), some of the queries by the end of the HoloLens1 and HoloLens2 sequences do not have a pose estimated from HoloLens. In such a case we have to resort to using standard P3P, which performs (on average) worse than MultiCameraPose. Hopefully the delay was only caused by the software extracting the data from HoloLens and the delay is not actually present in real use. If it is present, it is a problem as the techniques based on InLoc described in this paper would not work in real-time.
@@ -1480,13 +1501,14 @@ Our approach produced a completely wrong pose estimate in Query 40 of the s10e q
 \section{Computational complexity}
 The redesigned and improved pose estimation pipeline is a fairly complex piece of software. It is hard to compute the asymptotic complexity of processing a query image or a set of query images. The computational requirements are missing from the InLoc paper \cite{taira2018inloc}. However, the authors mention the need for about 14 GB RAM in their experiment, to hold the image descriptors in memory.
 
-Table \ref{tab:emperical-complexity} shows the following processing times I have measured. They are not necessarily accurate, as sometimes, the experiment was re-run while keeping some previously computed data.
+Table \ref{tab:emperical-complexity} shows the processing times I have measured. They are not necessarily accurate, as sometimes, the experiment was re-run while keeping some previously computed data.
 
 \begin{table}[htb!]
 	\centering
 	\begin{tabular}{|c|c|c|}
 		\hline
-		Experiment & Step & Very rough estimate \\
+		Experiment & Step & Processing time\\
+		\hline
 		\hline
 		s10e & GPU & 11 min \\
 		s10e & CPU & 1h 46 min \\
@@ -1501,11 +1523,11 @@ Table \ref{tab:emperical-complexity} shows the following processing times I have
 		HoloLens1-k4-sequentialPV & CPU & about 40 hours \\
 		\hline
 	\end{tabular}
-	\caption{The experiment is split into two parts; the first part runs on a GPU (feature extraction) and the rest runs on a CPU. For the CPU instance, a machine with 45 threads and K8 2000 CPUs (or similar) was used. GPU instance used a single NVIDIA 1080Ti GPU with 8 threads.}
+	\caption{The experiment is split into two parts; the first part runs on a GPU (feature extraction) and the rest runs on a CPU. For the CPU instance, a machine with 45 threads and K8 2000 CPUs (or similar) was used. GPU instance used a single NVIDIA 1080Ti GPU with 8 threads. The processing time is a rough estimate.}
 	\label{tab:emperical-complexity}
 \end{table}
 
-The preprocessing step shall also be taken into account. It takes about 20 minutes to create the \code{score} matrix for an s10e query set. It is done by executing \code{buildFeatures.m} followed by \code{buildScores.m}. The same task takes 22 minutes on the HoloLens1 query set. Note that both tasks share the same number of cutouts that require processing in \code{buildFeatures.m}.
+The preprocessing step shall also be taken into account. It takes about 20 minutes to create the \code{score} matrix for an s10e query set. It is done by executing \code{buildFeatures.m} followed by \code{buildScores.m}. The same task takes 22 minutes on the HoloLens1 query set. Note that both tasks share the same number of cutouts that require processing by \code{buildFeatures.m}.
 
 The recommended amount of RAM for re-running the experiments is 90 GB.
 
