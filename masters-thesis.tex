@@ -149,6 +149,7 @@ V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
 	\item \todo[fix list figures, tables (use the optional argument for a short name)]
 	\item \todo[make sure the dependencies are properly cited as noted in their README]
 	\item \todo[unify table styles]
+	\item \todo[add easy to see reference for the umbrella repository URL]
 \end{itemize}
 
 %\part{Your Party}
@@ -210,11 +211,11 @@ Let's take a look at a high-level overview of how the InLoc method operates. The
 
 \begin{enumerate}
 	\item For every query image: find top N similar cutout images using the \code{score} similarity matrix.
-	\item For every query-cutout pair: find tentative pixel-to-pixel correspondences using matching of NetVLAD \ref{section:NetVLAD} features.
+	\item For every query-cutout pair: find tentative pixel-to-pixel correspondences using matching of NetVLAD \ref{section:NetVLAD} features. This step is called geometric verification.
 	\item Re-rank the top N cutout lists according to the highest number of tentatives found (if there is a draw, the original query-cutout score decides the order).
 	\item Choose top $M \le N$ cutouts in the lists.
 	\item For all query-cutout pairs, construct a pose estimate using P3P-RANSAC\footnote{P3P is covered in section \ref{section:P3P}; refer to \cite{RANSAC} for RANSAC description.}. This is possible since the pixel-to-pixel correspondences can be converted into 2D-3D correspondences (cutouts are RGBD).
-	\item Project the estimated poses and evaluate their similarities to the query images.
+	\item Project the estimated poses and evaluate their similarities to the query images (pose verification step).
 	\item For every query: choose the cutout for which we have a synthesized query image with highest similarity to the query image (using DenseRootSIFT \cite{RootSIFT} \cite{DenseSIFT}).
 \end{enumerate}
 
@@ -681,47 +682,47 @@ A future work could add support for the creation of the panorama/cutout images.
 
 InLoc \cite{taira2018inloc} authors provide a demonstration in MATLAB that operates on the InLoc dataset. I have taken this demonstration and adjusted it, so that it works on the InLocCIIRC dataset instead. I have added an evaluation script, that was missing from the original code. Although the evaluation of InLoc is handled by \url{http://www.visuallocalization.net}, this tool of course doesn't handle the newly created InLocCIIRC dataset yet.
 
-The entire InLocCIIRC implementation should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP server. However, the GPU node prohibited the use of more than 8 CPU threads per user. So I had to split the implementation into 2 parts: in the first run, the GPU is used. In the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc implementation as well.
+The entire InLocCIIRC implementation should run on a multi-core machine with a GPU. The number of processing CPU threads can be up to 45 at a time. In order to do this, I was running the program on a CMP\footnote{Center for Machine Perception at Czech Technical University in Prague.} server. However, the GPU node prohibited the use of more than 8 CPU threads per user. Therefore the implementation was split into 2 parts: in the first run, the GPU is used; in the latter run, no GPU is required, but a CPU with a lot of cores is used. The need for a GPU comes from the fact that we are using inference of NetVLAD-based neural network, which would take much longer on a CPU. This GPU restriction is present in InLoc implementation as well.
 
-The original InLoc implementation uses point cloud projection in the pose verification step. The code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering. I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (\code{pyrender}, \code{trimesh}, \code{open3D}). My \code{projectMesh} method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and call the render functions. However, this would require non-trivial implementation changes, at least in the demo, because the implementation is in MATLAB and the \code{projectMesh} routine is in Python.
+The original InLoc implementation uses point cloud projection in the pose verification step. However, the code for point cloud (PC) projection did not support variable point size. Because the models in my datasets are not dense (compared to those taken with the Faro 3D scanner), the projection can sometimes see through pillars or objects that are close to the camera. This is not desirable, as seeing what is behind the object can result in a different NetVLAD descriptor that is not similar to the query image. At first I have implemented PC projection with a point size parameter, but the problem is that it does not support headless\footnote{Headless rendering is rendering on a computer where the rendering program is not attached to a physical display.} rendering. I ended up using a mesh model projection instead of a point cloud projection in the point verification step. I am using existing software packages to achieve this (\code{pyrender}, \code{trimesh}, \code{open3D}). My \code{projectMesh} method supports headless rendering. Unfortunately, it is very demanding - requires ~14 GB RAM and it also takes time to load the dataset into memory. Of course, one would cache the model in memory and then just call the render functions. However, this would require non-trivial implementation changes, because the implementation is in MATLAB and the \code{projectMesh} routine is in Python.
 
-A major change to the implementation was adding support for sequential queries. Currently the code\footnote{The repository implementing the new pipeline is called InLocCIIRC\_demo, but the name is in fact not very accurate, because it is not really an implementation of the InLoc paper \cite{taira2018inloc}. However, the pose estimation algorithms are indeed based on InLoc.} supports specifically sequential queries from HoloLens. To estimate poses of sequential queries from HoloLens, poses from HoloLens must be provided. These poses are estimates of the ground-truth camera poses, and are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
+A major change to the implementation was adding support for sequential queries. Currently the code\footnote{The repository implementing the new pipeline is called \code{InLocCIIRC\_demo}, but the name is in fact not very accurate, because it is not really an implementation of the InLoc paper \cite{taira2018inloc}. However, the pose estimation algorithms are indeed based on InLoc.} supports specifically sequential queries from HoloLens. To estimate poses (wrt World) of sequential queries from HoloLens, poses from HoloLens (wrt Omega) must be provided. The latter poses are computed by HoloLens itself. There are two approaches how the sequential nature of query sets is leveraged. Both approaches depend on a parameter \emph{k}. We want to estimate the camera pose for each query in the query sequence. At each such query, we consider a segment of queries, such that the last query in the segment is the currently processed query. Constant \emph{k} defines how long the segment is.
 
-The first approach is called SequentialPV. It only leverages the other queries (in the segment) in the pose verification step. This approach aims to be more robust than the non-sequential one, by providing more evidence: the projection quality for all queries in the segment is considered and compared to the input query images. How is this done? We have top \topPE{} camera poses (given by P3P in the pose estimation step). These poses are the estimated poses of the current query. Next, we have camera pose estimates for every query in the segment, provided by HoloLens. Those poses are wrt Omega. Therefore, I convert the poses from HoloLens from Omega to World, by aligning the two poses of the last query in the segment. The two poses are:
+The first approach is called SequentialPV. It only leverages the other queries (in the segment) in the pose verification step. This approach aims to be more robust than the non-sequential one, by providing more evidence: the projection quality for all queries in the segment is considered and compared to the input query images. How is this done? We have top \topPE{} camera poses (given by P3P in the pose estimation step). These poses are the estimated poses of the current query. Next, we have camera pose estimates for every query in the segment, provided by HoloLens. Those poses are wrt Omega. Therefore, we convert the poses from HoloLens from Omega to World, by aligning the two poses of the last query in the segment. The two poses are:
 
 \begin{itemize}
 	\item the camera pose estimate (wrt World) provided from pose estimation step,
 	\item the camera pose estimate (wrt Omega) provided from HoloLens.
 \end{itemize}
 
-To match the two poses, we just need to compute a linear transformation (rotation, translation). With this transformation, the other poses from HoloLens are converted from Omega to World. With all camera pose estimates being with respect to World coordinate system, I run the pose verification step. The pose verification step returns a score, symbolizing the quality of the input query image and the reconstructed query image. I sum all the scores in the segment. Note that there are other ways of integrating the scores together: e.g. mean, maximum; I haven't tested them yet. This is done for those top \topPE{} poses from the pose estimation step. At the end, I choose the candidate with highest score to represent the final camera pose estimate. This approach is a basic way to leverage the fact that the queries were taken in a sequence (and captured with HoloLens).
+To match the two poses, we just need to compute a linear transformation (rotation, translation). With this transformation, the other poses from HoloLens are converted from Omega to World. With all camera pose estimates being with respect to World coordinate system, we run the pose verification step. The pose verification step returns a score, symbolizing the quality of the input query image and the reconstructed query image. All the scores in the segment are summed up. Note that there are other ways of integrating the scores together: e.g. mean, maximum; I haven't tested them yet. This is done for those top \topPE{} poses from the pose estimation step. At the end, I choose the candidate with highest score to represent the final camera pose estimate. This approach is a basic way to leverage the fact that the queries were taken in a sequence (and captured with HoloLens).
 
-Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-2D correspondences are computed using the geometric verification step and are subsequently converted into 2D-3D correspondences. Given these data, an external program called \code{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the \code{MultiCameraPose} program and gsP4P, please see Chapter \ref{chapter:literature-review}. I store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
+Approach two is called MultiCameraPose. We want to estimate pose of each query in the sequence by taking into account all poses and correspondences in the current segment. The camera pose estimates (wrt Omega) are taken from HoloLens. The 2D-2D correspondences are computed using the geometric verification step and are subsequently converted into 2D-3D correspondences. Given these data, an external program called \code{MultiCameraPose} \cite{MultiCameraPose} processes them and returns the camera pose estimates wrt World. The program contains an implementation of gsP4P \cite{Kukelova2016CVPR}. For details on the \code{MultiCameraPose} program and gsP4P, please see Chapter \ref{chapter:literature-review}. We then store all returned camera rig poses, as the main result of the pose estimation step. In the pose verification step, all the estimated poses within a particular segment are evaluated (score is computed). Again, the candidate segment with the highest cumulative (summed up) score is selected. The last pose from the estimated poses in the segment is selected to be the final camera pose estimate for current query.
 
 There is an important change when MultiCameraPose is used, compared to processing non-sequential queries. To understand that, let me first describe how the pose estimation step works in the non-sequential case:
 
 \begin{enumerate}
 	\item We are given top \topRetrieval{} candidate cutouts for each query. These cutouts aim to be visually similar to the query. They were constructed using the input \code{score} matrix.
 	\item Query and cutout features are extracted.
-	\item Geometric verification is executed for all query-cutout pairs. This gives us 2D-2D correspondences aka ``inliers'' (some of which are inaccurate).
+	\item Geometric verification is executed for all query-cutout pairs. This gives us 2D-2D correspondences called ``inliers'' (some of which are inaccurate).
 	\item \label{item:GV-reranking} The top \topRetrieval{} candidates are re-ranked and sorted, so that query-cutout pairs with the highest number of inliers are preferred. If the number of inliers is the same, the original input \code{score} is used on top of it (floating point value between zero and 1).
 	\item \label{item:topGV} Top \topGV{} candidate cutouts for each query are chosen.
-	\item Each query-cutout pair and its 2D-2D correspondences are processed. Because one of 2D corresponding point sets lies in the cutout image, we can extract its corresponding 3D points (the dataset provides depth and 3D point of every cutout pixel). The query-cutout 2D-3D correspondences are ``fed'' into P3P. The camera pose is estimated.
+	\item Each query-cutout pair and its 2D-2D correspondences are processed. Because one of 2D corresponding point sets lies in the cutout image, we can extract its corresponding 3D points (the dataset provides depth and 3D point of every cutout pixel). The query-cutout 2D-3D correspondences are then passed into P3P. The camera pose is estimated.
 	\item We now have \topPE{} candidate pose estimates for every query.
 \end{enumerate}
 
-In the MultiCameraPose approach, the segments have length k>1. We need to decide how to choose, for each query, top \topPE{} \emph{query-cutout segments}. The candidates will then be processed further using pose estimation and verification. Recall that the last query in the segment is always the one currently being processed (the one for which we want the camera pose). My current implementation does the following:
+In the MultiCameraPose approach, the segments have length $k>1$. We need to decide how to choose, for each query, top \topPE{} \emph{query-cutout segments}. The candidates will then be processed further using pose estimation and verification. Recall that the last query in the segment is always the one currently being processed (the one for which we want the camera pose). My current implementation does the following:
 
 \begin{enumerate}
 	\item We have the re-ranked and sorted top \topGV{} candidate cutouts for each query, as described in step \ref{item:topGV} of the non-sequential pose estimation approach.
-	\item Generate all possible query-cutout segments of length k. There are $\topGV{}^{k}$ possibilities.
-	\item Because k is expected to be no more than 5, we can easily generate all the combinations.
+	\item Generates all possible query-cutout segments of length $k$. There are $\topGV{}^{k}$ possibilities.
+	\item Because $k$ is expected\footnote{The higher the $k$, the higher the chance of data associated to a particular query in the segment is corrupted. This would negatively impact the resulting pose estimate precision.} to be no more than 5, we can easily generate all the combinations.
 	\item \label{item:topGV-sequential} Every query-cutout has a score assigned, as described in step \ref{item:GV-reranking} of the non-sequential algorithm. I simply choose the combinations which have the cumulative (summed up) score the highest. Top \topPE{} combinations are selected.
 \end{enumerate}
 
 The algorithm in step \ref{item:topGV-sequential} may be a bit problematic for two reasons. First, some query-cutout pairs may naturally have more inliers (on average) than others. It might be sub-optimal to sum those scores. Instead, e.g. an average or a median should be considered. The second issue is that selecting \topPE{} combinations from $\topGV{}^{k}$ is not enough. But increasing the number of chosen top combinations is currently not possible, because pose verification is so slow. The second issue is described in more detail in subsection \ref{subsection:hard-top-pick-top-combinations}.
 
-Another problem not considered in the reference InLoc implementation is related to the different aspect ratios of HoloLens queries and cutouts. Recall that HoloLens query images have a $1344 \times 758$ pixel resolution, whereas the cutouts have resolution of $1600 \times 1200$. This makes the HoloLens queries have $16:9$ aspect ratio and the cutouts have a $4:3$ aspect ratio. Why is that a problem? The methods used in geometric verification (GV) would break - the tentative correspondences would not be computed properly. Therefore, we need to provide the GV step with the same aspect ratio (and also the same resolution by scaling). Of course, if we rescale the query image to match the cutout image dimensions, we will deform the query view. Therefore my solution is to add padding\footnote{another approach would be to crop the query image to achieve the same aspect ratio; then rescale without deformation. Of course, the problem with this approach is that we would lower the horizontal field of view, which would mean less RGB data to work with in the transformed query image.} on top and bottom of the same image; where the added pixels share the same constant value. The padding is added so that the aspect ratio matches the cutout aspect ratio. Then we can also rescale without deformation. In the pose estimation step, we have to undo the process on the query inliers, so that they correspond with the properties of the camera that took those images.
+Another problem not considered in the reference InLoc implementation is related to the different aspect ratios of HoloLens queries and cutouts. Recall that HoloLens query images have a $1344 \times 758$ pixel resolution, whereas the cutouts have resolution of $1600 \times 1200$. This makes the HoloLens queries have $16:9$ aspect ratio and the cutouts have a $4:3$ aspect ratio. Why is that a problem? The methods used in geometric verification (GV) would break - the tentative correspondences would not be computed properly. Therefore, we need to provide the GV step with the same aspect ratio (and also the same resolution by scaling). Of course, if we rescale the query image to match the cutout image dimensions, we will deform the query view. Therefore my solution is to add padding\footnote{Another approach would be to crop the query image to achieve the same aspect ratio; then rescale without deformation. Of course, the problem with this approach is that we would lower the horizontal field of view, which would mean less RGB data to work with in the transformed query image.} on top and bottom of the query image; where the added pixels share the same constant value. The padding is added so that the aspect ratio matches the cutout aspect ratio. Then we can also rescale without deformation. In the pose estimation step, we have to undo the process on the query inliers, so that they correspond with the properties of the camera that took those images.
 
 \section{Source code and dataset structure}
 
@@ -775,7 +776,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\end{minipage}
 	}
 	\label{fig:demo-structure}
-	\caption{The organization of the source code of the main pipeline implementation. Only notable items shown.}
+	\caption{The organization of the source code of the core project. Only notable items shown.}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -794,6 +795,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		.3 buildRawPoses.m\DTcomment{optimize reference poses}.
 		.3 holoLensPoses.m\DTcomment{converted to be wrt World}.
 		.3 transformPoses.m\DTcomment{create reference poses}.
+		.2 README.md\DTcomment{detailed description}.
 		}
 	\end{minipage}
 	}
@@ -807,7 +809,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	\begin{minipage}{0.9\textwidth}
 		\dirtree{%
 		.1 InLocCIIRC\_dataset.
-		.2 cutouts.
+		.2 cutouts/.
 		.2 evaluation-*/.
 		.2 inputs-*.
 		.3 cutout\_imgnames\_all.mat.
@@ -821,7 +823,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		.3 gv\_dense/.
 		.3 PnP\_dense\_inlier/.
 		.3 synthesized/.
-		.2 panoramas.
+		.2 panoramas/.
 		.2 query-*.
 		.3 1.jpg.
 		.3 2.jpg.
@@ -829,14 +831,14 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		.3 HoloLensPoses/\DTcomment{wrt World}.
 		.3 poses/\DTcomment{reference poses}.
 		.3 projectedPoses/\DTcomment{visual quality of ref. poses}.
-		.2 sweepData\DTcomment{from Matterport API}.
-		.2 HoloLens sequences.\DTcomment{data from the two HoloLens sequences}.
+		.2 sweepData/\DTcomment{from Matterport API}.
+		.2 HoloLens sequences/\DTcomment{data from the two HoloLens sequences}.
 		.2 Habitat/\DTcomment{data for Habitat experiments}.
 		}
 	\end{minipage}
 	}
 	\label{fig:dataset-structure}
-	\caption{The structure of the InLocCIIRC dataset. Only notable items shown. \todo[Habitat data should not be in InLocCIIRC\_dataset!]}
+	\caption{The structure of the InLocCIIRC dataset. Only notable items shown. \todo[Habitat data should not be in \code{InLocCIIRC\_dataset}!]}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -883,7 +885,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 \renewcommand{\lstlistingname}{Algorithm} % Listing -> Algorithm
 \renewcommand{\lstlistlistingname}{List of \lstlistingname s} % List of Listings -> List of Algorithms
 
-\begin{lstlisting}[style=pseudocode, caption={InLocCIIRC pseudocode. \todo[pseudocode review.]}]
+\begin{lstlisting}[style=pseudocode, caption={\code{InLocCIIRC\_demo} pseudocode.}]
 	mode = 'non-sequential' or 'sequentialPV' or 'MultiCameraPose'
 	segmentLength = 3 # aka `k`; considered in 'sequentialPV', 'MultiCameraPose' modes
 	querySet = 's10e' or 'holoLens1' or 'holoLens2'
@@ -894,6 +896,18 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	neuralNet = NetVLAD()
 	coarseLayer = 'conv5'
 	fineLayer = 'conv3'
+
+	def main():
+		score, queryNames, cutoutNames = initialize()
+		assertNonSequentialModeUsedIfQuerySetIsNonSequential()
+		# score represents query-cutout score matrix
+		ImgList = retrieval(score, queryNames, cutoutNames)
+		ImgList = poseEstimation(ImgList)
+		ImgList = poseVerification(ImgList)
+		evaluate(ImgList)
+
+	def initialize():
+		return implementationDetail()
 
 	def addSecondaryQueries(ImgList, score, queryNames, cutoutNames):
 		# primary query is a query user requested to perform pose estimation on.
@@ -936,7 +950,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 			thisQueryFeatures = list() # query image features followed by `topRetrieval` cutout features
 			queryImage = loadImage(queryName)
 			queryImage = loadQueryImageCompatibleWithCutouts(queryImage)
-			thisQueryFeatures.append(queryImage)
+			thisQueryFeatures.append(extractFeatures(queryImage))
 			for j in topRetrieval:
 				cutoutName = Imglist[i].topNname[j]
 				cutoutImage = loadImage(cutoutName)
@@ -954,7 +968,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		match12 = findNearestMatches(queryCoarseFeats, cutoutCoarseFeats)
 		return f1, f2, match12
 
-	def sortImgListRowByHighestScores(ImgListRow)
+	def sortImgListRowByHighestScores(ImgListRow):
 		for i in len(queryNames):
 			sortedScores, ind = sort(ImgListRow[i].topNscore, 'descend')
 			ImgListRow[i].topNname = ImgListRow[i].topNname[ind]
@@ -980,7 +994,7 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 	def getActualSegmentLength(idx, desiredSegmentLength, ImgList):
 		return getSegmentLengthSuchThatSegmentQueriesAreWithinSequenceBounds(idx, desiredSegmentLength, ImgList)
 
-	def getCandidateIdx():
+	def getCandidatesForQueries(ImgList):
 		# for each query, we have multiple candidate solutions.
 		# parfor_densePE and parfor_densePV functions must be executed on
 		# all of those candidates
@@ -992,21 +1006,23 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		treatQueriesSequentially = mode == 'MultiCameraPose'
 		if not treatQueriesSequentially:
 			desiredSegmentLength = 1
+		else:
+			desiredSegmentLength = segmentLength
 		ImgListSequential = keepPrimaryQueriesOnly(ImgList)
 		for i in range(len(ImgListSequential)):
 			actualSegmentLength = getActualSegmentLength(i, desiredSegmentLength, ImgListSequential)
 			combinations = permuteIndices([0:topGV], actualSegmentLength)
-			scores = computeScoresForSegmentCombinations('cumulative-sum')
+			queryName = ImgListSequential[i].queryname
+			scores = computeScoresForSegmentCombinations(combinations, ImgList, queryName, 'cumulative-sum')
 			ind = findBestCombinations(scores, topPE)
-			updateTopCutoutsAnsScoresInTheSegment(ImgListSequential[i], scores, ind)
+			updateTopCutoutsAndScoresInTheSegment(ImgListSequential[i], scores, ind)
 		if treatQueriesSequentially:
 			posesFromHoloLens = getPosesFromHoloLens()
 		else:
 			posesFromHoloLens = list()
 
-		parfor i in len(ImgListSequential):
-			candidateIdx = getCandidateIdx()
-			parfor_densePE(ImgListSequential, i, posesFromHoloLens, candidateIdx)
+		parfor queryName, candidateIdx in getCandidatesForQueries(ImgListSequential):
+			parfor_densePE(ImgListSequential, queryName, posesFromHoloLens, candidateIdx)
 
 		for i in len(ImgListSequential)
 			ImgListSequential[i].Ps = list(size=topPE) # estimated poses in the segment, for topPE combinations
@@ -1015,13 +1031,14 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 
 		return ImgListSequential
 
-	def parfor_densePE(ImgList, idx, posesFromHoloLens, candidateIdx):
-		actualSegmentLength = getActualSegmentLength(idx, implementationDetail(), ImgList)
+	def parfor_densePE(ImgList, parentQueryName, posesFromHoloLens, candidateIdx):
+		actualSegmentLength = getActualSegmentLength(parentQueryName, implementationDetail(), ImgList)
 		Ps = list(size=actualSegmentLength)
 		useP3P = segmentLength == 1
 		if invalidPosesDueToDelay(posesFromHoloLens):
 			useP3P = True
 		for j in segmentLength:
+			queryName = getQueryNameBasedOnParentQueryName(j, parentQueryName)
 			f1, f2, match12, inls12 = load(queryName, cutoutName, candidateIdx)
 			queryTentatives = f1[inls12[0]]
 			cutoutTentatives = f2[inls12[2]]
@@ -1032,29 +1049,28 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		if useP3P:
 			P, inls = P3P(correspondences)
 			Ps[end] = P
-			save(inls, candidateIdx=candidateIdx)
+			save(parentQueryName, candidateIdx, inls)
 		else:
 			Ps = multiCameraPose(correspondences, posesFromHoloLens)
 
-		save(Ps, candidateIdx=candidateIdx)
+		save(parentQueryName, candidateIdx, Ps)
 
 	def convertHLPosesToBeWrtCurrentQueryPoseEstimate(posesFromHoloLens):
 		# it should be clear how to do this from my textual description in the Implementation Chapter %\ref{chapter:implementation}%
 		return implementationDetail()
 
-	def parfor_densePV(ImgList, queries, idx, candidateIdx):
-		parentQuery = queries[idx]
-		queriesInSegment = getQueriesInSegment(parentQuery)
-		cutouts = getCutoutsInSegment(parentQuery)
-		Ps = load(parentQuery, candidateIdx=candidateIdx)
+	def parfor_densePV(ImgList, parentQueryName, candidateIdx):
+		queriesInSegment = getQueriesInSegment(parentQueryName)
+		cutouts = getCutoutsInSegment(parentQueryName)
+		Ps = load(parentQueryName, candidateIdx)
 		for i in range(len(queriesInSegment))
-			query = queriesInSegment[i]
-			cutout = cutouts[i]
+			queryName = queriesInSegment[i]
+			cutoutName = cutouts[i]
 			P = Ps[i]
-			queryImage = loadQueryImage(query)
+			queryImage = loadQueryImage(queryName)
 			synthQueryImage = projectPose(P)
 			error = compute_DSIFT_error(queryImage, synthQueryImage)
-			save(parentQuery, query, cutout, error, synthImage, candidateIdx=candidateIdx)
+			save(parentQueryName, candidateIdx, queryName, cutoutName, error, synthImage)
 
 	def poseVerification(ImgList):
 		PV_list = setUpListForPoseVerificationProcessing(ImgList)
@@ -1062,34 +1078,23 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 			posesFromHoloLens = getPosesFromHoloLens()
 			posesFromHoloLens = convertHLPosesToBeWrtCurrentQueryPoseEstimate(posesFromHoloLens)
 			addPosesFromHoloLensForPoseVerificationProcessing(PV_list, posesFromHoloLens)
-		spaces = getSpacesAtWhichPoseEstimatesAre(ImgList)
-		for space in spaces:
-			queries = getQueriesInSpace(ImgList, space)
-			parfor i in len(queries):
-				candidateIdx = getCandidateIdx()
-				parfor_densePV(ImgList, queries, i, candidateIdx)
 
-		ImgList = reRankSortAndChooseTop(topPV)
+		parfor queryName, candidateIdx in getCandidatesForQueries(PV_list):
+			parfor_densePV(PV_list, queryName, candidateIdx)
+
+		PV_list = reRankSortAndChooseTop(PV_list, topPV)
+		return PV_list
 
 	def evaluate(ImgList):
 		# chooses top 1 poseVerification results for each query
-		visualEvaluationQueryByQuery(ImgList)
+		visualEvaluationQueries(ImgList)
 		visualEvaluationQuerySegments(ImgList)
 		computeTranslationAndOrientationErrorsWrtReferencePoses(ImgList)
 		showLocalizationAccuracyGivenThresholds()
 		showErrorStatistics()
-
-	def main()
-		score, queryNames, cutoutNames = initialize()
-		assertNonSequentialModeUsedIfQuerySetIsNonSequential()
-		# score represents query-cutout score matrix
-		ImgList = retrieval(score, queryNames, cutoutNames)
-		ImgList = poseEstimation(ImgList)
-		ImgList = poseVerification(ImgList)
-		evaluate(ImgList)
 \end{lstlisting}
 
-Note that in the current actual source code, I do not have the 'non-sequential' mode. Instead, it is determined by choosing 'MultiCameraPose' mode and setting segmentLength to 1.
+Note that in the current version of the actual source code, I do not have the 'non-sequential' mode. Instead, it is determined by choosing 'MultiCameraPose' mode and setting segmentLength to 1.
 
 \section{\code{MultiCameraPose}}
 The \code{MultiCameraPose} project has been slightly modified and used as an external dependency. The modified source code is available at \cite{MultiCameraPose}.
@@ -1101,8 +1106,8 @@ The \code{MultiCameraPose} project has been slightly modified and used as an ext
 	\item Comments for easier code understanding.
 	\item The core multi-pose estimation procedure runs \code{num\_global\_iterations}-times.
 	\item At the end of each global iteration, the new estimate is considered the best so far, if it matches the following criteria:
-	\item Criteria 1: The median translation error is no higher than the median translation error associated with the previous best estimate,
-	\item Criteria 2: The median orientation error is no higher than the median orientation error associated to the previous best estimate.
+	\item Criteria 1: The median translation error is not higher than the median translation error associated with the previous best estimate,
+	\item Criteria 2: The median orientation error is not higher than the median orientation error associated to the previous best estimate.
 	\item Fixed a bug regarding translation error computation.
 	\item Added a build script.
 	\item Other small changes.
@@ -1137,7 +1142,7 @@ The MATLAB function is present at \code{InLocCIIRC\_utils/multiCameraPose/ \allo
 		\hline
 		\code{allCorrespondences3D} & $n \times 1$ cell array & \makecell{Each element contains the \\ 3D cutout correspondences. \\ Each element is a $3 \times l$ double array, \\ where $l$ is the number of correspondences found.} \\
 		\hline
-		\code{inlierThreshold} & double & Unused; not implemented. \\
+		\code{inlierThreshold} & double & Unused in \code{multi\_camera\_pose}. \\
 		\hline
 		\code{numLoSteps} & integer & \makecell{Number of steps in internally used \\ Locally Optimized RANSAC.} \\
 		\hline
@@ -1151,12 +1156,12 @@ The MATLAB function is present at \code{InLocCIIRC\_utils/multiCameraPose/ \allo
 		\hline
 		\code{imageHeight} & integer & The height of the camera sensors [px]. \\
 		\hline
-		\code{K} & $3 \times 3$ double & \makecell{The camera calibration matrix \\ (See section \ref{section:cameraCS})}. \\
+		\code{K} & $3 \times 3$ double & \makecell{The camera calibration matrix \\ (See section \ref{section:cameraCS}).}. \\
 		\hline
-		\code{params} & struct & \makecell{Contains experiment-specific parameters. See \\ \code{InLocCIIRC\_utils/params/setupParams.m}} \\
+		\code{params} & struct & \makecell{Contains experiment-specific parameters. See \\ \code{InLocCIIRC\_utils/params/setupParams.m}.} \\
 		\hline
 	\end{tabular}
-	\caption{The input parameters of the \code{multiCameraPose.m} MATLAB function. The function acts as an interface to the \code{MultiCameraPose} executable program.}
+	\caption{The input parameters of the \code{multiCameraPose.m} MATLAB function. The function acts as an interface to the \code{multi\_camera\_pose} executable program.}
 	\label{tab:MCP_frontend_input}
 \end{table}
 
