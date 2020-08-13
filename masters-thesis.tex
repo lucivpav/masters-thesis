@@ -98,6 +98,7 @@
 \newcommand{\topPE}{10} % PE output (number of candidate poses for each query)
 \newcommand{\topPV}{1} % obviously
 \newcommand{\HLvsRefPosesErrorsCaption}{Estimate of reference vs ground truth poses errors. All the queries in the sequence were considered, with two kinds of exceptions. Queries, for which we do not have a reference pose (Vicon got lost) are not considered in the statistics. Queries for which we do not have a corresponding pose from HoloLens (due to the delay) are also not included in the statistics. Ground truth poses are estimated from the poses provided from HoloLens, after conversion to World coordinate system.}
+\newcommand{\InLocCIIRCDatasetModelsInHabitat}{Disclaimer: I am the author of the dataset and the modified Habitat source code. But in order to load the InLocCIIRC models into Habitat, a transformation must be performed to comply with the Habitat format. The transformation was developed and performed by Martina Dubeňová. If you need to load custom Matterport models into Habitat, feel free to browse the AI Habitat documentation or contact Martina at \code{dubenma1@fel.cvut.cz}.}
 
 % Abstract in Czech
 \begin{abstract-czech}
@@ -659,7 +660,7 @@ The scanned rooms contain a couple of types of objects that can confuse the Matt
 \end{table}
 
 \section{Habitat}
-We provide an (incomplete) tool for generating synthetic datasets in InLoc dataset-like format. The tool is a modification of the Habitat AI platform \cite{habitat19iccv}. It currently supports creation of sequential query sets in digitalized environments, such as the Matterport3D dataset \cite{Matterport3D} and our InLocCIIRC dataset \todo[podporu pro nas dataset vytvorila martina, tohle bych sem nemel psat!]. The implementation is available at \cite{HabitatFork}. It can be used for creation of large datasets (for evaluation of indoor localization methods) without an expensive 3D scanning equipment. However, evaluating an improved HoloLens tracking accuracy is not very meaningful here, as the data from HoloLens would need to be simulated.
+We provide an (incomplete) tool for generating synthetic datasets in InLoc dataset-like format. The tool is a modification of the AI Habitat platform \cite{habitat19iccv}. It currently supports creation of sequential query sets in digitalized environments, such as the Matterport3D dataset \cite{Matterport3D} and our InLocCIIRC dataset\footnote{\InLocCIIRCDatasetModelsInHabitat}. The implementation is available at \cite{HabitatFork}. It can be used for creation of large datasets (for evaluation of indoor localization methods) without an expensive 3D scanning equipment. However, evaluating an improved HoloLens tracking accuracy is not very meaningful here, as the data from HoloLens would need to be simulated.
 
 \subsection{Usage}
 \begin{enumerate}
@@ -831,12 +832,12 @@ An umbrella repository referencing all the sub-projects has been created. It is 
 		.3 projectedPoses/\DTcomment{visual quality of ref. poses}.
 		.2 sweepData/\DTcomment{from Matterport API}.
 		.2 HoloLens sequences/\DTcomment{data from the two HoloLens sequences}.
-		.2 Habitat/\DTcomment{data for Habitat experiments}.
+		.2 Habitat\footnote{\InLocCIIRCDatasetModelsInHabitat}/\DTcomment{data for AI Habitat experiments on top of our dataset}.
 		}
 	\end{minipage}
 	}
 	\label{fig:dataset-structure}
-	\caption[Dataset structure]{The structure of the InLocCIIRC dataset. Only notable items shown. \todo[Habitat data should not be in \code{InLocCIIRC\_dataset}!]}
+	\caption[Dataset structure]{The structure of the InLocCIIRC dataset. Only notable items shown.}
 \end{figure}
 
 \begin{figure}[htb!]
@@ -1534,7 +1535,7 @@ The recommended amount of RAM for re-running the experiments is 90 GB.
 I have created a new dataset suitable for indoor visual localization; either on single RGB images or on a sequence of query images and localization data from HoloLens. I have adjusted the original\footnote{Original InLoc implementation available at \cite{InLocImplementation}.} InLoc implementation and made it work on the newly acquired dataset. The performance on the non-sequential s10e query set is very good (compared to results in InLoc paper). This is likely caused by the fact that our dataset is much smaller than the InLoc dataset. I have also implemented two novel methods that are based on InLoc \cite{taira2018inloc} - the sequentialPV method and the MultiCameraPose method. It was expected that the sequentialPV method would not to perform very well compared to HoloLens tracking. The MultiCameraPose method is more accurate than both the baseline InLoc method and the sequentialPV method. The resulting estimated poses are usable. However its performance is still significantly below the precision of HoloLens tracking itself. It is not clear why the new MultiCameraPose method is not performing that well. In the previous chapter, I have described known sources of errors, a lot of which can be targeted in a future work. This will certainly improve the evaluation performance.
 
 \section{Future work}
-Improve the accuracy of the MultiCameraPose method by fixing known sources of errors. Spend extra time to analyze why there are inaccurate poses for certain queries and suggest an enhancement. The work on the HoloLens2 sequence should be continued - we need to compute reference poses. The code is there, but currently we are missing more manually set-up 2D-3D correspondences. Also, the work on synthetic dataset generation using Habitat AI shall be continued. Although it cannot give us data from HoloLens tracking, it can be used to generate new indoor localization datasets, without the need for expensive equipment (such as a Matterport scanner). There are extra parameters such as setting up the cutout horizontal field of view, \code{dslevel}\footnote{Determines how much to downsample images in the pose verification step.}, \code{MultiCameraPose} software \cite{MultiCameraPose} parameters and more. The accuracy of the reference poses wrt ground truth poses shall be also improved.
+Improve the accuracy of the MultiCameraPose method by fixing known sources of errors. Spend extra time to analyze why there are inaccurate poses for certain queries and suggest an enhancement. The work on the HoloLens2 sequence should be continued - we need to compute reference poses. The code is there, but currently we are missing more manually set-up 2D-3D correspondences. Also, the work on synthetic dataset generation using AI Habitat shall be continued. Although it cannot give us data from HoloLens tracking, it can be used to generate new indoor localization datasets, without the need for expensive equipment (such as a Matterport scanner). There are extra parameters such as setting up the cutout horizontal field of view, \code{dslevel}\footnote{Determines how much to downsample images in the pose verification step.}, \code{MultiCameraPose} software \cite{MultiCameraPose} parameters and more. The accuracy of the reference poses wrt ground truth poses shall be also improved.
 
 The paper \cite{IsThisTheRightPlace} provides an improvement of the InLoc pose verification step. Once a reference implementation is available, I recommend incorporating the changes into our implementation.
 
