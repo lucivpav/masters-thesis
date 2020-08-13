@@ -49,10 +49,15 @@
 	\def\subfieldofstudyname{Studijní program}%
 }
 
+\ctutemplateset{maketitle nocolumn default}{
+	\begin{nocolumnfrontmatterpage}
+		\ctutemplate{nocolumn.thanks}
+		\ctutemplate{nocolumn.declaration}
+	\end{nocolumnfrontmatterpage}
+}
+
 \ctutemplateset{maketitle twocolumn default}{
 	\begin{twocolumnfrontmatterpage}
-		\ctutemplate{twocolumn.thanks}
-		\ctutemplate{twocolumn.declaration}
 		\ctutemplate{twocolumn.abstract.in.titlelanguage}
 		\ctutemplate{twocolumn.abstract.in.secondlanguage}
 		\ctutemplate{twocolumn.tableofcontents}
@@ -117,9 +122,12 @@ I would like to thank my family for their support and motivation; especially dur
 
 % Declaration / Prohlaseni
 \begin{declaration}
-Prohlašuji, že jsem předloženou práci vypracoval samostatně, a že jsem uvedl veškerou použitou literaturu. \todo[kolonka na podpis]
+Prohlašuji, že jsem předloženou práci vypracoval samostatně a že jsem uvedl veškeré použité informační zdroje v souladu s Metodickým pokynem o dodržování etických principů při přípravě vysokoškolských závěrečných prací.
 
-V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year}
+\vspace{2cm}
+
+\noindent
+V Praze, \ctufield{day}.~\ctufield{month}.~\ctufield{year} \hfill \dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots
 \end{declaration}
 
 % Only for testing purposes

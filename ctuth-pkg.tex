@@ -179,6 +179,44 @@
 
 
 
+\NewDocumentEnvironment{ nocolumnfrontmatterpage } { } {
+	% Set the page geometry to the title one (it's a bit wider)
+	\ctuthesis_geometry_title:
+	\newpage
+	\pagestyle{nocol}
+
+	\DeclareDocumentCommand\chapter{ s o m }{\relax
+		% Compute the vertical adjustment
+		\skip_gset:Nn \g_ctuthesis_tempa_skip { 40 \box_ht:N \strutbox }
+		{ \LARGE \skip_gsub:Nn \g_ctuthesis_tempa_skip { \box_ht:N \strutbox + \box_dp:N \strutbox } }
+		% Space used if not at the beginning of a column
+		\skip_vertical:n { 12pt - \g_ctuthesis_tempa_skip }
+		% Add the space below the chapter title to the adjustment
+		\skip_gsub:Nn \g_ctuthesis_tempa_skip { 2pt }
+		% Vertical adjustment
+		\vspace* { \g_ctuthesis_tempa_skip }
+		% Zero measure vertical box, the contents are raised by something and typeset
+		\noindent \leavevmode
+		\hbox_to_wd:nn \linewidth {
+			% In the first column its right-aligned, in the second left-aligned.
+			% It can't be more than one line.
+			\leavevmode\color{ctubluetext}\LARGE\strut\bfseries\sffamily##3
+			\hfil
+		}\par
+		\skip_vertical:n { 2pt }
+		\everypar{\noindent}
+	}
+} {
+	\ctuthesis_geometry_plain:
+	\clearpage
+	\onecolumn
+	\pagestyle{plain}
+}
+
+
+
+
+
 
 %%% LANGUAGES
 
@@ -549,6 +587,15 @@
 			\rule [ \dimexpr - \textheight - \headsep - 6pt ]{ 11pt }{ \textheight } 
 		}
 	}
+	\renewcommand { \headrulewidth } { 0pt }
+	\renewcommand { \footrulewidth } { 0pt }
+	\dim_set_eq:NN \headwidth \textwidth
+}
+
+\fancypagestyle{nocol}{
+	\fancyhf { }
+	\fancyfoot [ RO, LE ] { \texttt { \ctufield { preprint } } }
+	\fancyfoot [ C ] { \thepage }
 	\renewcommand { \headrulewidth } { 0pt }
 	\renewcommand { \footrulewidth } { 0pt }
 	\dim_set_eq:NN \headwidth \textwidth

@@ -126,14 +126,14 @@
 		\tableofcontents
 }
 
-\ctutemplateset{twocolumn.thanks}{
+\ctutemplateset{nocolumn.thanks}{
 		\selectctulanguage{title}
 		\chapter{\thanksname}\noindent
 		\ctufield{thanks}
 }
 
-\ctutemplateset{twocolumn.declaration}{
-		\selectctulanguage{title}
+\ctutemplateset{nocolumn.declaration}{
+		\selectctulanguage{second}
 		\chapter{\declarationname}\noindent
 		\ctufield{declaration}
 }
@@ -148,14 +148,10 @@
 		\listoftables
 }
 
-% Abstract template includes the Acknowledgements, Declaration and two Abstracts
+% Abstract template includes the two Abstracts
 % the abstracts are accompanied by the keywords and possibly other information
 \ctutemplateset{maketitle.twocolumn.default}{
 	\begin{twocolumnfrontmatterpage}
-		\ctutemplate{twocolumn.thanks}
-	\newpage
-		\ctutemplate{twocolumn.declaration}
-	\clearpage
 		\ctutemplate{twocolumn.abstract.in.titlelanguage}
 	\newpage
 		\ctutemplate{twocolumn.abstract.in.secondlanguage}
@@ -170,6 +166,14 @@
 		\ctutemplate{twocolumn.loft}
 	} { }
 	\end{twocolumnfrontmatterpage}
+}
+
+\ctutemplateset{maketitle.nocolumn.default}{
+	\begin{nocolumnfrontmatterpage}
+		\ctutemplate{nocolumn.thanks}
+		\cleardoublepage
+		\ctutemplate{nocolumn.declaration}
+	\end{nocolumnfrontmatterpage}
 }
 
 % Lists of Figures and Tables
@@ -192,8 +196,10 @@
 		\ctutemplate{include.specification}
 		\cleardoublepage*
 	} { }
-	% The abstract and alike
+	\ctutemplate{maketitle.nocolumn.default}
+	\cleardoublepage
 	\ctutemplate{maketitle.twocolumn.default}
+
 	\def\thepage{}
 	% Start the mainmatter
 	\mainmatter
