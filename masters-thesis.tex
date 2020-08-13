@@ -1149,7 +1149,7 @@ The MATLAB function is present at \code{InLocCIIRC\_utils/multiCameraPose/ \allo
 		\hline
 		\code{pointsCentered} & boolean & \makecell{If not, the 2D correspondences are transformed, \\ so that their origin is \\ at $(\text{\code{imageWidth}}/2, \text{\code{imageHeight}}/2)$.} \\
 		\hline
-		\code{undistortionNeeded} & boolean & \makecell{Undistorts the 2D correspondences. \\ \todo[cite some distortion publication?]} \\
+		\code{undistortionNeeded} & boolean & \makecell{Corrects the impact of lens distortion\footnotemark \\ on the 2D correspondences.} \\
 		\hline
 		\code{imageWidth} & integer & How wide the camera sensors are [px]. \\
 		\hline
@@ -1163,6 +1163,7 @@ The MATLAB function is present at \code{InLocCIIRC\_utils/multiCameraPose/ \allo
 	\caption[Input parameters of \code{multiCameraPose} MATLAB function]{The input parameters of the \code{multiCameraPose} MATLAB function. The function acts as an interface to the \code{multi\_camera\_pose} executable program.}
 	\label{tab:MCP_frontend_input}
 \end{table}
+\footnotetext{Consider reading \cite{LensDistortion} to learn more about what lens distortion is.}
 
 The function has a single output - \code{posesWrtModel}. It is a $1 \times n$ cell array. Each element is a $3 \times 4$ double. The $3 \times 3$ sub-matrix on the left is a rotation matrix R; it converts World bases into camera bases. The remaining $3 \times 1$ vector on the right is World origin wrt camera coordinate system.
 
