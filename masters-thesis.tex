@@ -400,7 +400,7 @@ The sweeps, used to construct the point cloud model, were taken on Thursday/Frid
 
 The two HoloLens sequences were captured about three weeks later. This means the environment was more challenging to work with, because it has changed from the state in which it was scanned by Matterport.
 
-Alignments define the pose of individual sweeps within the space they are in. Because the poses are given to us from Matterport, we do not need to perform the generalized iterative closest point (GICP) step, as in InLoc. Because Matterport gives us an entire model (point cloud and mesh) of each scanned space, we do not need to consider alignments at all. They were useful in InLoc, where there were individual point clouds for sweeps and thus the 3D coordinates of the points projecting onto cutouts were wrt the sweep coordinate system.
+Alignments define the pose of individual sweeps within the space they are in. Because the poses are given to us from Matterport, we do not need to perform the generalized iterative closest point (GICP) step, as in InLoc. Because Matterport gives us an entire model (point cloud and mesh) of each scanned space, we do not need to consider alignments at all. They were useful in InLoc, where there were individual point clouds for sweeps and thus the 3D coordinates of the points projecting onto cutouts were with respect to (wrt) the sweep coordinate system.
 
 In InLoc, there are point cloud models for every sweep. On the contrary, in InLocCIIRC we have a model for each space.
 
@@ -430,7 +430,7 @@ We need to know the reference pose of each query, in order to evaluate how accur
 		\caption{HoloLens2 sequence.}
 		\label{fig:holoLens-marker}
 	\end{subfigure}
-	\caption[Camera and Marker]{The camera and marker (the object tracked by Vicon). Marker coordinate system is visualized in subfigure \ref{fig:s10e-marker} by the xyz arrows.}
+	\caption[Camera and Marker]{The camera and marker (the object tracked by Vicon). Marker coordinate system is visualized in subfigure \ref{fig:s10e-marker} by the \code{xyz} arrows.}
 	\label{fig:camera-markers}
 \end{figure}
 
@@ -500,7 +500,7 @@ Table \ref{tab:HL1-ref-poses-errors} shows quantitative evaluation of the qualit
 		\caption{\HLvsRefPosesErrorsCaption{}}
 		\label{tab:HL1-ref-vs-HL-errors}	
 	\end{subtable}
-	\caption[Evaluatio of optimized HoloLens1 reference poses]{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Parameters describing the Marker to camera transformation were \textbf{optimized} using brute-force search.}
+	\caption[Evaluation of optimized HoloLens1 reference poses]{Quantitative evaluation of reference poses quality. HoloLens1 sequence shown. Parameters describing the Marker to camera transformation were \textbf{optimized} using brute-force search.}
 	\label{tab:HL1-ref-poses-errors}
 \end{table}
 
@@ -563,7 +563,7 @@ The resulting reference poses are not perfectly matching ground truth poses, whi
 	\item 2.2 $\pm$ $0.3\degree$ orientation error.
 \end{itemize}
 
-Notice that namely the the translation error is very low. To estimate the quality of my reference poses wrt ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown initial HoloLens coordinate system (Omega), I first need to convert those poses to be wrt World. To achieve this, I use procrustes \cite{procrustes}, which finds a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we would have ground truth estimates.
+Notice that namely the the translation error is very low. To estimate the quality of my reference poses with respect to (wrt) ground truth poses, I consider the HoloLens poses as the ground truth poses. However, because the poses from HoloLens are wrt some unknown initial HoloLens coordinate system (Omega), I first need to convert those poses to be wrt World. To achieve this, I use procrustes \cite{procrustes}, which finds a linear transformation from one coordinate system to another (translation, rotation, scale), given corresponding 3D points. In my case, the 3D points are simply the camera centers. Procrustes minimizes the sum of squared errors of points in the same coordinate system. After the conversion, we would have ground truth estimates.
 
 Unfortunately, there was another hidden problem that had to be dealt with, prior the reference vs ground truth pose errors could be computed. The problem is that the poses provided from HoloLens do not correspond to the query they are associated with in the data. It turns out the poses are delayed. To make matters worse, both the translation and orientation that are used to construct the camera pose are delayed by a different amount! To resolve this issue, the pose from HoloLens associated to a query is computed to be based on translation and orientation data, that comes from the future queries. I found that the best results were achieved with the delays in table \ref{tab:HL-pose-delays}.
 
@@ -1216,7 +1216,7 @@ Table \ref{tab:s10e-InLoc-statistics} shows the performance under the various th
 		{\\ \hline \id & \inMap & \translation & \orientation}
 		\\\hline
 	\end{tabular}
-	\caption[s10e pose estimatation errors]{Pose estimation errors on s10e query images.}
+	\caption[s10e pose estimation errors]{Pose estimation errors on s10e query images.}
 	\label{tab:estimation-errors}
 \end{table}
 
